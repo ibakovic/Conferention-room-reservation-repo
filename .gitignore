@@ -1,0 +1,12 @@
+.DS_Store
+
+#Ignore node_modules
+node_modules
+
+#Ignore todo list
+todo.txt
+
+#Ignore automatically generatd files
+app/dist/index.js
+app/dist/style.css
+

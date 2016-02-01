@@ -1,0 +1,48 @@
+{
+  "name": "conferenceroom",
+  "version": "1.0.0",
+  "description": "App for booking conference rooms",
+  "main": "app.js",
+  "scripts": {
+    "start": "npm run browserify && gulp sass && node app.js",
+    "browserify": "browserify -t browserify-handlebars ./app/src/js/index.js -o ./app/dist/index.js",
+    "watchify": "watchify -t browserify-handlebars ./app/src/js/index.js -o ./app/dist/index.js -v",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ivan Baković",
+  "license": "ISC",
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "backbone.marionette": "^2.4.4",
+    "bcryptjs": "^2.3.0",
+    "bluebird": "^3.1.5",
+    "bookshelf": "^0.9.1",
+    "bootstrap-sass": "^3.3.6",
+    "bootswatch": "^3.3.6",
+    "fullcalendar": "^2.6.0",
+    "got": "^6.1.1",
+    "handlebars": "^4.0.5",
+    "hapi": "^12.1.0",
+    "hapi-auth-cookie": "^6.0.0",
+    "inert": "^3.2.0",
+    "jquery": "^2.2.0",
+    "knex": "^0.9.0",
+    "lodash": "^4.0.1",
+    "moment": "^2.11.1",
+    "mysql": "^2.10.2",
+    "nunjucks": "^2.3.0",
+    "popsicle": "^3.0.3",
+    "vision": "^4.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "browserify-handlebars": "^1.0.0",
+    "browserify-shim": "^3.8.12",
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.1.1",
+    "hapi-sass": "^2.0.0",
+    "install": "^0.4.1",
+    "node-sass": "^3.4.2",
+    "npm": "^3.5.3"
+  }
+}
