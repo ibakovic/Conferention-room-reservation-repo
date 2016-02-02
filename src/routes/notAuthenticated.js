@@ -101,42 +101,6 @@ function logout(req, res) {
 }
 
 module.exports = function(server) {
-  server.register(require('hapi-auth-cookie'), function(err) {
-
-    if (err) {
-      throw err;
-    }
-
-    var cache = server.cache({ segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 });
-    server.app.cache = cache;
-
-    server.auth.strategy('session', 'cookie', true, {
-      password: 'secret',
-      cookie: 'conferenceRoomReservation',
-      redirectTo: '/',
-      isSecure: false,
-      validateFunc: function (request, session, callback) {
-
-        cache.get(session.sid, function(err, cached) {
-
-          if (err) {
-            return callback(err, false);
-          }
-
-          if (!cached) {
-            return callback(null, false);
-          }
-
-          return callback(null, true, cached.account);
-        });
-      }
-    });
-/*
-    server.route([
-      { method: 'POST', path: '/login', config: { handler: login, auth: { mode: 'try' }, plugins: { 'hapi-auth-cookie': { redirectTo: false } } } },
-      { method: 'GET', path: '/logout', config: { handler: logout } }
-      ]);*/
-  });
   server.route({
     method: 'POST',
     path:'/login',

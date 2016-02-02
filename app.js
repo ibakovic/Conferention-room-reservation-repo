@@ -1,58 +1,10 @@
 'use strict';
 
-var server = require('./src/routes/initializeServer.js');
-var got = require('got');
-var Path = require('path');
-var User = require('./src/models/models.js').User;
+var server = require('./src/lib/initializeServer.js');
 var nunjucs = require('nunjucks');
-var sass = require('hapi-sass');
 
-var options = {
-    src: './app/src/style/style.sass',
-    dest: './app/dist/style.css',
-    force: true,
-    debug: true,
-    outputStyle: 'nested',
-    sourceComments: true
-};
- 
-server.register({
-  register: sass,
-  options: options
-  },
-  function (err) {
-    if (err) {
-      throw err;
-    }
-  }
-);
-
-User.fetchAll()
-  .then(function(users) {
-    server.route({
-      method: 'GET',
-      path: '/users',
-      handler: function(req, res) {
-        res(users);
-      }
-    });
-  })
-  .catch(function(err) {
-    console.log(err);
-  });
-
-//Use default templating engine
-server.register(require('vision'), function(err) {
-	if (err) {
-    throw err;
-  }
-
-  server.views({
-    engines: {
-      html: require('handlebars')
-    }
-  });
-});
+//All dependecies
+require('./src/lib/serverRegisters.js')(server);
 
 //Rooms routes
 var roomsRouter = require('./src/routes/rooms.js');
@@ -65,7 +17,7 @@ server.route(roomsRouter.getRoom);
 require('./src/routes/reservations.js')(server);
 
 //Login and register
-//require('./src/routes/notAuthenticated.js')(server);
+require('./src/routes/notAuthenticated.js')(server);
 
 //Handle static data
 server.register(require('inert'), function(err) {
@@ -83,14 +35,14 @@ server.register(require('inert'), function(err) {
           redirectToSlash: true,
           index: true
         }
-      }/*,
+      },
       auth: {
         mode: 'try',
         strategy: 'session'
       },
       plugins: {
         'hapi-auth-cookie': { redirectTo: false }
-      }*/
+      }
     }
   });
 });

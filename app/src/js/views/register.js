@@ -15,7 +15,7 @@ var RegisterView = Marionette.ItemView.extend({
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'registerSubmit', 'registerCancel');
+		_.bindAll(this, 'registerSubmit', 'registerCancel', 'show', 'hide');
 	},
 
 	registerSubmit: function() {
@@ -42,7 +42,15 @@ var RegisterView = Marionette.ItemView.extend({
 		});
 	},
 
-	registerCancel: function() {}
+	registerCancel: function() {},
+
+	show: function() {
+		this.$el.show();
+	},
+
+	hide: function() {
+		this.$el.hide();
+	}
 });
 
 module.exports = RegisterView;

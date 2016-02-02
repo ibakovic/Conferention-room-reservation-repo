@@ -9,6 +9,8 @@ function getRoomReservations(req, res) {
 	var resData = {};
 	resData.success = false;
 
+	console.log('username', req.auth);
+
 	Reservation.where(getReservations).fetchAll()
 	.then(function gotRoomReservations(reservations) {
 		if(!reservations) {
@@ -73,6 +75,12 @@ function changeDuration(req, response) {
 	var resData = {};
 	resData.success = false;
 
+	if(!req.payload.start || !req.payload.end) {
+		resData.msg = 'Start and end times are required!';
+		response(resData);
+		return;
+	}
+
 	var getReservation = {idReservations: req.params.reservationId};
 	var setReservation = {
 		start: req.payload.start,
@@ -90,7 +98,6 @@ function changeDuration(req, response) {
 		resData.msg = 'Reservation updated!';
 		resData.success = true;
 		resData.data = res;
-		console.log(resData);
 
 		response(resData);
 		return;
@@ -98,13 +105,77 @@ function changeDuration(req, response) {
 	.catch(function setError(err) {
 		resData = {};
 		resData.success = false;
-		resData.msg = err;
+		resData.msg = err.message;
+
+		response(resData);
+	});
+}
+
+function deleteReservation(req, res) {
+	var resData = {};
+	resData.success = false;
+
+	var getReservation = {idReservations: parseInt(req.params.reservationId, 10)};
+
+	Reservation.where(getReservation).destroy()
+	.then(function(response) {
+		resData.msg = 'Reservation deleted!';
+		resData.success = true;
+
+		res(resData);
+	})
+	.catch(function(err){
+		err.msg = err.message;
+		res(err);
+	});
+}
+
+function updateTitle(req, response) {
+	var resData = {};
+	resData.success = false;
+
+	if(!req.payload.newTitle) {
+		resData.msg = 'Movie title required!';
+
+		response(resData);
+		return;
+	}
+
+	var getReservation = {idReservations: req.params.reservationId};
+	var setReservation = {
+		title: req.payload.newTitle
+	};
+
+	Reservation.where(getReservation).save(setReservation, {method: 'update'})
+	.then(function reservationSet(res) {
+		if(!res) {
+			resData.msg = 'Reservation not found!';
+			response(resData);
+			return;
+		}
+
+		resData.msg = 'Reservation updated!';
+		resData.success = true;
+		resData.data = res;
+
+		response(resData);
+		return;
+	})
+	.catch(function setError(err) {
+		resData = {};
+		resData.success = false;
+		resData.msg = err.message;
 
 		response(resData);
 	});
 }
 
 module.exports = function(server) {
+	/*server.route({
+		method: 'GET',
+		path: '/reservations'
+	});*/
+
 	server.route({
 		method: 'GET',
 		path: '/reservations/{roomId}',
@@ -112,9 +183,21 @@ module.exports = function(server) {
 	});
 
 	server.route({
+		method: 'POST',
+		path: '/reservations/{reservationId}',
+		handler: updateTitle
+	});
+
+	server.route({
 		method: 'PUT',
 		path: '/reservations/{reservationId}',
 		handler: changeDuration
+	});
+
+	server.route({
+		method: 'DELETE',
+		path: '/reservations/{reservationId}',
+		handler: deleteReservation
 	});
 
 	server.route({

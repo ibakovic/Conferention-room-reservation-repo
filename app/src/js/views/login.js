@@ -15,7 +15,7 @@ var LoginView = Marionette.ItemView.extend({
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'loginSubmit', 'loginCancel');
+		_.bindAll(this, 'loginSubmit', 'loginCancel', 'show', 'hide');
 	},
 
 	loginSubmit: function() {
@@ -37,6 +37,14 @@ var LoginView = Marionette.ItemView.extend({
 
 	loginCancel: function() {
 		console.log('Cancel login');
+	},
+
+	show: function() {
+		this.$el.show();
+	},
+
+	hide: function() {
+		this.$el.hide();
 	}
 });
 
