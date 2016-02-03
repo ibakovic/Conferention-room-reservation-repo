@@ -4,6 +4,8 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var popsicle = require('popsicle');
 var Marionette = require('backbone.marionette');
+var router = require('../router.js');
+var models = require('../models/reservations.js');
 var loginTemplate = require('../../templates/login.html');
 
 var LoginView = Marionette.ItemView.extend({
@@ -11,16 +13,20 @@ var LoginView = Marionette.ItemView.extend({
 
 	events: {
 		'click #loginSubmit': 'loginSubmit',
-		'click #loginCancel': 'loginCancel'
+		'click #signUp': 'signUp'
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'loginSubmit', 'loginCancel', 'show', 'hide');
+		_.bindAll(this, 'loginSubmit', 'signUp');
 	},
 
 	loginSubmit: function() {
 		var username = this.$el.find('#loginUsername').val().trim();
 		var password = this.$el.find('#loginPassword').val().trim();
+
+		if(!username || !password) {
+			alert('Username and password required!');
+		}
 
 		popsicle.request({
 			method: 'POST',
@@ -31,20 +37,24 @@ var LoginView = Marionette.ItemView.extend({
 			}
 		})
 		.then(function LoginSent(res) {
-			alert(res.body.msg);
+			if(!res.body.success) {
+				alert(res.body.msg);
+				return;
+			}
+
+			models.reservations.fetch({success: function(collection, response) {
+				router.navigate('calendar', {trigger: true});
+				alert(res.body.msg);
+				return;
+			}});
+		})
+		.catch(function loginErr(err) {
+			console.log(err);
 		});
 	},
 
-	loginCancel: function() {
-		console.log('Cancel login');
-	},
-
-	show: function() {
-		this.$el.show();
-	},
-
-	hide: function() {
-		this.$el.hide();
+	signUp: function() {
+		router.navigate('register', {trigger: true});
 	}
 });
 

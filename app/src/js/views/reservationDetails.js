@@ -16,11 +16,12 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 
 	events: {
 		'click #updateTitle': 'updateTitle',
-		'click #deleteReservation': 'deleteReservation'
+		'click #deleteReservation': 'deleteReservation',
+		'click #cancelReservation': 'cancelReservation'
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'render', 'getData', 'updateTitle', 'deleteReservation', 'show', 'hide');
+		_.bindAll(this, 'render', 'getData', 'updateTitle', 'deleteReservation', 'show', 'hide', 'cancelReservation');
 	},
 
 	render: function() {
@@ -84,6 +85,10 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 
 	hide: function() {
 		this.$el.hide();
+	},
+
+	cancelReservation: function() {
+		router.navigate('calendar', {trigger: true});
 	}
 });
 

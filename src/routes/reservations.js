@@ -3,13 +3,41 @@
 var User = require('../models/models.js').User;
 var Room = require('../models/models.js').Room;
 var Reservation = require('../models/models.js').Reservation;
+var moment = require('moment');
+
+function getAllReservations(req, res) {
+	var resData = {};
+	resData.success = false;
+
+	//console.log('user id', req.auth.credentials);
+
+	Reservation.fetchAll()
+	.then(function gotAllReservations(reservations) {
+		if(!reservations) {
+			resData.msg = 'No reservations found';
+			res(resData);
+			return;
+		}
+
+		resData.msg = 'Reservations found!';
+		resData.success = true;
+		resData.data = reservations;
+
+		res(resData);
+	})
+	.catch(function setError(err) {
+		resData = {};
+		resData.success = false;
+		resData.msg = err;
+
+		res(resData);
+	});
+}
 
 function getRoomReservations(req, res) {
 	var getReservations = {roomId: req.params.roomId};
 	var resData = {};
 	resData.success = false;
-
-	console.log('username', req.auth);
 
 	Reservation.where(getReservations).fetchAll()
 	.then(function gotRoomReservations(reservations) {
@@ -81,7 +109,14 @@ function changeDuration(req, response) {
 		return;
 	}
 
-	var getReservation = {idReservations: req.params.reservationId};
+	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
+	if(duration > 180) {
+		resData.msg = 'Maximum duration is 3h! You exceeded that time!';
+		response(resData);
+		return;
+	}	
+
+	var getReservation = {id: parseInt(req.params.id, 10)};
 	var setReservation = {
 		start: req.payload.start,
 		end: req.payload.end
@@ -115,7 +150,7 @@ function deleteReservation(req, res) {
 	var resData = {};
 	resData.success = false;
 
-	var getReservation = {idReservations: parseInt(req.params.reservationId, 10)};
+	var getReservation = {id: parseInt(req.params.reservationId, 10)};
 
 	Reservation.where(getReservation).destroy()
 	.then(function(response) {
@@ -141,7 +176,7 @@ function updateTitle(req, response) {
 		return;
 	}
 
-	var getReservation = {idReservations: req.params.reservationId};
+	var getReservation = {id: req.params.reservationId};
 	var setReservation = {
 		title: req.payload.newTitle
 	};
@@ -171,10 +206,11 @@ function updateTitle(req, response) {
 }
 
 module.exports = function(server) {
-	/*server.route({
+	server.route({
 		method: 'GET',
-		path: '/reservations'
-	});*/
+		path: '/reservations',
+		handler: getAllReservations
+	});
 
 	server.route({
 		method: 'GET',
@@ -184,19 +220,19 @@ module.exports = function(server) {
 
 	server.route({
 		method: 'POST',
-		path: '/reservations/{reservationId}',
+		path: '/reservations/{id}',
 		handler: updateTitle
 	});
 
 	server.route({
 		method: 'PUT',
-		path: '/reservations/{reservationId}',
+		path: '/reservations/{id}',
 		handler: changeDuration
 	});
 
 	server.route({
 		method: 'DELETE',
-		path: '/reservations/{reservationId}',
+		path: '/reservations/{id}',
 		handler: deleteReservation
 	});
 

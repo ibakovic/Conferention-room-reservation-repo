@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 var Router = Backbone.Router.extend({
   routes: {
 		'':'start',
+		'register': 'register',
 		'calendar': 'calendar',
 		'reservationDetails': 'reservationDetails'
 	}

@@ -4,6 +4,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var popsicle = require('popsicle');
 var Marionette = require('backbone.marionette');
+var router = require('../router.js');
 var registerTemplate = require('../../templates/register.html');
 
 var RegisterView = Marionette.ItemView.extend({
@@ -15,7 +16,7 @@ var RegisterView = Marionette.ItemView.extend({
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'registerSubmit', 'registerCancel', 'show', 'hide');
+		_.bindAll(this, 'registerSubmit', 'registerCancel');
 	},
 
 	registerSubmit: function() {
@@ -42,14 +43,8 @@ var RegisterView = Marionette.ItemView.extend({
 		});
 	},
 
-	registerCancel: function() {},
-
-	show: function() {
-		this.$el.show();
-	},
-
-	hide: function() {
-		this.$el.hide();
+	registerCancel: function() {
+		router.navigate('', {trigger: true});
 	}
 });
 

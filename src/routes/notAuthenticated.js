@@ -38,7 +38,7 @@ function login(req, res) {
     }
 
     var sid = String(++uuid);
-    req.server.app.cache.set(sid, { account: req.payload.username }, 0, function(err) {
+    req.server.app.cache.set(sid, { account: user.attributes.id }, 0, function(err) {
 
       if (err) {
         res(err);
@@ -97,7 +97,10 @@ function register(req, res) {
 
 function logout(req, res) {
   req.cookieAuth.clear();
-  res({msg: 'Logged out successfully!'});
+  res({
+    msg: 'Logged out successfully!',
+    success: true
+  });
 }
 
 module.exports = function(server) {
@@ -119,7 +122,16 @@ module.exports = function(server) {
   server.route({
     method: 'POST',
     path: '/register',
-    handler: register
+    config: {
+      handler: register,
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': { redirectTo: false }
+      }
+    }
   });
 
   server.route({

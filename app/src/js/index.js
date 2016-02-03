@@ -8,62 +8,49 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var nunjucks = require('nunjucks');
 var router = require('./router.js');
+var models = require('./models/reservations.js');
 
+var resApp = new Marionette.Application();
+
+resApp.addRegions({
+	mainRegion: '#app'
+});
+
+//////////////////////////////////views to be moved to a separate file
+///
+///
 var DetailsView = require('./views/reservationDetails.js');
 var LoginView = require('./views/login.js');
 var CalendarView = require('./views/calendar.js');
 var RegisterView = require('./views/register.js');
 
 var detailsView = new DetailsView();
-var loginView = new LoginView();
-var calendarView = new CalendarView();
-var registerView = new RegisterView();
-
-var Reservation = Backbone.Model.extend();
-
-var Reservations = Backbone.Collection.extend({
-	model: Reservation
-	//url: 
-});
-
-function hideView(view) {
-	view.hide();
-}
+var calendarView = new CalendarView({collection: models.reservations});
 
 Backbone.Events.on('getReservationData', function(reservationData) {
 	detailsView.getData(reservationData);
 	detailsView.render();
+	$('#app').append(detailsView.$el);
+	router.navigate('reservationDetails', {trigger: true});
 });
 
 $('document').ready(function() {
-	calendarView.render();
-	$('#app').append(calendarView.$el);
-	calendarView.createCalendar();
-	calendarView.hide();
-
-	loginView.render();
-	$('#app').append(loginView.$el);
-	loginView.hide();
-
-	registerView.render();
-	$('#app').append(registerView.$el);
-	registerView.hide();
-
-	detailsView.render();
-	$('#app').append(detailsView.$el);
-	detailsView.hide();
-
 	router.on('route:start', function() {
 		if(document.cookie) {
 			router.navigate('calendar', {trigger: true});
 			return;
 		}
 
-		detailsView.hide();
-		calendarView.hide();
-		
-		loginView.show();
-		registerView.show();
+		resApp.mainRegion.show(new LoginView(), {preventDestroy: true});
+	});
+
+	router.on('route:register', function() {
+		if(document.cookie) {
+			router.navigate('calendar', {trigger: true});
+			return;
+		}
+
+		resApp.mainRegion.show(new RegisterView(), {preventDestroy: true});
 	});
 
 	router.on('route:calendar', function() {
@@ -71,12 +58,8 @@ $('document').ready(function() {
 			router.navigate('', {trigger: true});
 			return;
 		}
-
-		detailsView.hide();
-		loginView.hide();
-		registerView.hide();
-
-		calendarView.show();
+		
+		resApp.mainRegion.show(calendarView, {preventDestroy: true});
 	});
 	
 	router.on('route:reservationDetails', function() {
@@ -84,13 +67,12 @@ $('document').ready(function() {
 			router.navigate('', {trigger: true});
 			return;
 		}
-		
-		calendarView.hide();
-		loginView.hide();
-		registerView.hide();
-
-		detailsView.show();
+		resApp.mainRegion.show(detailsView, {preventDestroy: true});
 	});
 
-	Backbone.history.start();
+	resApp.on('start', function() {
+		Backbone.history.start();
+	});
+
+	resApp.start();
 });
