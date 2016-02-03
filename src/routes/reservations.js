@@ -1,15 +1,35 @@
 'use strict';
 
+var _ = require('lodash');
 var User = require('../models/models.js').User;
 var Room = require('../models/models.js').Room;
 var Reservation = require('../models/models.js').Reservation;
 var moment = require('moment');
+
+function overlapCheck(start, end) {
+	Reservation.fetchAll()
+		.then(function(reservations) {
+			var success = true;
+			_.each(reservations.models, function(reservation) {
+				if(moment(start).diff(reservation.attributes.end, 'minutes') < 0) {
+					if(moment(end).diff(reservation.attributes.start, 'minutes') > 0) {
+						success = false;
+					}
+				}
+			})
+			return success;
+		});
+}
+
+//var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 
 function getAllReservations(req, res) {
 	var resData = {};
 	resData.success = false;
 
 	//console.log('user id', req.auth.credentials);
+	
+	var todaysReservations = [];
 
 	Reservation.fetchAll()
 	.then(function gotAllReservations(reservations) {
@@ -74,6 +94,19 @@ function createReservation(req, res) {
 	var resData = {};
 	resData.success = false;
 
+	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
+	if(duration > 180) {
+		resData.msg = 'Maximum duration is 3h! You exceeded that time!';
+		res(resData);
+		return;
+	}
+
+	if(!overlapCheck(req.payload.start, req.payload.end)) {
+		resData.msg = 'Overlapping with another reservation!!';
+		res(resData);
+		return;
+	}
+
 	var reservation = new Reservation(makeReservation);
 
 	reservation.save()
@@ -114,7 +147,13 @@ function changeDuration(req, response) {
 		resData.msg = 'Maximum duration is 3h! You exceeded that time!';
 		response(resData);
 		return;
-	}	
+	}
+
+	if(!overlapCheck(req.payload.start, req.payload.end)) {
+		resData.msg = 'Overlapping with another reservation!!';
+		response(resData);
+		return;
+	}
 
 	var getReservation = {id: parseInt(req.params.id, 10)};
 	var setReservation = {
