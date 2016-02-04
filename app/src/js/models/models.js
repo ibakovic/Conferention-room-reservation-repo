@@ -14,11 +14,26 @@ var Reservations = Backbone.Collection.extend({
 
 var reservations = new Reservations();
 
+var Room = Backbone.Model.extend();
+
+var Rooms = Backbone.Collection.extend({
+	model: Room,
+	url: '/rooms',
+	parse: function(response) {
+		return response.data;
+	}
+});
+
+var rooms = new Rooms();
+
 if(document.cookie) {
+	rooms.fetch({reset: true});
 	reservations.fetch({reset: true});
 }
 
 module.exports = {
 	Reservation: Reservation,
-	reservations: reservations
+	reservations: reservations,
+	Room: Room,
+	rooms: rooms
 };

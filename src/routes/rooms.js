@@ -48,7 +48,7 @@ function getRoom(req, res) {
 	var resData = {};
 	resData.success = false;
 
-	var roomQuery = {idRooms: req.params.id};
+	var roomQuery = {roomId: req.params.id};
 	Room.where(roomQuery).fetch()
 	.then(function gotMRoom(room) {
 		if(!room) {

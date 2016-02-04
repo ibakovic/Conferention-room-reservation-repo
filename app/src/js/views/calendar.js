@@ -24,6 +24,7 @@ function changeReservationStartAndEnd(changeEvent) {
 	})
 	.then(function resized(res) {
 		console.log('resized!! ', res.body.msg);
+		if(!res.body.success) {}
 	})
 	.catch(function resizeError(err) {
 		alert(err.body.msg);
@@ -33,17 +34,23 @@ function changeReservationStartAndEnd(changeEvent) {
 var CalendarView = Marionette.ItemView.extend({
 	template: calendarTemplate,
 
+	roomId: 0,
+
 	events: {
 		'click #logout': 'logout'
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'onShow', 'createCalendar', 'logout');
+		_.bindAll(this, 'onShow', 'createCalendar');
 		this.listenTo(this.collection, 'reset', this.onShow);
 	},
 
 	onShow: function() {
 		this.createCalendar();
+	},
+
+	getRoomId: function(roomId) {
+		this.roomId = roomId;
 	},
 
 	createCalendar: function() {
@@ -90,7 +97,7 @@ var CalendarView = Marionette.ItemView.extend({
 				if(eventData) {
 					popsicle.request({
 						method: 'POST',
-						url: 'users/15/rooms/2',
+						url: 'rooms/2',
 						body: {
 							title: eventData.title,
 							start: eventData.start._d,
@@ -106,7 +113,7 @@ var CalendarView = Marionette.ItemView.extend({
 
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
-			events: _.map(self.collection.where({roomId: 2}), function(model) {
+			events: _.map(self.collection.where({roomId: parseInt(self.roomId, 10)}), function(model) {
 				return model.attributes;
 			}),
 
@@ -119,7 +126,8 @@ var CalendarView = Marionette.ItemView.extend({
 					start: model.get('start'),
 					end: model.get('end')
 				};
-				Backbone.Events.trigger('getReservationData', eventData);
+				//Backbone.Events.trigger('getReservationData', eventData);
+				router.navigate('reservationDetails/' + model.get('id'), {trigger: true});
 			},
 
 			eventResizeStop: function(resizeEvent) {
@@ -138,19 +146,6 @@ var CalendarView = Marionette.ItemView.extend({
 					}
 				}
 			}
-		});
-	},
-
-	logout: function() {
-		popsicle.request({
-			method: 'GET',
-			url: 'logout'
-		})
-		.then(function loggedOut(res) {
-			router.navigate('', {trigger: true});
-		})
-		.catch(function loggoutErr(err) {
-			console.log(err);
 		});
 	}
 });

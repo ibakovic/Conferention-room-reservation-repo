@@ -7,8 +7,8 @@ var Router = Backbone.Router.extend({
   routes: {
 		'':'start',
 		'register': 'register',
-		'calendar': 'calendar',
-		'reservationDetails': 'reservationDetails'
+		'calendar/:roomId': 'calendar',
+		'reservationDetails/:id': 'reservationDetails'
 	}
 });
 

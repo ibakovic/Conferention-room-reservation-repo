@@ -12,31 +12,38 @@ var reservationDetailsTemplate = require('../../templates/reservationDetails.htm
 var ReservationDetailsView = Marionette.ItemView.extend({
 	template: reservationDetailsTemplate,
 
-	reservation: {},
+	reservationId: 0,
 
 	events: {
 		'click #updateTitle': 'updateTitle',
 		'click #deleteReservation': 'deleteReservation',
 		'click #cancelReservation': 'cancelReservation'
 	},
-
-	initialize: function() {
-		_.bindAll(this, 'render', 'getData', 'updateTitle', 'deleteReservation', 'show', 'hide', 'cancelReservation');
-	},
-
-	render: function() {
+/*
+	collectionEvents: {
+    "reset": "onShow"
+  },
+*/
+	onShow: function() {
 		var self = this;
-		var html = this.template(self.reservation);
+		var reservation = this.collection.findWhere({id: parseInt(self.reservationId, 10)});
+		var html = this.template({
+			title: reservation.get('title'),
+			id: self.reservationId,
+			roomId: reservation.get('roomId'),
+			start: reservation.get('start'),
+			end: reservation.get('end')
+		});
 		this.$el.html(html);
 	},
 
-	getData: function(reservationData) {
-		var self = this;
-		this.reservation = reservationData;
+	getId: function(id) {
+		this.reservationId = id;
 	},
 
 	updateTitle: function() {
-		var path = 'reservations/' + this.reservation.id;
+		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
+		var path = 'reservations/' + this.reservationId + '/' + reservation.get('roomId');
 		var title = this.$el.find('#newTitle').val().trim();
 
 		if(!title) {
@@ -54,13 +61,14 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 		.then(function updatedTitle(res) {
 			alert(res.body.msg);
 			if(res.body.success) {
-				router.navigate('', {trigger: true});
+				router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
 			}
 		});
 	},
 
 	deleteReservation: function() {
-		var path = 'reservations/' + this.reservation.id;
+		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
+		var path = 'reservations/' + this.reservationId + '/' + reservation.get('roomId');
 
 		if(confirm('Are you sure you want to remove this reservation?')) {
 			popsicle.request({
@@ -70,7 +78,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 			.then(function(res) {
 				alert(res.body.msg);
 				if(res.body.success) {
-					router.navigate('', {trigger: true});
+					router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
 				}
 			})
 			.catch(function(err) {
@@ -88,7 +96,9 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 	},
 
 	cancelReservation: function() {
-		router.navigate('calendar', {trigger: true});
+		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
+
+		router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
 	}
 });
 

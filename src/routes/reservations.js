@@ -5,29 +5,11 @@ var User = require('../models/models.js').User;
 var Room = require('../models/models.js').Room;
 var Reservation = require('../models/models.js').Reservation;
 var moment = require('moment');
-
-function overlapCheck(start, end) {
-	Reservation.fetchAll()
-		.then(function(reservations) {
-			var success = true;
-			_.each(reservations.models, function(reservation) {
-				if(moment(start).diff(reservation.attributes.end, 'minutes') < 0) {
-					if(moment(end).diff(reservation.attributes.start, 'minutes') > 0) {
-						success = false;
-					}
-				}
-			})
-			return success;
-		});
-}
-
-//var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
+var success;
 
 function getAllReservations(req, res) {
 	var resData = {};
 	resData.success = false;
-
-	//console.log('user id', req.auth.credentials);
 	
 	var todaysReservations = [];
 
@@ -84,7 +66,7 @@ function getRoomReservations(req, res) {
 
 function createReservation(req, res) {
 	var makeReservation = {
-		userId: req.params.userId,
+		userId: parseInt(req.auth.credentials, 10),
 		roomId: req.params.roomId,
 		title: req.payload.title,
 		start: req.payload.start,
@@ -101,35 +83,50 @@ function createReservation(req, res) {
 		return;
 	}
 
-	if(!overlapCheck(req.payload.start, req.payload.end)) {
-		resData.msg = 'Overlapping with another reservation!!';
-		res(resData);
-		return;
-	}
+	Reservation.fetchAll()
+	.then(function overlapValidationAdd(reservations) {
+		var success = true;
+		_.map(reservations.models, function(reservation) {
+			if(parseInt(req.params.roomId, 10) === reservation.attributes.roomId) {
+				if(moment(req.payload.start).diff(reservation.attributes.end, 'minutes') < 0) {
+					if(moment(req.payload.end).diff(reservation.attributes.start, 'minutes') > 0) {
+						success = false;
+					}
+				}
+			}
+		});
 
-	var reservation = new Reservation(makeReservation);
-
-	reservation.save()
-	.then(function reservationCreated(reservation) {
-		if(!reservation) {
-			resData.msg = 'Failed to save reservation!';
+		if(!success) {
+			resData.msg = 'Your reservation overlaps with another one';
 			res(resData);
 			return;
 		}
 
-		resData.msg = 'Reservation saved!';
-		resData.success = true;
-		resData.data = reservation;
+		var reservation = new Reservation(makeReservation);
 
-		res(resData);
-	})
-	.catch(function setError(err) {
-		resData = {};
-		resData.success = false;
-		resData.msg = err;
+		reservation.save()
+		.then(function reservationCreated(reservation) {
+			if(!reservation) {
+				resData.msg = 'Failed to save reservation!';
+				res(resData);
+				return;
+			}
 
-		res(resData);
+			resData.msg = 'Reservation saved!';
+			resData.success = true;
+			resData.data = reservation;
+
+			res(resData);
+		})
+		.catch(function setError(err) {
+			resData = {};
+			resData.success = false;
+			resData.msg = err;
+
+			res(resData);
+		});
 	});
+	/**/
 }
 
 function changeDuration(req, response) {
@@ -148,40 +145,60 @@ function changeDuration(req, response) {
 		response(resData);
 		return;
 	}
+	
+	Reservation.fetchAll()
+	.then(function overlapValidateChange(reservations) {
+		var success = true;
+		_.map(reservations.models, function(reservation) {
+			if(parseInt(req.params.roomId, 10) === reservation.attributes.roomId) {
+				if(reservation.attributes.id !== parseInt(req.params.id, 10)) {
+					if(moment(req.payload.start).diff(reservation.attributes.end, 'minutes') < 0) {
+						if(moment(req.payload.end).diff(reservation.attributes.start, 'minutes') > 0) {
+							success = false;
+						}
+					}
+				}
+			}
+		});
 
-	if(!overlapCheck(req.payload.start, req.payload.end)) {
-		resData.msg = 'Overlapping with another reservation!!';
-		response(resData);
-		return;
-	}
-
-	var getReservation = {id: parseInt(req.params.id, 10)};
-	var setReservation = {
-		start: req.payload.start,
-		end: req.payload.end
-	};
-
-	Reservation.where(getReservation).save(setReservation, {method: 'update'})
-	.then(function reservationSet(res) {
-		if(!res) {
-			resData.msg = 'Reservation not found!';
+		if(!success) {
+			resData.msg = 'Your reservation overlaps with another one';
 			response(resData);
 			return;
 		}
 
-		resData.msg = 'Reservation updated!';
-		resData.success = true;
-		resData.data = res;
+		var getReservation = {
+			id: parseInt(req.params.id, 10),
+			userId: parseInt(req.auth.credentials, 10)
+		};
 
-		response(resData);
-		return;
-	})
-	.catch(function setError(err) {
-		resData = {};
-		resData.success = false;
-		resData.msg = err.message;
+		var setReservation = {
+			start: req.payload.start,
+			end: req.payload.end
+		};
 
-		response(resData);
+		Reservation.where(getReservation).save(setReservation, {method: 'update'})
+		.then(function reservationSet(res) {
+			if(!res) {
+				resData.msg = 'Reservation not found!';
+				response(resData);
+				return;
+			}
+
+			resData.msg = 'Reservation updated!';
+			resData.success = true;
+			resData.data = res;
+
+			response(resData);
+			return;
+		})
+		.catch(function setError(err) {
+			resData = {};
+			resData.success = false;
+			resData.msg = err.message;
+
+			response(resData);
+		});
 	});
 }
 
@@ -277,7 +294,7 @@ module.exports = function(server) {
 
 	server.route({
 		method: 'POST',
-		path: '/users/{userId}/rooms/{roomId}',
+		path: '/rooms/{roomId}',
 		handler: createReservation
 	});
 };
