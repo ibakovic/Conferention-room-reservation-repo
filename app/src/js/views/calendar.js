@@ -31,7 +31,39 @@ function changeReservationStartAndEnd(changeEvent) {
 	});
 }
 
-var CalendarView = Marionette.ItemView.extend({
+var ChildCalendarView = Marionette.ItemView.extend({
+	template: $('<div></div>'),
+
+	roomId: 0,
+
+	initialize: function() {
+		this.addEvent();
+	},
+
+	getRoomId: function(roomId) {
+		this.roomId = roomId;
+	},
+
+	addEvent: function() {
+		var self = this;
+
+		var reservation = {
+			title: self.model.get('title'),
+			start: self.model.get('start'),
+			end: self.model.get('end'),
+			id: self.model.get('id'),
+			roomId: self.model.get('roomId')
+		};
+
+		if(this.model.get('roomId') === this.roomId) {
+			$('#calendar').fullCalendar('renderEvent', reservation);
+		}
+	}
+});
+
+var CalendarView = Marionette.CollectionView.extend({
+	childView: ChildCalendarView,
+
 	template: calendarTemplate,
 
 	roomId: 0,
@@ -67,6 +99,7 @@ var CalendarView = Marionette.ItemView.extend({
 			},
 
 			defaultDate: moment().utc().valueOf(),
+			defaultView: 'agendaWeek',
 			firstDay: 1,
 			fixedWeekCount: false,
 			selectOverlap: false,
@@ -113,10 +146,7 @@ var CalendarView = Marionette.ItemView.extend({
 
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
-			events: _.map(self.collection.where({roomId: parseInt(self.roomId, 10)}), function(model) {
-				return model.attributes;
-			}),
-
+			
 			eventClick: function(clickEvent) {
 				var model = self.collection.findWhere({id: clickEvent.id});
 				var eventData = {
