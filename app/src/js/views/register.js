@@ -15,11 +15,8 @@ var RegisterView = Marionette.ItemView.extend({
 		'click #registerCancel': 'registerCancel'
 	},
 
-	initialize: function() {
-		_.bindAll(this, 'registerSubmit', 'registerCancel');
-	},
-
 	registerSubmit: function() {
+		//ItemView ui hash
 		var firstName = this.$el.find('#registerFirstName').val().trim();
 		var lastName = this.$el.find('#registerLastName').val().trim();
 		var username = this.$el.find('#registerUsername').val().trim();

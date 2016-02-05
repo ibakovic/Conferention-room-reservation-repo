@@ -147,6 +147,19 @@ var CalendarView = Marionette.ItemView.extend({
 				}
 			}
 		});
+	},
+
+	logout: function() {
+		popsicle.request({
+			method: 'GET',
+			url: 'logout'
+		})
+		.then(function loggedOut(res) {
+			router.navigate('', {trigger: true});
+		})
+		.catch(function loggoutErr(err) {
+			console.log(err);
+		});
 	}
 });
 

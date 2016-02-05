@@ -65,7 +65,7 @@ module.exports = function(server) {
 
     server.views({
       engines: {
-        html: require('handlebars')
+        html: require('nunjucks')
       }
     });
   });

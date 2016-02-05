@@ -8,8 +8,22 @@ var popsicle = require('popsicle');
 var router = require('../router.js');
 var roomsTemplate = require('../../templates/rooms.html');
 
-var RoomsView = Marionette.ItemView.extend({
+var RoomView = Marionette.ItemView.extend({
 	template: roomsTemplate,
+
+	events: {
+		'click .roomName': 'getCalendar'
+	},
+
+	getCalendar: function() {
+		var roomId = this.model.get('roomId');
+		router.navigate('calendar/' + roomId, {trigger: true});
+	}
+});
+
+//collection view
+var RoomsView = Marionette.CollectionView.extend({
+	childView: RoomView,
 
 	roomId: 0,
 
@@ -17,34 +31,8 @@ var RoomsView = Marionette.ItemView.extend({
 		'click #logout': 'logout'
 	},
 
-	initialize: function() {
-		_.bindAll(this, 'onShow', 'getRoomId', 'logout');
-		//this.listenTo(this.collection, 'reset', this.onShow);
-	},
-
-	onShow: function() {
-		var self = this;
-		var roomName = self.collection.findWhere({roomId: parseInt(self.roomId, 10)}).get('roomName');
-		var html = this.template({roomName: roomName});
-		this.$el.html(html);
-		this.$el.show();
-	},
-
 	getRoomId: function(roomId) {
 		this.roomId = roomId;
-	},
-
-	logout: function() {
-		popsicle.request({
-			method: 'GET',
-			url: 'logout'
-		})
-		.then(function loggedOut(res) {
-			router.navigate('', {trigger: true});
-		})
-		.catch(function loggoutErr(err) {
-			console.log(err);
-		});
 	}
 });
 

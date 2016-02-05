@@ -167,32 +167,52 @@ function changeDuration(req, response) {
 			return;
 		}
 
-		var getReservation = {
-			id: parseInt(req.params.id, 10),
-			userId: parseInt(req.auth.credentials, 10)
-		};
-
-		var setReservation = {
-			start: req.payload.start,
-			end: req.payload.end
-		};
-
-		Reservation.where(getReservation).save(setReservation, {method: 'update'})
-		.then(function reservationSet(res) {
-			if(!res) {
-				resData.msg = 'Reservation not found!';
+		User.where({id: req.auth.credentials}).fetch()
+		.then(function userChecked(user) {
+			if(!user) {
+				resData.msg = 'User not found!';
 				response(resData);
 				return;
 			}
 
-			resData.msg = 'Reservation updated!';
-			resData.success = true;
-			resData.data = res;
+			var getReservation = {
+				id: parseInt(req.params.id, 10),
+				userId: parseInt(req.auth.credentials, 10)
+			};
 
-			response(resData);
-			return;
+			if(user.attributes.username === 'admin') {
+				getReservation = {id: parseInt(req.params.id, 10)};
+			}
+
+			var setReservation = {
+				start: req.payload.start,
+				end: req.payload.end
+			};
+
+			Reservation.where(getReservation).save(setReservation, {method: 'update'})
+			.then(function reservationSet(res) {
+				if(!res) {
+					resData.msg = 'Your reservation not found!';
+					response(resData);
+					return;
+				}
+				
+				resData.msg = 'Reservation updated!';
+				resData.success = true;
+				resData.data = res;
+
+				response(resData);
+				return;
+			})
+			.catch(function setError(err) {
+				resData = {};
+				resData.success = false;
+				resData.msg = err.message;
+
+				response(resData);
+			});
 		})
-		.catch(function setError(err) {
+		.catch(function(err) {
 			resData = {};
 			resData.success = false;
 			resData.msg = err.message;
@@ -206,7 +226,10 @@ function deleteReservation(req, res) {
 	var resData = {};
 	resData.success = false;
 
-	var getReservation = {id: parseInt(req.params.reservationId, 10)};
+	var getReservation = {
+		id: parseInt(req.params.id, 10),
+		userId: parseInt(req.auth.credentials, 10)
+	};
 
 	Reservation.where(getReservation).destroy()
 	.then(function(response) {
@@ -216,8 +239,8 @@ function deleteReservation(req, res) {
 		res(resData);
 	})
 	.catch(function(err){
-		err.msg = err.message;
-		res(err);
+		resData.msg = 'Not authorized!';
+		res(resData);
 	});
 }
 
@@ -232,7 +255,11 @@ function updateTitle(req, response) {
 		return;
 	}
 
-	var getReservation = {id: req.params.reservationId};
+	var getReservation = {
+		id: req.params.id,
+		userId: req.auth.credentials
+	};
+
 	var setReservation = {
 		title: req.payload.newTitle
 	};

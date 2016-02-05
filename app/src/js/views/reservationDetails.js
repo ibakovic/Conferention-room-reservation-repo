@@ -43,7 +43,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 
 	updateTitle: function() {
 		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
-		var path = 'reservations/' + this.reservationId + '/' + reservation.get('roomId');
+		var path = 'reservations/' + this.reservationId;
 		var title = this.$el.find('#newTitle').val().trim();
 
 		if(!title) {
@@ -68,7 +68,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 
 	deleteReservation: function() {
 		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
-		var path = 'reservations/' + this.reservationId + '/' + reservation.get('roomId');
+		var path = 'reservations/' + this.reservationId;
 
 		if(confirm('Are you sure you want to remove this reservation?')) {
 			popsicle.request({

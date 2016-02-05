@@ -6,7 +6,6 @@ var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var nunjucks = require('nunjucks');
 var router = require('./router.js');
 var views = require('./views/main.js');
 
@@ -56,11 +55,12 @@ $('document').ready(function() {
 		}
 
 		views.calendarView.getRoomId(roomId);
+		views.calendarView.createCalendar();
 		resApp.mainRegion.show(views.calendarView, {preventDestroy: true});
 		
 		views.roomsView.getRoomId(roomId);
-		//resApp.roomRegion.$el.show();
-		//resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
+		resApp.roomRegion.$el.show();
+		resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
 	});
 	
 	router.on('route:reservationDetails', function(id) {
@@ -70,8 +70,8 @@ $('document').ready(function() {
 		}
 
 		resApp.roomRegion.$el.hide();
-		//views.detailsView.getId(id);
-		//resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
+		views.detailsView.getId(id);
+		resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
 	});
 
 	resApp.on('start', function() {
