@@ -7,9 +7,11 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var fullCalendar = require('fullcalendar');
-var router = require('../router.js');
+//var router = require('../router.js');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
+
+var roomId;
 
 function changeReservationStartAndEnd(changeEvent) {
 	var path = 'reservations/' + changeEvent.id;
@@ -34,29 +36,26 @@ function changeReservationStartAndEnd(changeEvent) {
 var ChildCalendarView = Marionette.ItemView.extend({
 	template: $('<div></div>'),
 
-	roomId: 0,
-
 	initialize: function() {
 		this.addEvent();
-	},
-
-	getRoomId: function(roomId) {
-		this.roomId = roomId;
 	},
 
 	addEvent: function() {
 		var self = this;
 
-		var reservation = {
-			title: self.model.get('title'),
-			start: self.model.get('start'),
-			end: self.model.get('end'),
-			id: self.model.get('id'),
-			roomId: self.model.get('roomId')
-		};
+		if(this.model.get('roomId') === parseInt(roomId, 10)) {
+			var reservation = {
+				title: self.model.get('title'),
+				start: self.model.get('start'),
+				end: self.model.get('end'),
+				id: self.model.get('id'),
+				roomId: self.model.get('roomId')
+			};
 
-		if(this.model.get('roomId') === this.roomId) {
 			$('#calendar').fullCalendar('renderEvent', reservation);
+			//if(this.model.get('userId') !== 15) {
+				this.$el.css("background-color", "red");
+			//}
 		}
 	}
 });
@@ -66,23 +65,19 @@ var CalendarView = Marionette.CollectionView.extend({
 
 	template: calendarTemplate,
 
-	roomId: 0,
-
 	events: {
 		'click #logout': 'logout'
 	},
 
 	initialize: function() {
-		_.bindAll(this, 'onShow', 'createCalendar');
-		this.listenTo(this.collection, 'reset', this.onShow);
-	},
-
-	onShow: function() {
 		this.createCalendar();
+		this.listenTo(this.collection, 'reset', this.createCalendar);
+
+		//this.roomId = options.roomId;
 	},
 
-	getRoomId: function(roomId) {
-		this.roomId = roomId;
+	getRoomId: function(newRoomId) {
+		roomId = newRoomId;
 	},
 
 	createCalendar: function() {
@@ -99,7 +94,6 @@ var CalendarView = Marionette.CollectionView.extend({
 			},
 
 			defaultDate: moment().utc().valueOf(),
-			defaultView: 'agendaWeek',
 			firstDay: 1,
 			fixedWeekCount: false,
 			selectOverlap: false,
@@ -130,7 +124,7 @@ var CalendarView = Marionette.CollectionView.extend({
 				if(eventData) {
 					popsicle.request({
 						method: 'POST',
-						url: 'rooms/2',
+						url: 'rooms/' + roomId,
 						body: {
 							title: eventData.title,
 							start: eventData.start._d,
@@ -146,6 +140,9 @@ var CalendarView = Marionette.CollectionView.extend({
 
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
+			/*events: _.map(this.collection.models, function(model) {
+				return model.attributes;
+			}),*/
 			
 			eventClick: function(clickEvent) {
 				var model = self.collection.findWhere({id: clickEvent.id});
@@ -157,7 +154,7 @@ var CalendarView = Marionette.CollectionView.extend({
 					end: model.get('end')
 				};
 				//Backbone.Events.trigger('getReservationData', eventData);
-				router.navigate('reservationDetails/' + model.get('id'), {trigger: true});
+				Backbone.history.navigate('reservationDetails/' + model.get('id'), {trigger: true});
 			},
 
 			eventResizeStop: function(resizeEvent) {
@@ -185,7 +182,7 @@ var CalendarView = Marionette.CollectionView.extend({
 			url: 'logout'
 		})
 		.then(function loggedOut(res) {
-			router.navigate('', {trigger: true});
+			Backbone.history.navigate('', {trigger: true});
 		})
 		.catch(function loggoutErr(err) {
 			console.log(err);

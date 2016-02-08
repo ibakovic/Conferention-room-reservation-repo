@@ -2,7 +2,14 @@
 
 var Backbone = require('backbone');
 
-var Reservation = Backbone.Model.extend();
+var SingleReservation = Backbone.Model.extend({
+	urlRoot: '/reservations',
+	parse: function(response) {
+		return response.data;
+	}
+});
+
+var Reservation = Backbone.Model.extend({});
 
 var Reservations = Backbone.Collection.extend({
 	model: Reservation,
@@ -32,6 +39,7 @@ if(document.cookie) {
 }
 
 module.exports = {
+	SingleReservation: SingleReservation,
 	Reservation: Reservation,
 	reservations: reservations,
 	Room: Room,

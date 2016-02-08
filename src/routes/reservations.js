@@ -10,8 +10,6 @@ var success;
 function getAllReservations(req, res) {
 	var resData = {};
 	resData.success = false;
-	
-	var todaysReservations = [];
 
 	Reservation.fetchAll()
 	.then(function gotAllReservations(reservations) {
@@ -35,6 +33,47 @@ function getAllReservations(req, res) {
 		res(resData);
 	});
 }
+
+/*
+var resData = {};
+	resData.success = false;
+
+	var roomIdArray = [];
+
+	Room.fetchAll()
+	.then(function roomsFetched(rooms) {
+		var reservationsArray = [];
+
+		_.map(rooms.models, function(room) {
+			Reservation.where({roomId: room.attributes.roomId}).fetchAll()
+			.then(function roomReservationFetched(reservations) {
+				//reservationsArray.push(reservations);
+				return reservations;
+			})
+			.catch(function(err) {
+				resData.success = false;
+				resData.msg = err.message;
+
+				res(resData);
+			});
+		});
+
+		res(reservationsArray);
+	})
+	.catch(function setError(err) {
+		resData.success = false;
+		resData.msg = err;
+
+		res(resData);
+	});
+ */
+
+
+
+
+
+
+
 
 function getRoomReservations(req, res) {
 	var getReservations = {roomId: req.params.roomId};
@@ -288,6 +327,33 @@ function updateTitle(req, response) {
 	});
 }
 
+function getSingleReservation(req, res) {
+	var resData = {};
+	resData.success = false;
+
+	Reservation.where({id: req.params.id}).fetch()
+	.then(function gotAllReservations(reservations) {
+		if(!reservations) {
+			resData.msg = 'No reservations found';
+			res(resData);
+			return;
+		}
+
+		resData.msg = 'Reservation found!';
+		resData.success = true;
+		resData.data = reservations;
+
+		res(resData);
+	})
+	.catch(function setError(err) {
+		resData = {};
+		resData.success = false;
+		resData.msg = err;
+
+		res(resData);
+	});
+}
+
 module.exports = function(server) {
 	server.route({
 		method: 'GET',
@@ -297,7 +363,7 @@ module.exports = function(server) {
 
 	server.route({
 		method: 'GET',
-		path: '/reservations/{roomId}',
+		path: '/reservations/rooms/{roomId}',
 		handler: getRoomReservations
 	});
 
@@ -323,5 +389,11 @@ module.exports = function(server) {
 		method: 'POST',
 		path: '/rooms/{roomId}',
 		handler: createReservation
+	});
+
+	server.route({
+		method: 'GET',
+		path: '/reservations/{id}',
+		handler: getSingleReservation
 	});
 };

@@ -6,13 +6,11 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var popsicle = require('popsicle');
-var router = require('../router.js');
+//var router = require('../router.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
 var ReservationDetailsView = Marionette.ItemView.extend({
 	template: reservationDetailsTemplate,
-
-	reservationId: 0,
 
 	events: {
 		'click #updateTitle': 'updateTitle',
@@ -24,27 +22,15 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     "reset": "onShow"
   },
 */
-	onShow: function() {
-		var self = this;
-		var reservation = this.collection.findWhere({id: parseInt(self.reservationId, 10)});
-		var html = this.template({
-			title: reservation.get('title'),
-			id: self.reservationId,
-			roomId: reservation.get('roomId'),
-			start: reservation.get('start'),
-			end: reservation.get('end')
-		});
-		this.$el.html(html);
-	},
-
-	getId: function(id) {
-		this.reservationId = id;
+	getModel: function(model) {
+		this.model = model;
 	},
 
 	updateTitle: function() {
-		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
-		var path = 'reservations/' + this.reservationId;
+		var reservation = this.collection.findWhere({id: this.model.get('id')});
+		var path = 'reservations/' + this.model.get('id');
 		var title = this.$el.find('#newTitle').val().trim();
+		var self = this;
 
 		if(!title) {
 			alert('New title required!');
@@ -61,14 +47,15 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 		.then(function updatedTitle(res) {
 			alert(res.body.msg);
 			if(res.body.success) {
-				router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
+				Backbone.history.navigate('calendar/' + self.model.get('roomId'), {trigger: true});
 			}
 		});
 	},
 
 	deleteReservation: function() {
-		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
-		var path = 'reservations/' + this.reservationId;
+		var reservation = this.collection.findWhere({id: this.model.get('id')});
+		var self = this;
+		var path = 'reservations/' + this.model.get('id');
 
 		if(confirm('Are you sure you want to remove this reservation?')) {
 			popsicle.request({
@@ -78,7 +65,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 			.then(function(res) {
 				alert(res.body.msg);
 				if(res.body.success) {
-					router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
+					Backbone.history.navigate('calendar/' + self.model.get('roomId'), {trigger: true});
 				}
 			})
 			.catch(function(err) {
@@ -96,9 +83,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 	},
 
 	cancelReservation: function() {
-		var reservation = this.collection.findWhere({id: parseInt(this.reservationId, 10)});
-
-		router.navigate('calendar/' + reservation.get('roomId'), {trigger: true});
+		Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
 	}
 });
 

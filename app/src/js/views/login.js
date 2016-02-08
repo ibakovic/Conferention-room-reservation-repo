@@ -4,7 +4,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var popsicle = require('popsicle');
 var Marionette = require('backbone.marionette');
-var router = require('../router.js');
+//var router = require('../router.js');
 var models = require('../models/models.js');
 var loginTemplate = require('../../templates/login.html');
 
@@ -43,7 +43,7 @@ var LoginView = Marionette.ItemView.extend({
 			}
 			models.rooms.fetch({success: function() {
 				models.reservations.fetch({success: function(collection, response) {
-					router.navigate('calendar/2', {trigger: true});
+					Backbone.history.navigate('calendar/2', {trigger: true});
 					alert(res.body.msg);
 					return;
 				}});
@@ -55,7 +55,7 @@ var LoginView = Marionette.ItemView.extend({
 	},
 
 	signUp: function() {
-		router.navigate('register', {trigger: true});
+		Backbone.history.navigate('register', {trigger: true});
 	}
 });
 

@@ -5,7 +5,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var popsicle = require('popsicle');
-var router = require('../router.js');
+//var router = require('../router.js');
 var roomsTemplate = require('../../templates/rooms.html');
 
 var RoomView = Marionette.ItemView.extend({
@@ -17,7 +17,7 @@ var RoomView = Marionette.ItemView.extend({
 
 	getCalendar: function() {
 		var roomId = this.model.get('roomId');
-		router.navigate('calendar/' + roomId, {trigger: true});
+		Backbone.history.navigate('calendar/' + roomId, {trigger: true});
 	}
 });
 
