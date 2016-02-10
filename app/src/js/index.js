@@ -46,7 +46,6 @@ var routerController = Marionette.Object.extend({
 						if((collection.length !== 0) && (collection.models[0].get('roomId') === parseInt(roomId, 10))) {
 							//resApp.mainRegion.empty();
 							console.log(collection);
-							debugger;
 							resApp.mainRegion.show(new views.Calendar2View({collection: collection}), {preventDestroy: true});
 
 							views.roomsView.getRoomId(roomId);

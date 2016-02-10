@@ -1,4 +1,16 @@
 {
+	"CredentialsRequired": "Username and password required!",
+	"PasswordInvalid": "Invalid password!",
+	"FirstLastNameNotFound": "First and last name required!",
+	"EmailNotFound": "E-mail required!",
+	"EmailExists": "A user with this e-mail already exists!",
+	"UsernameExists": "This username already exists!",
+
+	"LoginSuccess": "Login successfull",
+
+	"RegistrationCompleted": "Registration successfull! You have 30 mins to confirm your registration via e-mail!",
+	"RegistrationFailed": "Your data was not saved successfully!",
+
 	"ReservationsNotFound": "No reservations found!",
 	"ReservationsFound": "Reservations found!",
 

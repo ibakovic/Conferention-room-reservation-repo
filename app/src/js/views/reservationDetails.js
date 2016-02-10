@@ -6,7 +6,6 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var popsicle = require('popsicle');
-//var router = require('../router.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
 var ReservationDetailsView = Marionette.ItemView.extend({
