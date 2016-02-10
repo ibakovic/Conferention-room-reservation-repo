@@ -1,0 +1,30 @@
+{
+	"ReservationsNotFound": "No reservations found!",
+	"ReservationsFound": "Reservations found!",
+
+	"ReservationNotSaved": "Failed to save reservation!",
+	"ReservationSaved": "Reservation saved!",
+	"ReservationNotFound": "Your reservation was not found!",
+	"ReservationFound": "Reservation found!",
+	"ReservationUpdated": "Reservation updated!",
+	"ReservationDeleted": "Reservation deleted!",
+
+	"UserNotFound": "User not found!",
+
+	"RoomsNotFound": "No rooms found!",
+	"RoomsFound": "Rooms found!",
+
+	"RoomNotFound": "Room not found",
+	"RoomFound": "Room found",
+	"RoomNameNotFound": "Room name required!",
+	"RoomCreated": "Room created",
+
+	"TitleNotFound": "Title required!",
+	"StartNotFound": "Start time required!",
+	"EndNotFound": "End time required!",
+
+	"MaxDurationExceeded": "Maximum duration is 3h! You exceeded that time!",
+	"EndBeforeStart": "Start must be before end!",
+
+	"Overlap": "Your reservation overlaps with another one!"
+}

@@ -4,11 +4,17 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var popsicle = require('popsicle');
 var Marionette = require('backbone.marionette');
-//var router = require('../router.js');
 var registerTemplate = require('../../templates/register.html');
 
 var RegisterView = Marionette.ItemView.extend({
 	template: registerTemplate,
+
+	ui: {
+		firstName: '#registerFirstName',
+		lastName: '#registerLastName',
+		username: '#registerUsername',
+		password: '#registerPassword'
+	},
 
 	events: {
 		'click #registerSubmit': 'registerSubmit',
@@ -17,10 +23,12 @@ var RegisterView = Marionette.ItemView.extend({
 
 	registerSubmit: function() {
 		//ItemView ui hash
-		var firstName = this.$el.find('#registerFirstName').val().trim();
-		var lastName = this.$el.find('#registerLastName').val().trim();
-		var username = this.$el.find('#registerUsername').val().trim();
-		var password = this.$el.find('#registerPassword').val().trim();
+		var firstName = this.ui.firstName.val().trim();
+		var lastName = this.ui.lastName.val().trim();
+		var username = this.ui.username.val().trim();
+		var password = this.ui.password.val().trim();
+		
+		//provjera upisanog!!!
 
 		popsicle.request({
 			method: 'POST',

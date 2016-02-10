@@ -27,10 +27,6 @@ var RoomsView = Marionette.CollectionView.extend({
 
 	roomId: 0,
 
-	events: {
-		'click #logout': 'logout'
-	},
-
 	getRoomId: function(roomId) {
 		this.roomId = roomId;
 	}

@@ -6,6 +6,8 @@ var Room = require('../models/models.js').Room;
 var Reservation = require('../models/models.js').Reservation;
 var moment = require('moment');
 var success;
+var message = require('../../strings.json');
+var serverRouter = require('../lib/serverRoutes.js');
 
 function getAllReservations(req, res) {
 	var resData = {};
@@ -14,12 +16,12 @@ function getAllReservations(req, res) {
 	Reservation.fetchAll()
 	.then(function gotAllReservations(reservations) {
 		if(!reservations) {
-			resData.msg = 'No reservations found';
+			resData.msg = message.ReservationsNotFound;
 			res(resData);
 			return;
 		}
 
-		resData.msg = 'Reservations found!';
+		resData.msg = message.ReservationsFound;
 		resData.success = true;
 		resData.data = reservations;
 
@@ -34,46 +36,49 @@ function getAllReservations(req, res) {
 	});
 }
 
-/*
-var resData = {};
+function getAllReservations2(req, res) {
+	var resData = {};
 	resData.success = false;
 
-	var roomIdArray = [];
-
 	Room.fetchAll()
-	.then(function roomsFetched(rooms) {
-		var reservationsArray = [];
-
-		_.map(rooms.models, function(room) {
-			Reservation.where({roomId: room.attributes.roomId}).fetchAll()
-			.then(function roomReservationFetched(reservations) {
-				//reservationsArray.push(reservations);
-				return reservations;
-			})
-			.catch(function(err) {
-				resData.success = false;
-				resData.msg = err.message;
-
+	.then(function roomsFetched(rooms){
+		Reservation.fetchAll()
+		.then(function gotAllReservations(reservations) {
+			if(!reservations) {
+				resData.msg = message.ReservationsNotFound;
 				res(resData);
+				return;
+			}
+			var reservationMatrix = [];
+			var i = 0;
+			_.forEach(rooms.models, function(room) {
+				reservationMatrix.push(_.filter(reservations.models, function(reservation) {
+					if(reservation.attributes.roomId === room.attributes.roomId) 
+						return reservation;
+				}));
 			});
-		});
 
-		res(reservationsArray);
+			resData.msg = message.ReservationsFound;
+			resData.success = true;
+			resData.data = reservationMatrix;
+
+			res(resData);
+		})
+		.catch(function setError(err) {
+			resData = {};
+			resData.success = false;
+			resData.msg = err.message;
+
+			res(resData);
+		});
 	})
-	.catch(function setError(err) {
+	.catch(function (err) {
 		resData.success = false;
-		resData.msg = err;
+		resData.msg = err.message;
 
 		res(resData);
 	});
- */
-
-
-
-
-
-
-
+}
 
 function getRoomReservations(req, res) {
 	var getReservations = {roomId: req.params.roomId};
@@ -83,12 +88,12 @@ function getRoomReservations(req, res) {
 	Reservation.where(getReservations).fetchAll()
 	.then(function gotRoomReservations(reservations) {
 		if(!reservations) {
-			resData.msg = 'No reservations found';
+			resData.msg = message.ReservationsNotFound;
 			res(resData);
 			return;
 		}
 
-		resData.msg = 'Reservations found!';
+		resData.msg = message.ReservationsFound;
 		resData.success = true;
 		resData.data = reservations;
 
@@ -115,13 +120,37 @@ function createReservation(req, res) {
 	var resData = {};
 	resData.success = false;
 
-	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
-	if(duration > 180) {
-		resData.msg = 'Maximum duration is 3h! You exceeded that time!';
+	if(!req.payload.title) {
+		resData.msg = message.TitleNotFound;
 		res(resData);
 		return;
 	}
 
+	if(!req.payload.start) {
+		resData.msg = message.StartNotFound;
+		res(resData);
+		return;
+	}
+
+	if(!req.payload.end) {
+		resData.msg = message.EndNotFound;
+		res(resData);
+		return;
+	}
+
+	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
+	if(duration > 180) {
+		resData.msg = message.MaxDurationExceeded;
+		res(resData);
+		return;
+	}
+
+	if(duration <= 0) {
+		resData.msg = message.EndBeforeStart;
+		res(resData);
+		return;
+	}
+	
 	Reservation.fetchAll()
 	.then(function overlapValidationAdd(reservations) {
 		var success = true;
@@ -136,7 +165,7 @@ function createReservation(req, res) {
 		});
 
 		if(!success) {
-			resData.msg = 'Your reservation overlaps with another one';
+			resData.msg = message.Overlap;
 			res(resData);
 			return;
 		}
@@ -146,12 +175,12 @@ function createReservation(req, res) {
 		reservation.save()
 		.then(function reservationCreated(reservation) {
 			if(!reservation) {
-				resData.msg = 'Failed to save reservation!';
+				resData.msg = message.ReservationNotSaved;
 				res(resData);
 				return;
 			}
 
-			resData.msg = 'Reservation saved!';
+			resData.msg = message.ReservationSaved;
 			resData.success = true;
 			resData.data = reservation;
 
@@ -165,22 +194,33 @@ function createReservation(req, res) {
 			res(resData);
 		});
 	});
-	/**/
 }
 
 function changeDuration(req, response) {
 	var resData = {};
 	resData.success = false;
 
-	if(!req.payload.start || !req.payload.end) {
-		resData.msg = 'Start and end times are required!';
+	if(!req.payload.start) {
+		resData.msg = message.StartNotFound;
+		response(resData);
+		return;
+	}
+
+	if(!req.payload.end) {
+		resData.msg = message.EndNotFound;
 		response(resData);
 		return;
 	}
 
 	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 	if(duration > 180) {
-		resData.msg = 'Maximum duration is 3h! You exceeded that time!';
+		resData.msg = message.MaxDurationExceeded;
+		response(resData);
+		return;
+	}
+
+	if(duration <= 0) {
+		resData.msg = message.EndBeforeStart;
 		response(resData);
 		return;
 	}
@@ -201,7 +241,7 @@ function changeDuration(req, response) {
 		});
 
 		if(!success) {
-			resData.msg = 'Your reservation overlaps with another one';
+			resData.msg = message.Overlap;
 			response(resData);
 			return;
 		}
@@ -209,7 +249,7 @@ function changeDuration(req, response) {
 		User.where({id: req.auth.credentials}).fetch()
 		.then(function userChecked(user) {
 			if(!user) {
-				resData.msg = 'User not found!';
+				resData.msg = message.UserNotFound;
 				response(resData);
 				return;
 			}
@@ -231,12 +271,12 @@ function changeDuration(req, response) {
 			Reservation.where(getReservation).save(setReservation, {method: 'update'})
 			.then(function reservationSet(res) {
 				if(!res) {
-					resData.msg = 'Your reservation not found!';
+					resData.msg = message.ReservationNotFound;
 					response(resData);
 					return;
 				}
 				
-				resData.msg = 'Reservation updated!';
+				resData.msg = message.ReservationUpdated;
 				resData.success = true;
 				resData.data = res;
 
@@ -272,13 +312,13 @@ function deleteReservation(req, res) {
 
 	Reservation.where(getReservation).destroy()
 	.then(function(response) {
-		resData.msg = 'Reservation deleted!';
+		resData.msg = message.ReservationDeleted;
 		resData.success = true;
 
 		res(resData);
 	})
 	.catch(function(err){
-		resData.msg = 'Not authorized!';
+		resData.msg = err.message;
 		res(resData);
 	});
 }
@@ -288,7 +328,7 @@ function updateTitle(req, response) {
 	resData.success = false;
 
 	if(!req.payload.newTitle) {
-		resData.msg = 'Movie title required!';
+		resData.msg = message.TitleNotFound;
 
 		response(resData);
 		return;
@@ -306,12 +346,12 @@ function updateTitle(req, response) {
 	Reservation.where(getReservation).save(setReservation, {method: 'update'})
 	.then(function reservationSet(res) {
 		if(!res) {
-			resData.msg = 'Reservation not found!';
+			resData.msg = message.ReservationNotFound;
 			response(resData);
 			return;
 		}
 
-		resData.msg = 'Reservation updated!';
+		resData.msg = message.ReservationUpdated;
 		resData.success = true;
 		resData.data = res;
 
@@ -334,12 +374,12 @@ function getSingleReservation(req, res) {
 	Reservation.where({id: req.params.id}).fetch()
 	.then(function gotAllReservations(reservations) {
 		if(!reservations) {
-			resData.msg = 'No reservations found';
+			resData.msg = message.ReservationNotFound;
 			res(resData);
 			return;
 		}
 
-		resData.msg = 'Reservation found!';
+		resData.msg = message.ReservationFound;
 		resData.success = true;
 		resData.data = reservations;
 
@@ -355,45 +395,19 @@ function getSingleReservation(req, res) {
 }
 
 module.exports = function(server) {
-	server.route({
-		method: 'GET',
-		path: '/reservations',
-		handler: getAllReservations
-	});
+	serverRouter(server, 'GET', '/reservations', getAllReservations);
+	
+	serverRouter(server, 'GET', '/reservations/rooms/{roomId}', getRoomReservations);
+	
+	serverRouter(server, 'POST', '/reservations/{id}', updateTitle);
+	
+	serverRouter(server, 'PUT', '/reservations/{id}', changeDuration);
 
-	server.route({
-		method: 'GET',
-		path: '/reservations/rooms/{roomId}',
-		handler: getRoomReservations
-	});
-
-	server.route({
-		method: 'POST',
-		path: '/reservations/{id}',
-		handler: updateTitle
-	});
-
-	server.route({
-		method: 'PUT',
-		path: '/reservations/{id}',
-		handler: changeDuration
-	});
-
-	server.route({
-		method: 'DELETE',
-		path: '/reservations/{id}',
-		handler: deleteReservation
-	});
-
-	server.route({
-		method: 'POST',
-		path: '/rooms/{roomId}',
-		handler: createReservation
-	});
-
-	server.route({
-		method: 'GET',
-		path: '/reservations/{id}',
-		handler: getSingleReservation
-	});
+	serverRouter(server, 'DELETE', '/reservations/{id}', deleteReservation);
+	
+	serverRouter(server, 'POST', '/reservations/rooms/{roomId}', createReservation);
+	
+	serverRouter(server, 'GET', '/reservations/{id}', getSingleReservation);
+	
+	serverRouter(server, 'GET', '/reservations2', getAllReservations2);
 };

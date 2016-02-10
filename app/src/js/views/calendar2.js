@@ -11,7 +11,7 @@ var fullCalendar = require('fullcalendar');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
 
-var roomId;
+var $calendarElement;
 
 function changeReservationStartAndEnd(changeEvent) {
 	var path = 'reservations/' + changeEvent.id;
@@ -41,22 +41,18 @@ var ChildCalendarView = Marionette.ItemView.extend({
 	},
 
 	addEvent: function() {
+		debugger;
 		var self = this;
 
-		if(this.model.get('roomId') === parseInt(roomId, 10)) {
-			var reservation = {
-				title: self.model.get('title'),
-				start: self.model.get('start'),
-				end: self.model.get('end'),
-				id: self.model.get('id'),
-				roomId: self.model.get('roomId')
-			};
+		var reservation = {
+			title: self.model.get('title'),
+			start: self.model.get('start'),
+			end: self.model.get('end'),
+			id: self.model.get('id'),
+			roomId: self.model.get('roomId')
+		};
 
-			$('#calendar').fullCalendar('renderEvent', reservation);
-			//if(this.model.get('userId') !== 15) {
-				this.$el.css("background-color", "red");
-			//}
-		}
+		$calendarElement.fullCalendar('renderEvent', reservation);
 	}
 });
 
@@ -76,16 +72,15 @@ var CalendarView = Marionette.CollectionView.extend({
 		//this.roomId = options.roomId;
 	},
 
-	getRoomId: function(newRoomId) {
-		roomId = newRoomId;
-	},
-
 	createCalendar: function() {
 		var html = this.template();
 		this.$el.html(html);
 		var self = this;
-
+		var roomId = this.collection.models[0].get('roomId');
+		
 		var $calendar = this.$el.find('#calendar');
+		$calendarElement = $calendar;
+
 		$calendar.fullCalendar({
 			header: {
 				left: 'prev,next today',
@@ -124,7 +119,7 @@ var CalendarView = Marionette.CollectionView.extend({
 				if(eventData) {
 					popsicle.request({
 						method: 'POST',
-						url: 'reservations/rooms/' + roomId,
+						url: 'rooms/' + roomId,
 						body: {
 							title: eventData.title,
 							start: eventData.start._d,

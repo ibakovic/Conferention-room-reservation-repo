@@ -1,6 +1,8 @@
 'use strict';
 
 var Backbone = require('backbone');
+var popsicle = require('popsicle');
+var _ = require('lodash');
 
 var SingleReservation = Backbone.Model.extend({
 	urlRoot: '/reservations',
@@ -21,6 +23,12 @@ var Reservations = Backbone.Collection.extend({
 
 var reservations = new Reservations();
 
+var Reservations2 = Backbone.Collection.extend({
+	model: Reservation
+});
+
+var reservationsArray = [];
+
 var Room = Backbone.Model.extend();
 
 var Rooms = Backbone.Collection.extend({
@@ -36,12 +44,26 @@ var rooms = new Rooms();
 if(document.cookie) {
 	rooms.fetch({reset: true});
 	reservations.fetch({reset: true});
+
+	popsicle.request({
+		method: 'GET',
+		url: 'reservations2'
+	})
+	.then(function (res) {
+		_.forEach(res.body.data, function(data) {
+			var collection = new Reservations2(data);
+			reservationsArray.push(collection);
+		});
+	});
 }
 
 module.exports = {
+	reservationsArray: reservationsArray,
 	SingleReservation: SingleReservation,
 	Reservation: Reservation,
 	reservations: reservations,
 	Room: Room,
 	rooms: rooms
 };
+
+//export kao funkciju pa uzet promise

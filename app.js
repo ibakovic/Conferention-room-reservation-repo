@@ -7,11 +7,7 @@ var nunjucs = require('nunjucks');
 require('./src/lib/serverRegisters.js')(server);
 
 //Rooms routes
-var roomsRouter = require('./src/routes/rooms.js');
-
-server.route(roomsRouter.listAllRooms);
-server.route(roomsRouter.createRoom);
-server.route(roomsRouter.getRoom);
+require('./src/routes/rooms.js')(server);
 
 //Reservations routes no time check
 require('./src/routes/reservations.js')(server);

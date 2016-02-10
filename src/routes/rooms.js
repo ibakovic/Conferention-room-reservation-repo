@@ -2,6 +2,8 @@
 
 var request = {};
 var Room = require('../models/models.js').Room;
+var serverRoute = require('../lib/serverRoutes.js');
+var message = require('../../strings.json');
 
 function listAllRooms(req, res) {
 	var resData = {};
@@ -9,14 +11,18 @@ function listAllRooms(req, res) {
 
 	Room.fetchAll()
 	.then(function fetchRooms(rooms) {
-		resData.msg = 'List of rooms';
+		if(!rooms) {
+			resData.msg = message.RoomsNotFound;
+		}
+
+		resData.msg = message.RoomsFound;
 		resData.success = true;
 		resData.data = rooms;
 
 		res(resData);
 	})
 	.catch(function(err) {
-		resData.msg = 'Error with data fetch';
+		resData.msg = err.message;
 		resData.err = err;
 
 		res(resData);
@@ -24,19 +30,25 @@ function listAllRooms(req, res) {
 }
 
 function createRoom(req, res) {
-	var room = new Room({roomName: req.payload.roomName});
-
 	var resData = {};
 	resData.success = false;
+
+	if(!req.payload.roomName) {
+		resData.msg = message.RoomNameNotFound;
+		res(resData);
+		return;
+	}
+
+	var room = new Room({roomName: req.payload.roomName});
 
 	room.save()
 	.then(function saveRoom(room) {
 		if(!room) {
-			resData.msg = 'Room not found';
+			resData.msg = message.RoomNotFound;
 			res(resData);
 			return;
 		}
-		resData.msg = 'room created';
+		resData.msg = message.RoomCreated;
 		resData.success = true;
 		resData.data = room;
 
@@ -52,11 +64,11 @@ function getRoom(req, res) {
 	Room.where(roomQuery).fetch()
 	.then(function gotMRoom(room) {
 		if(!room) {
-			resData.msg = 'Room not found';
+			resData.msg = message.RoomNotFound;
 			res(resData);
 			return;
 		}
-		resData.msg = 'room found';
+		resData.msg = message.RoomFound;
 		resData.success = true;
 		resData.data = room;
 
@@ -64,22 +76,10 @@ function getRoom(req, res) {
 	});
 }
 
-request.listAllRooms = {
-	method: 'GET',
-	path: '/rooms',
-	handler: listAllRooms
+module.exports = function roomsRouter(server) {
+	serverRoute(server, 'GET', '/rooms', listAllRooms);
+	
+	serverRoute(server, 'POST', '/rooms', createRoom);
+	
+	serverRoute(server, 'GET', '/rooms/{id}', getRoom);
 };
-
-request.createRoom = {
-	method: 'POST',
-	path: '/rooms',
-	handler: createRoom
-};
-
-request.getRoom = {
-	method: 'GET',
-	path: '/rooms/{id}',
-	handler: getRoom
-};
-
-module.exports = request;

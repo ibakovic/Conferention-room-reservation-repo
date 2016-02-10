@@ -12,6 +12,10 @@ var reservationDetailsTemplate = require('../../templates/reservationDetails.htm
 var ReservationDetailsView = Marionette.ItemView.extend({
 	template: reservationDetailsTemplate,
 
+	ui: {
+		newTitle: '#newTitle'
+	},
+
 	events: {
 		'click #updateTitle': 'updateTitle',
 		'click #deleteReservation': 'deleteReservation',
@@ -29,7 +33,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 	updateTitle: function() {
 		var reservation = this.collection.findWhere({id: this.model.get('id')});
 		var path = 'reservations/' + this.model.get('id');
-		var title = this.$el.find('#newTitle').val().trim();
+		var title = this.ui.newTitle.val().trim();
 		var self = this;
 
 		if(!title) {

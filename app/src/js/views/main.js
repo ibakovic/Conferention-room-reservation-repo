@@ -5,6 +5,7 @@ var models = require('../models/models.js');
 var DetailsView = require('./reservationDetails.js');
 var LoginView = require('./login.js');
 var CalendarView = require('./calendar.js');
+var Calendar2View = require('./calendar2.js');
 var RegisterView = require('./register.js');
 var RoomsView = require('./rooms.js');
 
@@ -20,5 +21,6 @@ module.exports = {
 	registerView: registerView,
 	detailsView: detailsView,
 	calendarView: calendarView,
+	Calendar2View: Calendar2View,
 	roomsView: roomsView
 };

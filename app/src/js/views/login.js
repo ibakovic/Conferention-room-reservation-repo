@@ -11,21 +11,23 @@ var loginTemplate = require('../../templates/login.html');
 var LoginView = Marionette.ItemView.extend({
 	template: loginTemplate,
 
+	ui: {
+		username: '#loginUsername',
+		password: '#loginPassword'
+	},
+
 	events: {
 		'click #loginSubmit': 'loginSubmit',
 		'click #signUp': 'signUp'
 	},
 
-	initialize: function() {
-		_.bindAll(this, 'loginSubmit', 'signUp');
-	},
-
 	loginSubmit: function() {
-		var username = this.$el.find('#loginUsername').val().trim();
-		var password = this.$el.find('#loginPassword').val().trim();
+		var username = this.ui.username.val().trim();
+		var password = this.ui.password.val().trim();
 
 		if(!username || !password) {
 			alert('Username and password required!');
+			return;
 		}
 
 		popsicle.request({
