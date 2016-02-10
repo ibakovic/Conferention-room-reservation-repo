@@ -4,6 +4,7 @@
 	"FirstLastNameNotFound": "First and last name required!",
 	"EmailNotFound": "E-mail required!",
 	"EmailExists": "A user with this e-mail already exists!",
+	"EmailWrongFormat": "Incorrect e-mail format submitted!",
 	"UsernameExists": "This username already exists!",
 
 	"LoginSuccess": "Login successfull",
