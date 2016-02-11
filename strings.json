@@ -2,9 +2,15 @@
 	"CredentialsRequired": "Username and password required!",
 	"PasswordInvalid": "Invalid password!",
 	"FirstLastNameNotFound": "First and last name required!",
+
 	"EmailNotFound": "E-mail required!",
 	"EmailExists": "A user with this e-mail already exists!",
 	"EmailWrongFormat": "Incorrect e-mail format submitted!",
+  "EmailSent": "E-mail sent",
+  "EmailNotSent": "Failed to send e-mail",
+  "EmailSubject": "Verification for registration confirmation",
+  "EmailText": "Click on this link to verify your registration: ",
+	
 	"UsernameExists": "This username already exists!",
 
 	"LoginSuccess": "Login successfull",
@@ -23,6 +29,8 @@
 	"ReservationDeleted": "Reservation deleted!",
 
 	"UserNotFound": "User not found!",
+	"UserNotSaved": "Failed to save your data!",
+	"UserSaved": "Registration completed!",
 
 	"RoomsNotFound": "No rooms found!",
 	"RoomsFound": "Rooms found!",
@@ -39,5 +47,7 @@
 	"MaxDurationExceeded": "Maximum duration is 3h! You exceeded that time!",
 	"EndBeforeStart": "Start must be before end!",
 
-	"Overlap": "Your reservation overlaps with another one!"
+	"Overlap": "Your reservation overlaps with another one!",
+
+	"ConfirmIdNotFound": "Confirmation ID is required!"
 }

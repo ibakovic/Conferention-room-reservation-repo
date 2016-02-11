@@ -2,29 +2,8 @@
 
 var server = require('./src/lib/initializeServer.js');
 var nunjucs = require('nunjucks');
-var moment = require('moment');
-var User = require('./src/models/models.js').User;
 
-setInterval(function() {
-  User.fetchAll()
-  .then(function(users) {
-    var now = moment()._d;
-    console.log('Now:', now);
-
-    users.models.forEach(function(user) {
-      if(user.attributes.expiration) {
-        var timeDifference = moment(now).diff(user.attributes.expiration, 'minutes');
-        if(timeDifference > 0) {
-          user.destroy();
-          console.log('Row deleted!');
-        }
-      }
-    });
-  })
-  .catch(function(err) {
-    console.log(err);
-  });
-}, 15*60*1000);
+require('./src/lib/checkExpirations.js');
 
 //All dependecies
 require('./src/lib/serverRegisters.js')(server);

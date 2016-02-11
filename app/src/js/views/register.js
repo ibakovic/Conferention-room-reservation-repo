@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var Backbone = require('backbone');
 var popsicle = require('popsicle');
+var isEmail = require('is-email');
 var Marionette = require('backbone.marionette');
 var registerTemplate = require('../../templates/register.html');
 
@@ -22,45 +23,88 @@ var RegisterView = Marionette.ItemView.extend({
 		'click #registerCancel': 'registerCancel'
 	},
 
+	validate: function() {
+		var self = this;
+		
+		var W3CDOM = (document.getElementsByTagName && document.createElement);
+
+		var validForm = true;
+		var firstError = null;
+		var errorstring = '';
+
+		function validate() {
+			validForm = true;
+			firstError = null;
+			errorstring = '';
+
+			_.forEach(self.ui, function(element) {
+				if(!element.val().trim()) {
+					writeError(element, 'This field is required!');
+				}
+			});
+
+			if (!W3CDOM)
+				alert(errorstring);
+
+			if (firstError)
+				firstError.focus();
+
+			if (validForm) {
+				return true;
+			}
+			
+			return false;
+		}
+
+		function writeError(obj, message) {
+			validForm = false;
+
+			if (obj[0].hasError)
+				return;
+
+			if (!firstError)
+				firstError = obj;
+
+			if (W3CDOM) {
+				obj[0].className += ' registerInputError';
+				obj[0].onchange = removeError;
+
+				var sp = document.createElement('div');
+				sp.className = 'registerError';
+				sp.appendChild(document.createTextNode(message));
+
+				obj[0].parentNode.appendChild(sp);
+				obj[0].hasError = sp;
+
+				return;
+			}
+
+			errorstring += obj.name + ': ' + message + '\n';
+			obj[0].hasError = true;
+		}
+
+		function removeError()
+		{
+			this.className = this.className.substring(0,this.className.lastIndexOf(' '));
+			this.parentNode.removeChild(this.hasError);
+			this.hasError = null;
+			this.onchange = null;
+		}
+
+		return validate();
+	},
+
 	registerSubmit: function() {
+		var self = this;
 		//ItemView ui hash
 		var firstName = this.ui.firstName.val().trim();
 		var lastName = this.ui.lastName.val().trim();
 		var username = this.ui.username.val().trim();
 		var password = this.ui.password.val().trim();
 		var email = this.ui.email.val().trim();
-		
-		//provjera upisanog!!!
-		if(!firstName) {
-			alert('First name required!');
-			return;
-		}
 
-		if(!lastName) {
-			alert('Last name required!');
+		if(!this.validate())
 			return;
-		}
-
-		if(!username) {
-			alert('Username required!');
-			return;
-		}
-
-		if(!password) {
-			alert('Password required!');
-			return;
-		}
-
-		if(!email) {
-			alert('E-mail required!');
-			return;
-		}
-
-		var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
-		if(!pattern.test(email)) {
-			alert('Wrong e-mail format!');
-			return;
-		}
 
 		popsicle.request({
 			method: 'POST',

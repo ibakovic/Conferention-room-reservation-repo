@@ -10,18 +10,33 @@ $radius: 5px
 	background-color: #E3E3E3
 	border-radius: $radius
 
+	.inputWrapper
+		width: 100%
+		margin-left: 2%
+
+		.form-control
+			width: 92%
+
+		.loginInputError
+			border-color: red
+			margin-bottom: 2%
+
+		.loginError
+			color: red
+			margin-bottom: 4%
+
 	.loginTitle
 		margin: $defaultMargin
 
 	#loginUsername, #loginPassword
 		margin: $defaultMargin
-		width: 96%
 
 	#loginUsername
 		margin-bottom: 0
 
 	#loginPassword
 		margin-top: 1px
+		margin-bottom: 0
 
 	#loginSubmit
-		width: 60%
+		width: 50%

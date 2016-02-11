@@ -9,10 +9,25 @@ $defaultMargin: 2%
 	border-radius: 5px
 	text-align: center
 
+	.displayInline
+		width: 100%
+		margin-left: 2%
+
+		.form-control
+			width: 95%
+
+		.registerInputError
+			border-color: red
+			margin-bottom: 2%
+
+		.registerError
+			color: red
+			margin-bottom: 4%
+
 	.registerTitle
 		margin-bottom: $defaultMargin
 
-	#registerFirstName, #registerLastName, #registerUsername, #registerPassword
+	#registerFirstName, #registerLastName, #registerUsername, #registerPassword, #registerEmail
 		margin: 1px
 
 	#registerSubmit, #registerCancel

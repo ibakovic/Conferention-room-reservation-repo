@@ -88,6 +88,13 @@ var routerController = Marionette.Object.extend({
 			views.detailsView.getModel(model);
 			resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
 		}});
+	},
+
+	confirmRegistration: function(id) {
+		resApp.roomRegion.$el.hide();
+
+		views.confirmRegistration.getId(id);
+		resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
 	}
 });
 
@@ -98,7 +105,8 @@ var Router = Marionette.AppRouter.extend({
 		'register': 'register',
 		'calendar/:roomId': 'calendar',
 		'calendar2/:roomId': 'calendar2',
-		'reservationDetails/:id': 'reservationDetails'
+		'reservationDetails/:id': 'reservationDetails',
+		'confirm/:id': 'confirmRegistration'
 	}
 });
 
