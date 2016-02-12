@@ -35,11 +35,11 @@ function changeReservationStartAndEnd(changeEvent) {
 
 var ChildCalendarView = Marionette.ItemView.extend({
 	template: $('<div></div>'),
-
+/*
 	initialize: function() {
 		this.addEvent();
 	},
-
+*/
 	addEvent: function() {
 		var self = this;
 
@@ -69,15 +69,13 @@ var CalendarView = Marionette.CollectionView.extend({
 		'click #logout': 'logout'
 	},
 
-	initialize: function() {
-		this.createCalendar();
-		this.listenTo(this.collection, 'reset', this.createCalendar);
-
-		//this.roomId = options.roomId;
-	},
-
 	getRoomId: function(newRoomId) {
 		roomId = newRoomId;
+	},
+
+	onDomRefresh: function() {
+		this.createCalendar();
+		this.children.call("addEvent");
 	},
 
 	createCalendar: function() {

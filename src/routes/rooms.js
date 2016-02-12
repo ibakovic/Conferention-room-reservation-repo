@@ -13,19 +13,21 @@ function listAllRooms(req, res) {
 	.then(function fetchRooms(rooms) {
 		if(!rooms) {
 			resData.msg = message.RoomsNotFound;
+			res(resData).code(400);
+			return;
 		}
 
 		resData.msg = message.RoomsFound;
 		resData.success = true;
 		resData.data = rooms;
 
-		res(resData);
+		res(resData).code(200);
 	})
 	.catch(function(err) {
 		resData.msg = err.message;
 		resData.err = err;
 
-		res(resData);
+		res(resData).code(400);
 	});
 }
 
@@ -35,7 +37,7 @@ function createRoom(req, res) {
 
 	if(!req.payload.roomName) {
 		resData.msg = message.RoomNameNotFound;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 
@@ -45,14 +47,18 @@ function createRoom(req, res) {
 	.then(function saveRoom(room) {
 		if(!room) {
 			resData.msg = message.RoomNotFound;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
 		resData.msg = message.RoomCreated;
 		resData.success = true;
 		resData.data = room;
 
-		res(resData);
+		res(resData).code(200);
+	})
+	.catch(function(err) {
+		resData.msg = err.message;
+		res(resData).code(400);
 	});
 }
 
@@ -65,14 +71,14 @@ function getRoom(req, res) {
 	.then(function gotMRoom(room) {
 		if(!room) {
 			resData.msg = message.RoomNotFound;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
 		resData.msg = message.RoomFound;
 		resData.success = true;
 		resData.data = room;
 
-		res(resData);
+		res(resData).code(200);
 	});
 }
 

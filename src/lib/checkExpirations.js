@@ -1,25 +1,32 @@
 'use strict';
 
+var Cron = require('cron').CronJob;
 var moment = require('moment');
-var Temp = require('../models/models.js').Temp;
+var User = require('../models/models.js').User;
 
-module.exports = setInterval(function() {
-  Temp.fetchAll()
-  .then(function(temps) {
+var job = new Cron({
+  cronTime: '* */15 * * * *',
+  onTick: function() {
     var now = moment()._d;
-    console.log('Now:', now);
+    console.log(now);
 
-    temps.models.forEach(function(temp) {
-      if(temp.attributes.expiration) {
-        var timeDifference = moment(now).diff(temp.attributes.expiration, 'minutes');
-        if(timeDifference > 0) {
-          temp.destroy();
-          console.log('Row deleted!');
+    User.where('verificationId', '<>', 'null').fetchAll()
+    .then(function usersFound(users) {
+      users.forEach(function(user) {
+
+        var timeDifference = moment(now).diff(user.get('createdAt'), 'minutes');
+
+        if(timeDifference > 3) {
+          user.destroy();
+          console.log('User ' + user.get('username') + ' deleted');
         }
-      }
+      });
+    })
+    .catch(function(err) {
+      console.log('err');
     });
-  })
-  .catch(function(err) {
-    console.log(err);
-  });
-}, 15*60*1000);
+  },
+  start: true
+});
+
+module.exports = job;

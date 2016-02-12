@@ -15,7 +15,7 @@
 
 	"LoginSuccess": "Login successfull",
 
-	"RegistrationCompleted": "Registration successfull! You have 30 mins to confirm your registration via e-mail!",
+	"RegistrationCompleted": "Registration successfull! \nYou have 30 mins to confirm your registration via e-mail!",
 	"RegistrationFailed": "Your data was not saved successfully!",
 
 	"ReservationsNotFound": "No reservations found!",
@@ -49,5 +49,7 @@
 
 	"Overlap": "Your reservation overlaps with another one!",
 
-	"ConfirmIdNotFound": "Confirmation ID is required!"
+	"ConfirmIdNotFound": "Confirmation ID is required!",
+	"ConfirmationNotFound": "Confirmation from this url was not found!",
+	"ConfirmationFailed": "Confirmation failed! \nNot registered yet!"
 }

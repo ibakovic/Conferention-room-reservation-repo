@@ -2,7 +2,6 @@
 
 var bcrypt = require('bcryptjs');
 var User = require('../models/models.js').User;
-var Temp = require('../models/models.js').Temp;
 var message = require('../../strings.json');
 var moment = require('moment');
 var isEmail = require('is-email');
@@ -20,12 +19,13 @@ function login(req, res) {
 
   if (!req.payload.username || !req.payload.password) {
     resData.msg = message.CredentialsRequired;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
   var loginQuery = {
-    username: req.payload.username
+    username: req.payload.username,
+    verificationId: null
   };
 
   User.where(loginQuery).fetch()
@@ -33,13 +33,13 @@ function login(req, res) {
     if (!user) {
       resData.msg = message.UserNotFound;
 
-      res(resData);
+      res(resData).code(400);
       return;
     }
 
     if(!comparePasswords(req.payload.password, user.attributes.password)) {
       resData.msg = message.PasswordInvalid;
-      res(resData);
+      res(resData).code(400);
       return;
     }
 
@@ -47,7 +47,8 @@ function login(req, res) {
     req.server.app.cache.set(sid, { account: user.attributes.id }, 0, function(err) {
 
       if (err) {
-        res(err);
+        res(err).code(400);
+        return;
       }
 
       req.cookieAuth.set({ sid: sid });
@@ -55,119 +56,69 @@ function login(req, res) {
       resData.msg = message.LoginSuccess;
       resData.success = true;
 
-      res(resData);
+      res(resData).code(200);
     });
   })
   .catch(function userNotFound(err) {
     resData.msg = message.UserNotFound;
     resData.err = err;
 
-    res(resData);
+    res(resData).code(400);
     return;
   });
 }
 
 function register(req, res) {
-  //console.log(req.server.info);
   var resData = {};
   resData.success = false;
   
   if (!req.payload.username || !req.payload.password) {
     resData.msg = message.CredentialsRequired;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
   if(!req.payload.firstName || !req.payload.lastName) {
     resData.msg = message.FirstLastNameNotFound;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
   if(!req.payload.email) {
     resData.msg = message.EmailNotFound;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
   if(!isEmail(req.payload.email)) {
     resData.msg = message.EmailWrongFormat;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
-  User.fetchAll()
-  .then(function tempUserFound(users) {
-    var usernameExists = false;
-    var emailExists = false;
+  User.query({where: {username: req.payload.username}, orWhere: {email: req.payload.email}}).fetch()
+  .then(function foundUsers(user) {
+    if(!user) {
+      var verificationId = bcrypt.hashSync(req.payload.username, bcrypt.genSaltSync(10), null).toString();
+      verificationId = verificationId.replace(/\//g,'*');
 
-    users.models.forEach(function(model) {
-      if(model.attributes.username === req.payload.username)
-        usernameExists = true;
-
-      if(model.attributes.email === req.payload.email) {
-        emailExists = true;
-      }
-    });
-
-    if(usernameExists) {
-      resData.msg = message.UsernameExists;
-      res(resData);
-      return;
-    }
-
-    if(emailExists) {
-      resData.msg = message.EmailExists;
-      res(resData);
-      return;
-    }
-
-    Temp.fetchAll()
-    .then(function tempsFetched(temps) {
-      var tempUsernameExists = false;
-      var tempEmailExists = false;
-
-      temps.models.forEach(function(model) {
-        if(model.attributes.username === req.payload.username)
-          tempUsernameExists = true;
-
-        if(model.attributes.email === req.payload.email) {
-          tempEmailExists = true;
-        }
-      });
-
-      if(tempUsernameExists) {
-        resData.msg = message.UsernameExists;
-        res(resData);
-        return;
-      }
-
-      if(tempEmailExists) {
-        resData.msg = message.EmailExists;
-        res(resData);
-        return;
-      }
-
-      var confirmId = bcrypt.hashSync(req.payload.username, bcrypt.genSaltSync(10), null).toString();
-      confirmId = confirmId.replace(/\//g,'*');
-
-      var expiration = moment().add(1.5, 'h')._d;
+      var createdAt = moment()._d;
       
-      var newTemp = new Temp({
+      var newTemp = new User({
         username: req.payload.username,
         password: bcrypt.hashSync(req.payload.password, bcrypt.genSaltSync(10)),
         firstName: req.payload.firstName,
         lastName: req.payload.lastName,
         email: req.payload.email,
-        expiration: expiration,
-        confirmId: confirmId
+        createdAt: createdAt,
+        verificationId: verificationId
       });
 
       newTemp.save()
       .then(function tempSaved(savedTemp) {
         if(!savedTemp) {
           resData.msg = message.RegistrationFailed;
-          res(resData);
+          res(resData).code(400);
           return;
         }
 
@@ -175,7 +126,7 @@ function register(req, res) {
           protocol: req.server.info.protocol,
           host: req.server.info.address,
           port: req.server.info.port,
-          id: confirmId
+          id: verificationId
         });
 
         var transporter = nodemailer.createTransport({
@@ -191,29 +142,37 @@ function register(req, res) {
 
         transporter.sendMail(mailOptions, function(err, info) {
           if(err) {
-            console.log(err);
-            return res.status(400).json({msg: message.EmailNotSent});
+            resData.msg = message.EmailNotSent;
+            res(resData).code(400);
+            return;
           }
           
           resData.msg = message.RegistrationCompleted;
           resData.success = true;
-          res(resData);
+          res(resData).code(200);
         });
       })
       .catch(function(err) {
         resData.msg = err.message;
-        res(resData);
+        res(resData).code(400);
       });
+      return;
+    }
 
-    })
-    .catch(function(err) {
-      resData.msg = err.message;
-      res(resData);
-    });
+    if(user.get('username') === req.payload.username) {
+      resData.msg = message.UsernameExists;
+      res(resData).code(400);
+      return;
+    }
+
+    if(user.get('email') === req.payload.email) {
+      resData.msg = message.EmailExists;
+      res(resData).code(400);
+    }
   })
   .catch(function(err) {
     resData.msg = err.message;
-    res(resData);
+    res(resData).code(400);
   });
 }
 
@@ -223,56 +182,40 @@ function confirmRegistration(req, res) {
 
   if(!req.params.confirmId) {
     resData.msg = message.ConfirmIdNotFound;
-    res(resData);
+    res(resData).code(400);
     return;
   }
 
-  Temp.where({confirmId: req.params.confirmId}).fetch()
+  User.where({verificationId: req.params.confirmId}).fetch()
   .then(function confirmationFetched(confirmation) {
     if(!confirmation) {
       resData.msg = message.ConfirmationNotFound;
-      res(resData);
+      res(resData).code(400);
       return;
     }
 
-    var userAttributes = {
-      username: confirmation.attributes.username,
-      password: confirmation.attributes.password,
-      firstName: confirmation.attributes.firstName,
-      lastName: confirmation.attributes.lastName,
-      email: confirmation.attributes.email
-    };
+    var setVerificationId = {verificationId: null};
+    confirmation.save(setVerificationId, {method: 'update'})
+    .then(function confirmationUpdated(confirmation) {
+      if(!confirmation) {
+        resData.msg = message.ConfirmationFailed;
+        res(resData).code(400);
+        return;
+      }
 
-    confirmation.destroy()
-    .then(function confirmationDestroyed() {
-      var newUser = new User(userAttributes);
-
-      newUser.save()
-      .then(function userSaved(user) {
-        if(!user) {
-          resData.msg = message.UserNotSaved;
-          res(resData);
-          return;
-        }
-
-        resData.success = true;
-        resData.msg = message.UserSaved;
-        resData.data = user;
-        res(resData);
-      })
-      .catch(function(err) {
-        resData.msg = err.message;
-        res(resData);
-      });
+      resData.success = true;
+      resData.msg = message.UserSaved;
+      resData.data = confirmation;
+      res(resData).code(200);
     })
     .catch(function(err) {
       resData.msg = err.message;
-      res(resData);
+      res(resData).code(400);
     });
   })
   .catch(function(err) {
     resData.msg = err.message;
-    res(resData);
+    res(resData).code(400);
   });
 }
 
@@ -281,7 +224,7 @@ function logout(req, res) {
   res({
     msg: 'Logged out successfully!',
     success: true
-  });
+  }).code(200);
 }
 
 function routes(server, method, path, handler) {
@@ -312,3 +255,8 @@ module.exports = function(server) {
     handler: logout
   });
 };
+
+
+//User.where('username', '<>', '1').fetchAll() izdviji sve koji nemaju username
+//User.where('email', '<>', 'null').fetchAll() izdvoji sve kojima email nije null
+//User.where({verificationId: null}).fetchAll() query for verified users

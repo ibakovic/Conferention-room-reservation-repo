@@ -3,7 +3,7 @@
 var server = require('./src/lib/initializeServer.js');
 var nunjucs = require('nunjucks');
 
-require('./src/lib/checkExpirations.js');
+//require('./src/lib/checkExpirations.js');
 
 //All dependecies
 require('./src/lib/serverRegisters.js')(server);

@@ -27,13 +27,8 @@ var Reservation = bookshelf.Model.extend({
 	tableName: 'Reservations'
 });
 
-var Temp = bookshelf.Model.extend({
-  tableName: 'Temp'
-});
-
 module.exports = {
 	User: User,
 	Room: Room,
-	Reservation: Reservation,
-  Temp: Temp
+	Reservation: Reservation
 };

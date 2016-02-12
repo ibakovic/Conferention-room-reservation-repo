@@ -17,22 +17,28 @@ function getAllReservations(req, res) {
 	.then(function gotAllReservations(reservations) {
 		if(!reservations) {
 			resData.msg = message.ReservationsNotFound;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
-
+/*
+		var start = moment(reservations.models[0].attributes.start).utc();
+		var local = start.local();
+		console.log('Local local', local);
+		console.log('Local start', start);
+		console.log('DB start', reservations.models[0].attributes.start);
+*/
 		resData.msg = message.ReservationsFound;
 		resData.success = true;
 		resData.data = reservations;
 
-		res(resData);
+		res(resData).code(200);
 	})
 	.catch(function setError(err) {
 		resData = {};
 		resData.success = false;
-		resData.msg = err;
+		resData.msg = err.message;
 
-		res(resData);
+		res(resData).code(400);
 	});
 }
 
@@ -46,7 +52,7 @@ function getAllReservations2(req, res) {
 		.then(function gotAllReservations(reservations) {
 			if(!reservations) {
 				resData.msg = message.ReservationsNotFound;
-				res(resData);
+				res(resData).code(400);
 				return;
 			}
 			var reservationMatrix = [];
@@ -62,21 +68,21 @@ function getAllReservations2(req, res) {
 			resData.success = true;
 			resData.data = reservationMatrix;
 
-			res(resData);
+			res(resData).code(200);
 		})
 		.catch(function setError(err) {
 			resData = {};
 			resData.success = false;
 			resData.msg = err.message;
 
-			res(resData);
+			res(resData).code(400);
 		});
 	})
 	.catch(function (err) {
 		resData.success = false;
 		resData.msg = err.message;
 
-		res(resData);
+		res(resData).code(400);
 	});
 }
 
@@ -89,7 +95,7 @@ function getRoomReservations(req, res) {
 	.then(function gotRoomReservations(reservations) {
 		if(!reservations) {
 			resData.msg = message.ReservationsNotFound;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
 
@@ -97,14 +103,14 @@ function getRoomReservations(req, res) {
 		resData.success = true;
 		resData.data = reservations;
 
-		res(resData);
+		res(resData).code(200);
 	})
 	.catch(function setError(err) {
 		resData = {};
 		resData.success = false;
 		resData.msg = err;
 
-		res(resData);
+		res(resData).code(400);
 	});
 }
 
@@ -122,32 +128,32 @@ function createReservation(req, res) {
 
 	if(!req.payload.title) {
 		resData.msg = message.TitleNotFound;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 
 	if(!req.payload.start) {
 		resData.msg = message.StartNotFound;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 
 	if(!req.payload.end) {
 		resData.msg = message.EndNotFound;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 
 	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 	if(duration > 180) {
 		resData.msg = message.MaxDurationExceeded;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 
 	if(duration <= 0) {
 		resData.msg = message.EndBeforeStart;
-		res(resData);
+		res(resData).code(400);
 		return;
 	}
 	
@@ -166,7 +172,7 @@ function createReservation(req, res) {
 
 		if(!success) {
 			resData.msg = message.Overlap;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
 
@@ -176,7 +182,7 @@ function createReservation(req, res) {
 		.then(function reservationCreated(reservation) {
 			if(!reservation) {
 				resData.msg = message.ReservationNotSaved;
-				res(resData);
+				res(resData).code(400);
 				return;
 			}
 
@@ -184,14 +190,14 @@ function createReservation(req, res) {
 			resData.success = true;
 			resData.data = reservation;
 
-			res(resData);
+			res(resData).code(200);
 		})
 		.catch(function setError(err) {
 			resData = {};
 			resData.success = false;
 			resData.msg = err;
 
-			res(resData);
+			res(resData).code(400);
 		});
 	});
 }
@@ -202,26 +208,26 @@ function changeDuration(req, response) {
 
 	if(!req.payload.start) {
 		resData.msg = message.StartNotFound;
-		response(resData);
+		response(resData).code(400);
 		return;
 	}
 
 	if(!req.payload.end) {
 		resData.msg = message.EndNotFound;
-		response(resData);
+		response(resData).code(400);
 		return;
 	}
 
 	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 	if(duration > 180) {
 		resData.msg = message.MaxDurationExceeded;
-		response(resData);
+		response(resData).code(400);
 		return;
 	}
 
 	if(duration <= 0) {
 		resData.msg = message.EndBeforeStart;
-		response(resData);
+		response(resData).code(400);
 		return;
 	}
 	
@@ -242,7 +248,7 @@ function changeDuration(req, response) {
 
 		if(!success) {
 			resData.msg = message.Overlap;
-			response(resData);
+			response(resData).code(400);
 			return;
 		}
 
@@ -250,7 +256,7 @@ function changeDuration(req, response) {
 		.then(function userChecked(user) {
 			if(!user) {
 				resData.msg = message.UserNotFound;
-				response(resData);
+				response(resData).code(400);
 				return;
 			}
 
@@ -272,7 +278,7 @@ function changeDuration(req, response) {
 			.then(function reservationSet(res) {
 				if(!res) {
 					resData.msg = message.ReservationNotFound;
-					response(resData);
+					response(resData).code(400);
 					return;
 				}
 				
@@ -280,7 +286,7 @@ function changeDuration(req, response) {
 				resData.success = true;
 				resData.data = res;
 
-				response(resData);
+				response(resData).code(200);
 				return;
 			})
 			.catch(function setError(err) {
@@ -288,7 +294,7 @@ function changeDuration(req, response) {
 				resData.success = false;
 				resData.msg = err.message;
 
-				response(resData);
+				response(resData).code(400);
 			});
 		})
 		.catch(function(err) {
@@ -296,7 +302,7 @@ function changeDuration(req, response) {
 			resData.success = false;
 			resData.msg = err.message;
 
-			response(resData);
+			response(resData).code(400);
 		});
 	});
 }
@@ -315,11 +321,11 @@ function deleteReservation(req, res) {
 		resData.msg = message.ReservationDeleted;
 		resData.success = true;
 
-		res(resData);
+		res(resData).code(200);
 	})
 	.catch(function(err){
 		resData.msg = err.message;
-		res(resData);
+		res(resData).code(400);
 	});
 }
 
@@ -330,7 +336,7 @@ function updateTitle(req, response) {
 	if(!req.payload.newTitle) {
 		resData.msg = message.TitleNotFound;
 
-		response(resData);
+		response(resData).code(400);
 		return;
 	}
 
@@ -347,7 +353,7 @@ function updateTitle(req, response) {
 	.then(function reservationSet(res) {
 		if(!res) {
 			resData.msg = message.ReservationNotFound;
-			response(resData);
+			response(resData).code(400);
 			return;
 		}
 
@@ -355,7 +361,7 @@ function updateTitle(req, response) {
 		resData.success = true;
 		resData.data = res;
 
-		response(resData);
+		response(resData).code(200);
 		return;
 	})
 	.catch(function setError(err) {
@@ -363,10 +369,11 @@ function updateTitle(req, response) {
 		resData.success = false;
 		resData.msg = err.message;
 
-		response(resData);
+		response(resData).code(400);
 	});
 }
 
+//getSingleReservation.method = 'GET';
 function getSingleReservation(req, res) {
 	var resData = {};
 	resData.success = false;
@@ -375,7 +382,7 @@ function getSingleReservation(req, res) {
 	.then(function gotAllReservations(reservations) {
 		if(!reservations) {
 			resData.msg = message.ReservationNotFound;
-			res(resData);
+			res(resData).code(400);
 			return;
 		}
 
@@ -383,16 +390,18 @@ function getSingleReservation(req, res) {
 		resData.success = true;
 		resData.data = reservations;
 
-		res(resData);
+		res(resData).code(200);
 	})
 	.catch(function setError(err) {
 		resData = {};
 		resData.success = false;
 		resData.msg = err;
 
-		res(resData);
+		res(resData).code(400);
 	});
 }
+
+var objects = [{}];
 
 module.exports = function(server) {
 	serverRouter(server, 'GET', '/reservations', getAllReservations);

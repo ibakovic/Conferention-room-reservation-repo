@@ -19,6 +19,7 @@
     "bookshelf": "^0.9.1",
     "bootstrap-sass": "^3.3.6",
     "bootswatch": "^3.3.6",
+    "cron": "^1.1.0",
     "fullcalendar": "^2.6.0",
     "got": "^6.1.1",
     "handlebars": "^4.0.5",
