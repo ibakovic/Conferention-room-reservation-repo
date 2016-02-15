@@ -82,10 +82,22 @@ function getRoom(req, res) {
 	});
 }
 
+var objects = [{
+	method: 'GET',
+	path: '/rooms',
+	handler: listAllRooms
+}, {
+	method: 'POST',
+	path: '/rooms',
+	handler: createRoom
+}, {
+	method: 'GET',
+	path: '/rooms/{id}',
+	handler: getRoom
+}];
+
 module.exports = function roomsRouter(server) {
-	serverRoute(server, 'GET', '/rooms', listAllRooms);
-	
-	serverRoute(server, 'POST', '/rooms', createRoom);
-	
-	serverRoute(server, 'GET', '/rooms/{id}', getRoom);
+	objects.forEach(function(object) {
+		serverRoute(server, object);
+	});
 };

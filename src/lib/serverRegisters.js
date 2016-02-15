@@ -38,6 +38,7 @@ module.exports = function(server) {
       redirectTo: '/',
       isHttpOnly: false,
       isSecure: false,
+      clearInvalid: true,
       validateFunc: function (request, session, callback) {
 
         cache.get(session.sid, function(err, cached) {

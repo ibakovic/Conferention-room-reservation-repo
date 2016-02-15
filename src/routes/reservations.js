@@ -376,10 +376,41 @@ function getSingleReservation(req, res) {
 	});
 }
 
-var objects = [{}];
+var objects = [{
+	method: 'GET',
+	path: '/reservations',
+	handler: getAllReservations
+}, {
+	method: 'GET',
+	path: '/reservations/rooms/{roomId}',
+	handler: getRoomReservations
+}, {
+	method: 'PUT',
+	path: '/reservations/{id}',
+	handler: updateTitle
+}, {
+	method: 'POST',
+	path: '/reservations/{id}',
+	handler: changeDuration
+}, {
+	method: 'DELETE',
+	path: '/reservations/{id}',
+	handler: deleteReservation
+}, {
+	method: 'POST',
+	path: '/reservations',
+	handler: createReservation
+}, {
+	method: 'GET',
+	path: '/reservations/{id}',
+	handler: getSingleReservation
+}];
 
 module.exports = function(server) {
-	serverRouter(server, 'GET', '/reservations', getAllReservations);
+	objects.forEach(function(object) {
+		serverRouter(server, object);
+	});
+	/*serverRouter(server, 'GET', '/reservations', getAllReservations);
 	
 	serverRouter(server, 'GET', '/reservations/rooms/{roomId}', getRoomReservations);
 	
@@ -391,5 +422,5 @@ module.exports = function(server) {
 	
 	serverRouter(server, 'POST', '/reservations', createReservation);
 	
-	serverRouter(server, 'GET', '/reservations/{id}', getSingleReservation);
+	serverRouter(server, 'GET', '/reservations/{id}', getSingleReservation);*/
 };
