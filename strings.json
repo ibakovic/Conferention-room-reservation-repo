@@ -51,5 +51,7 @@
 
 	"ConfirmIdNotFound": "Confirmation ID is required!",
 	"ConfirmationNotFound": "Confirmation from this url was not found!",
-	"ConfirmationFailed": "Confirmation failed! \nNot registered yet!"
+	"ConfirmationFailed": "Confirmation failed! \nNot registered yet!",
+
+	"RoomIdNotFound": "Room ID was not found!"
 }

@@ -11,6 +11,8 @@ var reservationDetailsTemplate = require('../../templates/reservationDetails.htm
 var ReservationDetailsView = Marionette.ItemView.extend({
 	template: reservationDetailsTemplate,
 
+	id: 0,
+
 	ui: {
 		newTitle: '#newTitle'
 	},
@@ -20,17 +22,19 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 		'click #deleteReservation': 'deleteReservation',
 		'click #cancelReservation': 'cancelReservation'
 	},
-/*
-	collectionEvents: {
-    "reset": "onShow"
-  },
-*/
+
 	getModel: function(model) {
 		this.model = model;
 	},
 
+	getId: function(id) {
+		this.id = parseInt(id, 10);
+		this.model = this.collection.findWhere({id: this.id});
+	},
+
 	updateTitle: function() {
-		var reservation = this.collection.findWhere({id: this.model.get('id')});
+		var reservation = this.collection.findWhere({id: this.id});
+		var roomId = reservation.get('roomId');
 		var path = 'reservations/' + this.model.get('id');
 		var title = this.ui.newTitle.val().trim();
 		var self = this;
@@ -40,39 +44,39 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 			return;
 		}
 
-		popsicle.request({
-			method: 'POST',
-			url: path,
-			body: {
-				newTitle: title
-			}
-		})
-		.then(function updatedTitle(res) {
-			alert(res.body.msg);
-			if(res.body.success) {
-				Backbone.history.navigate('calendar/' + self.model.get('roomId'), {trigger: true});
+		var changes = {
+			newTitle: title,
+			title: title
+		};
+
+		reservation.save(changes, {
+			wait: true,
+			success: function(model, response) {
+				alert(response.msg);
+				Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+			},
+			error: function(model, response) {
+				alert('Not authorized to update that reservation!');
 			}
 		});
 	},
 
 	deleteReservation: function() {
-		var reservation = this.collection.findWhere({id: this.model.get('id')});
+		var reservation = this.collection.findWhere({id: this.id});
+		var roomId = reservation.get('roomId');
 		var self = this;
 		var path = 'reservations/' + this.model.get('id');
 
 		if(confirm('Are you sure you want to remove this reservation?')) {
-			popsicle.request({
-				method: 'DELETE',
-				url: path
-			})
-			.then(function(res) {
-				alert(res.body.msg);
-				if(res.body.success) {
-					Backbone.history.navigate('calendar/' + self.model.get('roomId'), {trigger: true});
+			reservation.destroy({
+				wait: true,
+				success: function(model, response) {
+					alert(response.msg);
+					Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+				},
+				error: function(model, response) {
+					alert('Not authorized to delete this reservation!');
 				}
-			})
-			.catch(function(err) {
-				console.log(err);
 			});
 		}
 	},

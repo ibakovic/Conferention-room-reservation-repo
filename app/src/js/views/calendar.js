@@ -7,7 +7,6 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var fullCalendar = require('fullcalendar');
-//var router = require('../router.js');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
 
@@ -17,7 +16,7 @@ function changeReservationStartAndEnd(changeEvent) {
 	var path = 'reservations/' + changeEvent.id;
 	
 	popsicle.request({
-		method: 'PUT',
+		method: 'POST',
 		url: path,
 		body: {
 			start: changeEvent._start._d,
@@ -35,11 +34,7 @@ function changeReservationStartAndEnd(changeEvent) {
 
 var ChildCalendarView = Marionette.ItemView.extend({
 	template: $('<div></div>'),
-/*
-	initialize: function() {
-		this.addEvent();
-	},
-*/
+
 	addEvent: function() {
 		var self = this;
 
@@ -53,9 +48,6 @@ var ChildCalendarView = Marionette.ItemView.extend({
 			};
 
 			$('#calendar').fullCalendar('renderEvent', reservation);
-			//if(this.model.get('userId') !== 15) {
-				this.$el.css("background-color", "red");
-			//}
 		}
 	}
 });
@@ -103,7 +95,7 @@ var CalendarView = Marionette.CollectionView.extend({
 			scrollTime: '07:00:00',
 
 			select: function(start, end) {
-				if(moment(end._d).diff(start._d, 'minutes') >= 180) {
+				if(moment(end._d).diff(start._d, 'minutes') > 180) {
 					alert('Time limit on a single reservation is 3h!');
 					return;
 				}
@@ -122,16 +114,20 @@ var CalendarView = Marionette.CollectionView.extend({
 				if(eventData) {
 					popsicle.request({
 						method: 'POST',
-						url: 'reservations/rooms/' + roomId,
+						url: 'reservations',
 						body: {
 							title: eventData.title,
 							start: eventData.start._d,
-							end: eventData.end._d
+							end: eventData.end._d,
+							roomId: parseInt(roomId, 10)
 						}
 					})
 					.then(function reservationSuccess(res) {
 						alert(res.body.msg);
 						return null;
+					})
+					.catch(function(res) {
+						alert(res.body.msg);
 					});
 				}
 			},

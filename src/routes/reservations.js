@@ -42,50 +42,6 @@ function getAllReservations(req, res) {
 	});
 }
 
-function getAllReservations2(req, res) {
-	var resData = {};
-	resData.success = false;
-
-	Room.fetchAll()
-	.then(function roomsFetched(rooms){
-		Reservation.fetchAll()
-		.then(function gotAllReservations(reservations) {
-			if(!reservations) {
-				resData.msg = message.ReservationsNotFound;
-				res(resData).code(400);
-				return;
-			}
-			var reservationMatrix = [];
-			var i = 0;
-			_.forEach(rooms.models, function(room) {
-				reservationMatrix.push(_.filter(reservations.models, function(reservation) {
-					if(reservation.attributes.roomId === room.attributes.roomId) 
-						return reservation;
-				}));
-			});
-
-			resData.msg = message.ReservationsFound;
-			resData.success = true;
-			resData.data = reservationMatrix;
-
-			res(resData).code(200);
-		})
-		.catch(function setError(err) {
-			resData = {};
-			resData.success = false;
-			resData.msg = err.message;
-
-			res(resData).code(400);
-		});
-	})
-	.catch(function (err) {
-		resData.success = false;
-		resData.msg = err.message;
-
-		res(resData).code(400);
-	});
-}
-
 function getRoomReservations(req, res) {
 	var getReservations = {roomId: req.params.roomId};
 	var resData = {};
@@ -117,7 +73,7 @@ function getRoomReservations(req, res) {
 function createReservation(req, res) {
 	var makeReservation = {
 		userId: parseInt(req.auth.credentials, 10),
-		roomId: req.params.roomId,
+		roomId: req.payload.roomId,
 		title: req.payload.title,
 		start: req.payload.start,
 		end: req.payload.end
@@ -128,6 +84,12 @@ function createReservation(req, res) {
 
 	if(!req.payload.title) {
 		resData.msg = message.TitleNotFound;
+		res(resData).code(400);
+		return;
+	}
+
+	if(!req.payload.roomId) {
+		resData.msg = message.RoomIdNotFound;
 		res(resData).code(400);
 		return;
 	}
@@ -161,7 +123,7 @@ function createReservation(req, res) {
 	.then(function overlapValidationAdd(reservations) {
 		var success = true;
 		_.map(reservations.models, function(reservation) {
-			if(parseInt(req.params.roomId, 10) === reservation.attributes.roomId) {
+			if(parseInt(req.payload.roomId, 10) === reservation.attributes.roomId) {
 				if(moment(req.payload.start).diff(reservation.attributes.end, 'minutes') < 0) {
 					if(moment(req.payload.end).diff(reservation.attributes.start, 'minutes') > 0) {
 						success = false;
@@ -219,7 +181,7 @@ function changeDuration(req, response) {
 	}
 
 	var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
-	if(duration > 180) {
+	if(duration > 181) {
 		resData.msg = message.MaxDurationExceeded;
 		response(resData).code(400);
 		return;
@@ -316,12 +278,25 @@ function deleteReservation(req, res) {
 		userId: parseInt(req.auth.credentials, 10)
 	};
 
-	Reservation.where(getReservation).destroy()
+	Reservation.where(getReservation).fetch()
 	.then(function(response) {
-		resData.msg = message.ReservationDeleted;
-		resData.success = true;
+		if(!response) {
+			resData.msg = message.ReservationNotFound;
+			res(resData).code(400);
+			return;
+		}
 
-		res(resData).code(200);
+		response.destroy()
+		.then(function reservationDestroyed() {
+			resData.msg = message.ReservationDeleted;
+			resData.success = true;
+
+			res(resData).code(200);
+		})
+		.error(function(err) {
+			resData.msg = err.message;
+			res(resData).code(400);
+		});
 	})
 	.catch(function(err){
 		resData.msg = err.message;
@@ -408,15 +383,13 @@ module.exports = function(server) {
 	
 	serverRouter(server, 'GET', '/reservations/rooms/{roomId}', getRoomReservations);
 	
-	serverRouter(server, 'POST', '/reservations/{id}', updateTitle);
+	serverRouter(server, 'PUT', '/reservations/{id}', updateTitle);
 	
-	serverRouter(server, 'PUT', '/reservations/{id}', changeDuration);
+	serverRouter(server, 'POST', '/reservations/{id}', changeDuration);
 
 	serverRouter(server, 'DELETE', '/reservations/{id}', deleteReservation);
 	
-	serverRouter(server, 'POST', '/reservations/rooms/{roomId}', createReservation);
+	serverRouter(server, 'POST', '/reservations', createReservation);
 	
 	serverRouter(server, 'GET', '/reservations/{id}', getSingleReservation);
-	
-	serverRouter(server, 'GET', '/reservations2', getAllReservations2);
 };

@@ -37,27 +37,6 @@ var routerController = Marionette.Object.extend({
 		resApp.mainRegion.show(views.registerView, {preventDestroy: true});
 	},
 
-	calendar2: function(roomId){
-		_.delay(function() {
-			//if(models.reservationsArray.length !== 0) {
-				console.log('step 1');
-				_.forEach(models.reservationsArray, function(collection) {
-					if(collection.length !== 0) {
-						if((collection.length !== 0) && (collection.models[0].get('roomId') === parseInt(roomId, 10))) {
-							//resApp.mainRegion.empty();
-							console.log(collection);
-							resApp.mainRegion.show(new views.Calendar2View({collection: collection}), {preventDestroy: true});
-
-							views.roomsView.getRoomId(roomId);
-							resApp.roomRegion.$el.show();
-							resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
-						}
-					}
-				});
-			//}
-		}, 500);
-	},
-
 	calendar: function(roomId) {
 		if(!document.cookie) {
 			Backbone.history.navigate('', {trigger: true});
@@ -82,9 +61,9 @@ var routerController = Marionette.Object.extend({
 
 		resApp.roomRegion.$el.hide();
 		var model = new models.SingleReservation({id: id});
+
 		model.fetch({success: function(model, response) {
-			console.log('model', model);
-			console.log(response);
+			views.detailsView.getId(id);
 			views.detailsView.getModel(model);
 			resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
 		}});
@@ -104,7 +83,6 @@ var Router = Marionette.AppRouter.extend({
 		'':'start',
 		'register': 'register',
 		'calendar/:roomId': 'calendar',
-		'calendar2/:roomId': 'calendar2',
 		'reservationDetails/:id': 'reservationDetails',
 		'confirm/:id': 'confirmRegistration'
 	}
