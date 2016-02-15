@@ -6,9 +6,10 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var popsicle = require('popsicle');
+var ValidationView = require('./validation.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
-var ReservationDetailsView = Marionette.ItemView.extend({
+var ReservationDetailsView = ValidationView.extend({
 	template: reservationDetailsTemplate,
 
 	id: 0,
@@ -39,8 +40,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 		var title = this.ui.newTitle.val().trim();
 		var self = this;
 
-		if(!title) {
-			alert('New title required!');
+		if(!this.validate(this.ui)) {
 			return;
 		}
 
@@ -79,14 +79,6 @@ var ReservationDetailsView = Marionette.ItemView.extend({
 				}
 			});
 		}
-	},
-
-	show: function() {
-		this.$el.show();
-	},
-
-	hide: function() {
-		this.$el.hide();
 	},
 
 	cancelReservation: function() {

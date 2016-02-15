@@ -9,6 +9,19 @@ var success;
 var message = require('../../strings.json');
 var serverRouter = require('../lib/serverRoutes.js');
 
+/**
+ * @typedef ApiResponse
+ * @param {String} msg       server message
+ * @param {Boolean} success  status flag
+ * @param {Object} data      server sent data
+ */
+
+/**
+ * Fetches all reservations of all rooms
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function getAllReservations(req, res) {
 	var resData = {};
 	resData.success = false;
@@ -20,13 +33,7 @@ function getAllReservations(req, res) {
 			res(resData).code(400);
 			return;
 		}
-/*
-		var start = moment(reservations.models[0].attributes.start).utc();
-		var local = start.local();
-		console.log('Local local', local);
-		console.log('Local start', start);
-		console.log('DB start', reservations.models[0].attributes.start);
-*/
+
 		resData.msg = message.ReservationsFound;
 		resData.success = true;
 		resData.data = reservations;
@@ -42,6 +49,12 @@ function getAllReservations(req, res) {
 	});
 }
 
+/**
+ * Gets all reservations of a single room
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function getRoomReservations(req, res) {
 	var getReservations = {roomId: req.params.roomId};
 	var resData = {};
@@ -70,6 +83,12 @@ function getRoomReservations(req, res) {
 	});
 }
 
+/**
+ * Creates a new reservation
+ * @param  {HttpRequest} req
+ * @param  {HttpRepy} res
+ * @augments res using ApiResponse format
+ */
 function createReservation(req, res) {
 	var makeReservation = {
 		userId: parseInt(req.auth.credentials, 10),
@@ -164,6 +183,12 @@ function createReservation(req, res) {
 	});
 }
 
+/**
+ * Sets new start and end attributes of a reservation
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} response
+ * @augments res using ApiResponse format
+ */
 function changeDuration(req, response) {
 	var resData = {};
 	resData.success = false;
@@ -269,6 +294,12 @@ function changeDuration(req, response) {
 	});
 }
 
+/**
+ * Deletes single reservation
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function deleteReservation(req, res) {
 	var resData = {};
 	resData.success = false;
@@ -304,6 +335,12 @@ function deleteReservation(req, res) {
 	});
 }
 
+/**
+ * Updates reservation title
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} response
+ * @augments res using ApiResponse format
+ */
 function updateTitle(req, response) {
 	var resData = {};
 	resData.success = false;
@@ -349,6 +386,12 @@ function updateTitle(req, response) {
 }
 
 //getSingleReservation.method = 'GET';
+/**
+ * Gets a single reservation
+ * @param  {HttpRequest} req
+ * @param  {HttpResponse} res
+ * @augments res using ApiResponse format
+ */
 function getSingleReservation(req, res) {
 	var resData = {};
 	resData.success = false;
@@ -410,17 +453,4 @@ module.exports = function(server) {
 	objects.forEach(function(object) {
 		serverRouter(server, object);
 	});
-	/*serverRouter(server, 'GET', '/reservations', getAllReservations);
-	
-	serverRouter(server, 'GET', '/reservations/rooms/{roomId}', getRoomReservations);
-	
-	serverRouter(server, 'PUT', '/reservations/{id}', updateTitle);
-	
-	serverRouter(server, 'POST', '/reservations/{id}', changeDuration);
-
-	serverRouter(server, 'DELETE', '/reservations/{id}', deleteReservation);
-	
-	serverRouter(server, 'POST', '/reservations', createReservation);
-	
-	serverRouter(server, 'GET', '/reservations/{id}', getSingleReservation);*/
 };

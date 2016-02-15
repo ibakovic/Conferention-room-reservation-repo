@@ -9,10 +9,29 @@ var nodemailer = require('nodemailer');
 var format = require('string-template');
 var uuid = 1;
 
+/**
+ * Hashes second password and then compares with the hash in database
+ * @param  {Hash} password1
+ * @param  {Hash} password2
+ * @return {Bool} True if passwords match, false otherwise
+ */
 function comparePasswords(password1, password2) {
   return bcrypt.compareSync(password1, password2);
 }
 
+/**
+ * @typedef ApiResponse
+ * @param {String} msg       server message
+ * @param {Boolean} success  status flag
+ * @param {Object} data      server sent data
+ */
+
+/**
+ * Logs in user with proper username and password and creates and sends a cookie
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function login(req, res) {
   var resData = {};
   resData.success = false;
@@ -68,6 +87,12 @@ function login(req, res) {
   });
 }
 
+/**
+ * Registers user if given e-mail and username don't exist
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function register(req, res) {
   var resData = {};
   resData.success = false;
@@ -176,6 +201,12 @@ function register(req, res) {
   });
 }
 
+/**
+ * Confirmes registration so user can log in
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ * @augments res using ApiResponse format
+ */
 function confirmRegistration(req, res) {
   var resData = {};
   resData.success = false;
@@ -219,6 +250,11 @@ function confirmRegistration(req, res) {
   });
 }
 
+/**
+ * Erases cookies and returns to login page
+ * @param  {HttpRequest} req
+ * @param  {HttpReply} res
+ */
 function logout(req, res) {
   req.cookieAuth.clear();
   res({
@@ -255,8 +291,3 @@ module.exports = function(server) {
     handler: logout
   });
 };
-
-
-//User.where('username', '<>', '1').fetchAll() izdviji sve koji nemaju username
-//User.where('email', '<>', 'null').fetchAll() izdvoji sve kojima email nije null
-//User.where({verificationId: null}).fetchAll() query for verified users

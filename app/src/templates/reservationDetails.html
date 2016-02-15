@@ -1,11 +1,14 @@
 <div id="detailsWrapper">
 	<h2>{{title}}</h2>
-	<div class="contentWrapper">Reservation ID: <div class="reservationContent">{{id}}</div></div>
-	<div class="contentWrapper">Room ID: <div class="reservationContent">{{roomId}}</div></div>
-	<div class="contentWrapper">Start: <div class="reservationContent">{{start}}</div></div>
-	<div class="contentWrapper">End: <div class="reservationContent">{{end}}</div></div>
+	<div class="contentWrapper"><label>Reservation ID: </label><div class="reservationContent">{{id}}</div></div>
+	<div class="contentWrapper"><label>Room ID: </label><div class="reservationContent">{{roomId}}</div></div>
+	<div class="contentWrapper"><label>Start: </label><div class="reservationContent">{{start}}</div></div>
+	<div class="contentWrapper"><label>End: </label><div class="reservationContent">{{end}}</div></div>
 	<div id="addTitleWrapper">
-		<input type="text" id="newTitle" class="form-control" placeholder="Write your new title here">
+		<div class="input-group">
+			<label class="input-group-addon">New title: </label>
+			<input type="text" id="newTitle" class="form-control" placeholder="Write your new title here">
+		</div>
 		<button id="updateTitle" class="btn btn-success btn-lg">Update title</button>
 	</div>
 	<button id="deleteReservation" class="btn btn-warning btn-lg">Delete reservation</button>

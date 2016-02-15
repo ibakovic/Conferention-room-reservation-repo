@@ -3,6 +3,7 @@
 var server = require('./src/lib/initializeServer.js');
 var nunjucs = require('nunjucks');
 
+//Listen for expirations
 //require('./src/lib/checkExpirations.js');
 
 //All dependecies

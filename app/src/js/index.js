@@ -63,6 +63,8 @@ var routerController = Marionette.Object.extend({
 		var model = new models.SingleReservation({id: id});
 
 		model.fetch({success: function(model, response) {
+			model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+			model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
 			views.detailsView.getId(id);
 			views.detailsView.getModel(model);
 			resApp.mainRegion.show(views.detailsView, {preventDestroy: true});

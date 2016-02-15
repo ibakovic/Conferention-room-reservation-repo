@@ -133,21 +133,10 @@ var CalendarView = Marionette.CollectionView.extend({
 			},
 
 			editable: true,
-			eventLimit: true, // allow "more" link when too many events
-			/*events: _.map(this.collection.models, function(model) {
-				return model.attributes;
-			}),*/
+			eventLimit: true,
 			
 			eventClick: function(clickEvent) {
 				var model = self.collection.findWhere({id: clickEvent.id});
-				var eventData = {
-					title: model.get('title'),
-					id: model.get('id'),
-					roomId: model.get('roomId'),
-					start: model.get('start'),
-					end: model.get('end')
-				};
-				//Backbone.Events.trigger('getReservationData', eventData);
 				Backbone.history.navigate('reservationDetails/' + model.get('id'), {trigger: true});
 			},
 
