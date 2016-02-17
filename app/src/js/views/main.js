@@ -1,6 +1,7 @@
 'use strict';
 
 var models = require('../models/models.js');
+var Backbone = require('backbone');
 
 var DetailsView = require('./reservationDetails.js');
 var LoginView = require('./login.js');
@@ -13,8 +14,9 @@ var loginView = new LoginView();
 var registerView = new RegisterView();
 var detailsView = new DetailsView({collection: models.reservations});
 var calendarView = new CalendarView({
-	collection: models.reservations,
-	resModel: models.Reservation
+	//collection: new Backbone.Collection(),
+	//_collection: models.reservations,
+	collection: models.reservations
 });
 var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();

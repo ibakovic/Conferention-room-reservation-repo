@@ -9,6 +9,7 @@ var moment = require('moment');
 var fullCalendar = require('fullcalendar');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
+var q = require('q');
 
 var roomId;
 
@@ -32,42 +33,69 @@ function changeReservationStartAndEnd(changeEvent) {
 	});
 }
 
-var ChildCalendarView = Marionette.ItemView.extend({
-	template: $('<div></div>'),
-
-	addEvent: function() {
+var EventView = Marionette.ItemView.extend({
+	/*initialize: function() {
+		this.render();
+	},
+*/
+	render: function() {
 		var self = this;
 
-		if(this.model.get('roomId') === parseInt(roomId, 10)) {
-			var reservation = {
-				title: self.model.get('title'),
-				start: self.model.get('start'),
-				end: self.model.get('end'),
-				id: self.model.get('id'),
-				roomId: self.model.get('roomId')
-			};
+		this.parent.getCalendar()
+			.then(function calendarCatched(element) {
+				//console.log('Promise element', element);
+				self.addEvent(element);
+			})
+			.catch(function calendarError(error) {
+				console.log(error);
+			});
+		/*var $calendar = $('#calendar');
+		$calendar.fullCalendar('renderEvent', this.model.attributes, true);
+		var content = $('.fc-content');
+		var html = content[content.length-1];
+		this.$el.html(html);*/
+	},
 
-			$('#calendar').fullCalendar('renderEvent', reservation);
-		}
+	addEvent: function(element) {
+		//console.log('element:', element);
+		//console.log('#calendar', $('#calendar'));
+		if(this.model.get('roomId') === parseInt(roomId, 10))
+			element.prevObject.find('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
 	}
+	/*,
+
+	destroy: function() {
+		//remove full calendar element
+	}*/
 });
 
 var CalendarView = Marionette.CollectionView.extend({
-	childView: ChildCalendarView,
+	childView: EventView,
 
 	template: calendarTemplate,
 
+	calendarPromise: q.defer(),
+
 	events: {
 		'click #logout': 'logout'
+	},
+
+	onBeforeAddChild: function(childView){
+		childView.parent = this;
 	},
 
 	getRoomId: function(newRoomId) {
 		roomId = newRoomId;
 	},
 
+	getCalendar: function(calendarElement) {
+		return this.calendarPromise.promise;
+	},
+
 	onDomRefresh: function() {
 		this.createCalendar();
-		this.children.call("addEvent");
+		
+		//this.children.call("render");
 	},
 
 	createCalendar: function() {
@@ -76,6 +104,7 @@ var CalendarView = Marionette.CollectionView.extend({
 		var self = this;
 
 		var $calendar = this.$el.find('#calendar');
+		
 		$calendar.fullCalendar({
 			header: {
 				left: 'prev,next today',
@@ -97,39 +126,30 @@ var CalendarView = Marionette.CollectionView.extend({
 			select: function(start, end) {
 				if(moment(end._d).diff(start._d, 'minutes') > 180) {
 					alert('Time limit on a single reservation is 3h!');
+					$calendar.fullCalendar('unselect');
 					return;
 				}
+
 				var title = prompt('Event Title:');
 				var eventData;
 				if (title) {
 					eventData = {
 						title: title,
 						start: start,
-						end: end
+						end: end,
+						roomId: parseInt(roomId, 10)
 					};
-					$calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
+
+					var newEvent = new self.collection.model(eventData);
+
+					newEvent.save(null, {success: function(model, response) {
+						//Preuzimam model iz baze samo zbog id-a
+						self.collection.push(model.get('data'));
+						
+						alert(response.msg);
+					}});
 				}
 				$calendar.fullCalendar('unselect');
-				/////////////////////////////////////////////Send data here
-				if(eventData) {
-					popsicle.request({
-						method: 'POST',
-						url: 'reservations',
-						body: {
-							title: eventData.title,
-							start: eventData.start._d,
-							end: eventData.end._d,
-							roomId: parseInt(roomId, 10)
-						}
-					})
-					.then(function reservationSuccess(res) {
-						alert(res.body.msg);
-						return null;
-					})
-					.catch(function(res) {
-						alert(res.body.msg);
-					});
-				}
 			},
 
 			editable: true,
@@ -157,6 +177,9 @@ var CalendarView = Marionette.CollectionView.extend({
 				}
 			}
 		});
+
+		//console.log('Calendar created', $calendar);
+		this.calendarPromise.resolve($calendar);
 	},
 
 	logout: function() {

@@ -11,7 +11,12 @@ var SingleReservation = Backbone.Model.extend({
 	}
 });
 
-var Reservation = Backbone.Model.extend();
+var Reservation = Backbone.Model.extend({
+	urlRoot: '/reservations',
+	/*parse: function(response) {
+		return response.data;
+	}*/
+});
 
 var Reservations = Backbone.Collection.extend({
 	model: Reservation,

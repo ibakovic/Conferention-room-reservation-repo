@@ -15,7 +15,6 @@
     "backbone": "^1.2.3",
     "backbone.marionette": "^2.4.4",
     "bcryptjs": "^2.3.0",
-    "bluebird": "^3.1.5",
     "bookshelf": "^0.9.1",
     "bootstrap-sass": "^3.3.6",
     "bootswatch": "^3.3.6",
@@ -26,6 +25,7 @@
     "hapi": "^12.1.0",
     "hapi-auth-cookie": "^6.0.0",
     "inert": "^3.2.0",
+    "iron": "^4.0.0",
     "is-email": "^0.1.1",
     "jquery": "^2.2.0",
     "knex": "^0.9.0",
@@ -37,6 +37,7 @@
     "nunjucks": "^2.3.0",
     "nunjucksify": "^0.2.3",
     "popsicle": "^3.0.3",
+    "q": "^1.4.1",
     "string-template": "^1.0.0",
     "vision": "^4.0.1"
   },

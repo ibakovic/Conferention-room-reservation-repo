@@ -6,6 +6,7 @@ var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
+var iron = require('iron');
 var views = require('./views/main.js');
 var models = require('./models/models.js');
 

@@ -42,7 +42,7 @@ module.exports = function(server) {
       validateFunc: function (request, session, callback) {
 
         cache.get(session.sid, function(err, cached) {
-          //console.log(cached);
+          //console.log(server.app.cache);
 
           if (err) {
             return callback(err, false);
