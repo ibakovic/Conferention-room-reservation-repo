@@ -36,7 +36,7 @@ var Validation = Marionette.ItemView.extend({
 		function writeError(obj, message) {
 			validForm = false;
 
-			if(obj.hasError) {
+			if(obj[0].hasError) {
 				return;
 			}
 
@@ -45,19 +45,17 @@ var Validation = Marionette.ItemView.extend({
 			}
 
 			obj.addClass('InputError');
-			obj.change(removeError);
-			obj.hasError = true;
+			obj.change(function removeError() {
+				$(this).removeClass('InputError');
+				$(this).parent().find($('.Error')).remove();
+				$(this)[0].hasError = null;
+			});
+
+			obj[0].hasError = true;
 
 			var errorWarning = $('<div class="Error input-group-addon">' + message + '</div>');
 
 			obj.parent().append(errorWarning);
-		}
-
-		function removeError() {
-			$(this).removeClass('InputError');
-			$(this).parent().find($('.Error')).remove();
-			$(this)[0].hasError = null;
-			$(this)[0].onchange = null;
 		}
 
 		return validate();

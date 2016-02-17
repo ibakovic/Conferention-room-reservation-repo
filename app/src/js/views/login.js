@@ -42,11 +42,11 @@ var LoginView = Validate.extend({
 				alert(res.body.msg);
 				return;
 			}
+
 			models.rooms.fetch({reset: true});
 			models.reservations.fetch({reset: true});
 			
 			Backbone.history.navigate('calendar/2', {trigger: true});
-			alert(res.body.msg);
 		})
 		.catch(function loginErr(err) {
 			console.log(err);

@@ -49,11 +49,6 @@ var EventView = Marionette.ItemView.extend({
 			.catch(function calendarError(error) {
 				console.log(error);
 			});
-		/*var $calendar = $('#calendar');
-		$calendar.fullCalendar('renderEvent', this.model.attributes, true);
-		var content = $('.fc-content');
-		var html = content[content.length-1];
-		this.$el.html(html);*/
 	},
 
 	addEvent: function(element) {
