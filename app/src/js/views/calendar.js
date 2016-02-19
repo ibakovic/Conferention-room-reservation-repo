@@ -26,7 +26,7 @@ var EventView = Marionette.ItemView.extend({
 
   addEvent: function(element) {
     if(this.model.get('roomId') === parseInt(this.parent.roomId, 10))
-      element.fullCalendar('renderEvent', this.model.attributes, true);
+      $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
   }
   /*,
 

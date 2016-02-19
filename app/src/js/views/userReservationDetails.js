@@ -36,10 +36,13 @@ var UserReservationDetailsView = ValidationView.extend({
     var reservation = this.collection.findWhere({id: this.id});
     var roomId = reservation.get('roomId');
     var path = 'reservations/' + this.model.get('id');
-    var title = this.ui.newTitle.val().trim();
+    var title = this.ui.newTitle.html();
     var self = this;
 
-    if(!this.validate(this.ui)) {
+    console.log(this.ui.newTitle.html());
+
+    if(!title) {
+      alert('Title missing!');
       return;
     }
 
