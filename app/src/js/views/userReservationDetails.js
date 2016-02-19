@@ -5,7 +5,6 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
-var popsicle = require('popsicle');
 var ValidationView = require('./validation.js');
 var reservationDetailsTemplate = require('../../templates/userReservationDetails.html');
 

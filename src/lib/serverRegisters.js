@@ -13,7 +13,7 @@ var options = {
 };
 
 module.exports = function(server) {
-  //Include sass as a stylesheet language
+  //Include sass as a stylesheet language 
   server.register({
     register: sass,
     options: options
@@ -45,6 +45,8 @@ module.exports = function(server) {
       validateFunc: function (request, session, callback) {
 
         cache.get(session.sid, function(err, cached) {
+          //console.log(server.app.cache);
+
           if (err) {
             return callback(err, false);
           }
