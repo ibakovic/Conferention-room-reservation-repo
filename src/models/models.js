@@ -20,15 +20,15 @@ var User = bookshelf.Model.extend({
 });
 
 var Room = bookshelf.Model.extend({
-	tableName: 'Rooms'
+  tableName: 'Rooms'
 });
 
 var Reservation = bookshelf.Model.extend({
-	tableName: 'Reservations'
+  tableName: 'Reservations'
 });
 
 module.exports = {
-	User: User,
-	Room: Room,
-	Reservation: Reservation
+  User: User,
+  Room: Room,
+  Reservation: Reservation
 };

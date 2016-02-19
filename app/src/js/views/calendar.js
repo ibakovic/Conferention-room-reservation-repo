@@ -11,67 +11,66 @@ var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
 var q = require('q');
 
-var roomId;
-
 var EventView = Marionette.ItemView.extend({
-	render: function() {
-		var self = this;
+  render: function() {
+    var self = this;
 
-		this.parent.getCalendar()
-			.then(function calendarCatched(element) {
-				self.addEvent(element);
-			})
-			.catch(function calendarError(error) {
-				console.log(error);
-			});
-	},
+    this.parent.getCalendar()
+      .then(function calendarCatched(element) {
+        self.addEvent(element);
+      })
+      .catch(function calendarError(error) {
+        console.log(error);
+      });
+  },
 
-	addEvent: function(element) {
-		if(this.model.get('roomId') === parseInt(roomId, 10))
-			element.prevObject.find('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
-	}
-	/*,
+  addEvent: function(element) {
+    if(this.model.get('roomId') === parseInt(this.parent.roomId, 10))
+      element.fullCalendar('renderEvent', this.model.attributes, true);
+  }
+  /*,
 
-	destroy: function() {
-		//remove full calendar element
-	}*/
+  destroy: function() {
+    //remove full calendar element
+  }*/
 });
 
-var CalendarView = Marionette.CollectionView.extend({
-	childView: EventView,
+var CalendarView = Marionette.CompositeView.extend({
+  childView: EventView,
 
-	template: calendarTemplate,
+  template: calendarTemplate,
 
-	calendarPromise: q.defer(),
+  tagName: 'div',
 
-	events: {
-		'click #logout': 'logout'
-	},
+  roomId: 0,
 
-	onBeforeAddChild: function(childView) {
-		childView.parent = this;
-	},
+  calendarPromise: q.defer(),
 
-	getRoomId: function(newRoomId) {
-		roomId = newRoomId;
-	},
+  events: {
+    'click #logout': 'logout'
+  },
 
-	getCalendar: function(calendarElement) {
-		return this.calendarPromise.promise;
-	},
+  initialize: function(options) {
+    this.roomId = options.roomId;
+  },
 
-	onDomRefresh: function() {
-		this.createCalendar();
-	},
+  onBeforeAddChild: function(childView) {
+    childView.parent = this;
+  },
 
-	createCalendar: function() {
-		var html = this.template();
-		this.$el.html(html);
-		var self = this;
+  getCalendar: function(calendarElement) {
+    return this.calendarPromise.promise;
+  },
 
-		var $calendar = this.$el.find('#calendar');
+  onDomRefresh: function() {
+    this.createCalendar();
+  },
 
-		function changeReservationStartAndEnd(changeEvent) {
+  createCalendar: function() {
+    var self = this;
+    var $calendar = this.$el.find('#calendar');
+
+    function changeReservationStartAndEnd(changeEvent) {
       var changes = {
         start: changeEvent._start._d,
         end: changeEvent._end._d
@@ -79,108 +78,105 @@ var CalendarView = Marionette.CollectionView.extend({
 
       var reservation = self.collection.findWhere({id: changeEvent.id});
 
-			reservation.save(changes, {
-				wait: true,
-				success: function(model, response) {
-					alert(response.msg);
-				},
-				error: function(model, response) {
-					alert('Update failed!');
-				}
-			});
-		}
+      reservation.save(changes, {
+        wait: true,
+        success: function(model, response) {
+          alert(response.msg);
+        },
+        error: function(model, response) {
+          alert('Update failed!');
+        }
+      });
+    }
 
-		$calendar.fullCalendar({
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
-			},
+    $calendar.fullCalendar({
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay'
+      },
 
-			defaultDate: moment().utc().valueOf(),
-			firstDay: 1,
-			fixedWeekCount: false,
-			selectOverlap: false,
-			eventOverlap: false,
-			slotLabelFormat: 'H:mm',
-			selectable: true,
-			selectHelper: true,
-			timezone: 'UTC',
-			scrollTime: '07:00:00',
+      defaultDate: moment().utc().valueOf(),
+      firstDay: 1,
+      fixedWeekCount: false,
+      selectOverlap: false,
+      eventOverlap: false,
+      slotLabelFormat: 'H:mm',
+      selectable: true,
+      selectHelper: true,
+      timezone: 'UTC',
 
-			select: function(start, end) {
-				if(moment(end._d).diff(start._d, 'minutes') > 180) {
-					alert('Time limit on a single reservation is 3h!');
-					$calendar.fullCalendar('unselect');
-					return;
-				}
+      select: function(start, end) {
+        if(moment(end._d).diff(start._d, 'minutes') > 180) {
+          alert('Time limit on a single reservation is 3h!');
+          $calendar.fullCalendar('unselect');
+          return;
+        }
 
-				var title = prompt('Event Title:');
-				var eventData;
-				if (title) {
-					eventData = {
-						title: title,
-						start: start,
-						end: end,
-						roomId: parseInt(roomId, 10)
-					};
+        var title = prompt('Event Title:');
+        var eventData;
+        if (title) {
+          eventData = {
+            title: title,
+            start: start,
+            end: end,
+            roomId: parseInt(self.roomId, 10)
+          };
 
-					var newEvent = new self.collection.model(eventData);
+          var newEvent = new self.collection.model(eventData);
 
-					newEvent.save(null, {success: function(model, response) {
-						//Preuzimam model iz baze samo zbog id-a
-						self.collection.push(model.get('data'));
+          newEvent.save(null, {success: function(model, response) {
+            //Preuzimam model iz baze samo zbog id-a
+            self.collection.push(model.get('data'));
 
-						alert(response.msg);
-					}});
-				}
-				$calendar.fullCalendar('unselect');
-			},
+            alert(response.msg);
+          }});
+        }
+        $calendar.fullCalendar('unselect');
+      },
 
-			editable: true,
-			eventLimit: true,
+      editable: true,
+      eventLimit: true,
 
-			eventRender: function(event, element) {
-				if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
-					element.css('opacity', '0.55');
-					element.css('border-style', 'none');
-				}
-			},
+      eventRender: function(event, element) {
+        if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
+          element.css('opacity', '0.55');
+          element.css('border-style', 'none');
+        }
+      },
 
-			eventClick: function(clickEvent) {
-				if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
-					Backbone.history.navigate('userReservationDetails/' + clickEvent.id, {trigger: true});
-					return;
-				}
+      eventClick: function(clickEvent) {
+        if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
+          Backbone.history.navigate('userReservationDetails/' + clickEvent.id, {trigger: true});
+          return;
+        }
 
-				Backbone.history.navigate('reservationDetails/' + clickEvent.id, {trigger:true});
-			},
+        Backbone.history.navigate('reservationDetails/' + clickEvent.id, {trigger:true});
+      },
 
-			eventResize: function(resizeEvent) {
-				changeReservationStartAndEnd(resizeEvent);
-			},
+      eventResize: function(resizeEvent) {
+        changeReservationStartAndEnd(resizeEvent);
+      },
 
-			eventDrop: function(dragEvent) {
-				changeReservationStartAndEnd(dragEvent);
-			}
-		});
+      eventDrop: function(dragEvent) {
+        changeReservationStartAndEnd(dragEvent);
+      }
+    });
+    this.calendarPromise.resolve($calendar);
+  },
 
-		if(this.collection.length !== 0)
-			this.calendarPromise.resolve($calendar);
-	},
-
-	logout: function() {
-		popsicle.request({
-			method: 'GET',
-			url: 'logout'
-		})
-		.then(function loggedOut(res) {
-			Backbone.history.navigate('', {trigger: true});
-		})
-		.catch(function loggoutErr(err) {
-			console.log(err);
-		});
-	}
+  logout: function() {
+    popsicle.request({
+      method: 'GET',
+      url: 'logout'
+    })
+    .then(function loggedOut(res) {
+      Backbone.history.navigate('', {trigger: true});
+    })
+    .catch(function loggoutErr(err) {
+      console.log(err);
+    });
+  }
 });
 
 module.exports = CalendarView;

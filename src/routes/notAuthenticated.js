@@ -97,7 +97,7 @@ function login(req, res) {
 function register(req, res) {
   var resData = {};
   resData.success = false;
-  
+
   if (!req.payload.username || !req.payload.password) {
     resData.msg = message.CredentialsRequired;
     res(resData).code(400);
@@ -129,7 +129,7 @@ function register(req, res) {
       verificationId = verificationId.replace(/\//g,'*');
 
       var createdAt = moment()._d;
-      
+
       var newTemp = new User({
         username: req.payload.username,
         password: bcrypt.hashSync(req.payload.password, bcrypt.genSaltSync(10)),
@@ -172,7 +172,7 @@ function register(req, res) {
             res(resData).code(400);
             return;
           }
-          
+
           resData.msg = message.RegistrationCompleted;
           resData.success = true;
           res(resData).code(200);

@@ -6,60 +6,60 @@ var isEmail = require('is-email');
 var Marionette = require('backbone.marionette');
 
 var Validation = Marionette.ItemView.extend({
-	validate: function(elements) {
-		var validForm = true;
-		var firstError = null;
+  validate: function(elements) {
+    var validForm = true;
+    var firstError = null;
 
-		function validate() {
-			_.forEach(elements, function(element) {
-				if(!element.val().trim()) {
-					writeError(element, 'This field is required!');
-				}
-			});
+    function validate() {
+      _.forEach(elements, function(element) {
+        if(!element.val().trim()) {
+          writeError(element, 'This field is required!');
+        }
+      });
 
-			if(elements.email) {
-				if(!isEmail(elements.email.val().trim())) {
-					writeError(elements.email, 'This is not a valid e-mail!');
-				}
-			}
+      if(elements.email) {
+        if(!isEmail(elements.email.val().trim())) {
+          writeError(elements.email, 'This is not a valid e-mail!');
+        }
+      }
 
-			if (firstError)
-				firstError.focus();
+      if (firstError)
+        firstError.focus();
 
-			if (validForm) {
-				return true;
-			}
-			
-			return false;
-		}
+      if (validForm) {
+        return true;
+      }
 
-		function writeError(obj, message) {
-			validForm = false;
+      return false;
+    }
 
-			if(obj[0].hasError) {
-				return;
-			}
+    function writeError(obj, message) {
+      validForm = false;
 
-			if(!firstError) {
-				firstError = obj;
-			}
+      if(obj[0].hasError) {
+        return;
+      }
 
-			obj.addClass('InputError');
-			obj.change(function removeError() {
-				$(this).removeClass('InputError');
-				$(this).parent().find($('.Error')).remove();
-				$(this)[0].hasError = null;
-			});
+      if(!firstError) {
+        firstError = obj;
+      }
 
-			obj[0].hasError = true;
+      obj.addClass('InputError');
+      obj.change(function removeError() {
+        $(this).removeClass('InputError');
+        $(this).parent().find($('.Error')).remove();
+        $(this)[0].hasError = null;
+      });
 
-			var errorWarning = $('<div class="Error input-group-addon">' + message + '</div>');
+      obj[0].hasError = true;
 
-			obj.parent().append(errorWarning);
-		}
+      var errorWarning = $('<div class="Error input-group-addon">' + message + '</div>');
 
-		return validate();
-	}
+      obj.parent().append(errorWarning);
+    }
+
+    return validate();
+  }
 });
 
 module.exports = Validation;

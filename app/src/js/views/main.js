@@ -20,11 +20,11 @@ var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
 
 module.exports = {
-	loginView: loginView,
-	registerView: registerView,
-	userDetailsView: userDetailsView,
-	detailsView: detailsView,
-	calendarView: calendarView,
-	roomsView: roomsView,
-	confirmRegistration: confirmRegistration
+  loginView: loginView,
+  registerView: registerView,
+  userDetailsView: userDetailsView,
+  detailsView: detailsView,
+  CalendarView: CalendarView,
+  roomsView: roomsView,
+  confirmRegistration: confirmRegistration
 };

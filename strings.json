@@ -1,57 +1,57 @@
 {
-	"CredentialsRequired": "Username and password required!",
-	"PasswordInvalid": "Invalid password!",
-	"FirstLastNameNotFound": "First and last name required!",
+  "CredentialsRequired": "Username and password required!",
+  "PasswordInvalid": "Invalid password!",
+  "FirstLastNameNotFound": "First and last name required!",
 
-	"EmailNotFound": "E-mail required!",
-	"EmailExists": "A user with this e-mail already exists!",
-	"EmailWrongFormat": "Incorrect e-mail format submitted!",
+  "EmailNotFound": "E-mail required!",
+  "EmailExists": "A user with this e-mail already exists!",
+  "EmailWrongFormat": "Incorrect e-mail format submitted!",
   "EmailSent": "E-mail sent",
   "EmailNotSent": "Failed to send e-mail",
   "EmailSubject": "Verification for registration confirmation",
   "EmailText": "Click on this link to verify your registration: ",
-	
-	"UsernameExists": "This username already exists!",
 
-	"LoginSuccess": "Login successfull",
+  "UsernameExists": "This username already exists!",
 
-	"RegistrationCompleted": "Registration successfull! \nYou have 30 mins to confirm your registration via e-mail!",
-	"RegistrationFailed": "Your data was not saved successfully!",
+  "LoginSuccess": "Login successfull",
 
-	"ReservationsNotFound": "No reservations found!",
-	"ReservationsFound": "Reservations found!",
+  "RegistrationCompleted": "Registration successfull! \nYou have 30 mins to confirm your registration via e-mail!",
+  "RegistrationFailed": "Your data was not saved successfully!",
 
-	"ReservationNotSaved": "Failed to save reservation!",
-	"ReservationSaved": "Reservation saved!",
-	"ReservationNotFound": "Your reservation was not found!",
-	"ReservationFound": "Reservation found!",
-	"ReservationUpdated": "Reservation updated!",
-	"ReservationDeleted": "Reservation deleted!",
+  "ReservationsNotFound": "No reservations found!",
+  "ReservationsFound": "Reservations found!",
 
-	"UserNotFound": "User not found!",
-	"UserNotSaved": "Failed to save your data!",
-	"UserSaved": "Registration completed!",
+  "ReservationNotSaved": "Failed to save reservation!",
+  "ReservationSaved": "Reservation saved!",
+  "ReservationNotFound": "Your reservation was not found!",
+  "ReservationFound": "Reservation found!",
+  "ReservationUpdated": "Reservation updated!",
+  "ReservationDeleted": "Reservation deleted!",
 
-	"RoomsNotFound": "No rooms found!",
-	"RoomsFound": "Rooms found!",
+  "UserNotFound": "User not found!",
+  "UserNotSaved": "Failed to save your data!",
+  "UserSaved": "Registration completed!",
 
-	"RoomNotFound": "Room not found",
-	"RoomFound": "Room found",
-	"RoomNameNotFound": "Room name required!",
-	"RoomCreated": "Room created",
+  "RoomsNotFound": "No rooms found!",
+  "RoomsFound": "Rooms found!",
 
-	"TitleNotFound": "Title required!",
-	"StartNotFound": "Start time required!",
-	"EndNotFound": "End time required!",
+  "RoomNotFound": "Room not found",
+  "RoomFound": "Room found",
+  "RoomNameNotFound": "Room name required!",
+  "RoomCreated": "Room created",
 
-	"MaxDurationExceeded": "Maximum duration is 3h! You exceeded that time!",
-	"EndBeforeStart": "Start must be before end!",
+  "TitleNotFound": "Title required!",
+  "StartNotFound": "Start time required!",
+  "EndNotFound": "End time required!",
 
-	"Overlap": "Your reservation overlaps with another one!",
+  "MaxDurationExceeded": "Maximum duration is 3h! You exceeded that time!",
+  "EndBeforeStart": "Start must be before end!",
 
-	"ConfirmIdNotFound": "Confirmation ID is required!",
-	"ConfirmationNotFound": "Confirmation from this url was not found!",
-	"ConfirmationFailed": "Confirmation failed! \nNot registered yet!",
+  "Overlap": "Your reservation overlaps with another one!",
 
-	"RoomIdNotFound": "Room ID was not found!"
+  "ConfirmIdNotFound": "Confirmation ID is required!",
+  "ConfirmationNotFound": "Confirmation from this url was not found!",
+  "ConfirmationFailed": "Confirmation failed! \nNot registered yet!",
+
+  "RoomIdNotFound": "Room ID was not found!"
 }

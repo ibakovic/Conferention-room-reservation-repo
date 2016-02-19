@@ -9,30 +9,30 @@ var ValidationView = require('./validation.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
 var ReservationDetailsView = ValidationView.extend({
-	template: reservationDetailsTemplate,
+  template: reservationDetailsTemplate,
 
-	id: 0,
+  id: 0,
 
-	ui: {
-		newTitle: '#newTitle'
-	},
+  ui: {
+    newTitle: '#newTitle'
+  },
 
-	events: {
-		'click #returnToCalendar': 'returnToCalendar'
-	},
+  events: {
+    'click #returnToCalendar': 'returnToCalendar'
+  },
 
-	getModel: function(model) {
-		this.model = model;
-	},
+  getModel: function(model) {
+    this.model = model;
+  },
 
-	getId: function(id) {
-		this.id = parseInt(id, 10);
-		this.model = this.collection.findWhere({id: this.id});
-	},
+  getId: function(id) {
+    this.id = parseInt(id, 10);
+    this.model = this.collection.findWhere({id: this.id});
+  },
 
-	returnToCalendar: function() {
-		Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
-	}
+  returnToCalendar: function() {
+    Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
+  }
 });
 
 module.exports = ReservationDetailsView;
