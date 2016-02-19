@@ -159,20 +159,11 @@ var CalendarView = Marionette.CollectionView.extend({
 			},
 
 			eventResizeStop: function(resizeEvent) {
-				resizeEvent.changing = true;
+				changeReservationStartAndEnd(resizeEvent);
 			},
 
 			eventDragStop: function(dragEvent) {
 				changeReservationStartAndEnd(dragEvent);
-			},
-
-			eventAfterRender: function(changeEvent, element, view ) {
-				if(changeEvent.changing){
-					if(moment(changeEvent._start._d).diff(changeEvent._end._d, 'minutes') >= -180) {
-						changeReservationStartAndEnd(changeEvent);
-						return;
-					}
-				}
 			}
 		});
 
