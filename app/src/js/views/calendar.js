@@ -72,14 +72,12 @@ var CalendarView = Marionette.CollectionView.extend({
 		var $calendar = this.$el.find('#calendar');
 
 		function changeReservationStartAndEnd(changeEvent) {
-			var path = 'reservations/' + changeEvent.id;
+      var changes = {
+        start: changeEvent._start._d,
+        end: changeEvent._end._d
+      };
 
-			var changes = {
-				start: changeEvent._start._d,
-				end: changeEvent._end._d
-			};
-
-			var reservation = self.collection.findWhere({id: changeEvent.id});
+      var reservation = self.collection.findWhere({id: changeEvent.id});
 
 			reservation.save(changes, {
 				wait: true,
@@ -158,11 +156,11 @@ var CalendarView = Marionette.CollectionView.extend({
 				Backbone.history.navigate('reservationDetails/' + clickEvent.id, {trigger:true});
 			},
 
-			eventResizeStop: function(resizeEvent) {
+			eventResize: function(resizeEvent) {
 				changeReservationStartAndEnd(resizeEvent);
 			},
 
-			eventDragStop: function(dragEvent) {
+			eventDrop: function(dragEvent) {
 				changeReservationStartAndEnd(dragEvent);
 			}
 		});

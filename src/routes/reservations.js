@@ -137,7 +137,7 @@ function createReservation(req, res) {
 		res(resData).code(400);
 		return;
 	}
-	
+
 	Reservation.fetchAll()
 	.then(function overlapValidationAdd(reservations) {
 		var success = true;
@@ -189,7 +189,7 @@ function createReservation(req, res) {
  * @param  {HttpReply} response
  * @augments res using ApiResponse format
  */
-function changeDuration(req, response) {
+function updateStartAndEnd(req, response) {
 	var resData = {};
 	resData.success = false;
 
@@ -217,7 +217,7 @@ function changeDuration(req, response) {
 		response(resData).code(400);
 		return;
 	}
-	
+
 	Reservation.fetchAll()
 	.then(function overlapValidateChange(reservations) {
 		var success = true;
@@ -268,7 +268,7 @@ function changeDuration(req, response) {
 					response(resData).code(400);
 					return;
 				}
-				
+
 				resData.msg = message.ReservationUpdated;
 				resData.success = true;
 				resData.data = res;
@@ -397,7 +397,7 @@ function updateReservation (req, res) {
 	}
 
 	if (req.payload.start && req.payload.end) {
-		changeDuration(req, res);
+		updateStartAndEnd(req, res);
 		return;
 	}
 
