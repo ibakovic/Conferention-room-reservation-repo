@@ -2,6 +2,7 @@
 
 var $ = require('jquery');
 window.jQuery = window.$ = require('jquery');
+var localstorage = window.localStorage;
 var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -20,7 +21,7 @@ resApp.addRegions({
 var routerController = Marionette.Object.extend({
 	start: function() {
 		if(document.cookie) {
-			Backbone.history.navigate('calendar/2', {trigger: true});
+			Backbone.history.navigate('calendar/3', {trigger: true});
 			return;
 		}
 
@@ -52,6 +53,24 @@ var routerController = Marionette.Object.extend({
 		views.roomsView.getRoomId(roomId);
 		resApp.roomRegion.$el.show();
 		resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
+	},
+
+	userReservationDetails: function(id) {
+		if(!document.cookie) {
+			Backbone.history.navigate('', {trigger: true});
+			return;
+		}
+
+		resApp.roomRegion.$el.hide();
+		var model = new models.SingleReservation({id: id});
+
+		model.fetch({success: function(model, response) {
+			model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+			model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
+			views.userDetailsView.getId(id);
+			views.userDetailsView.getModel(model);
+			resApp.mainRegion.show(views.userDetailsView, {preventDestroy: true});
+		}});
 	},
 
 	reservationDetails: function(id) {
@@ -86,6 +105,7 @@ var Router = Marionette.AppRouter.extend({
 		'':'start',
 		'register': 'register',
 		'calendar/:roomId': 'calendar',
+		'userReservationDetails/:id': 'userReservationDetails',
 		'reservationDetails/:id': 'reservationDetails',
 		'confirm/:id': 'confirmRegistration'
 	}

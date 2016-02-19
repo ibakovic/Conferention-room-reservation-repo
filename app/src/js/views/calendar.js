@@ -34,16 +34,11 @@ function changeReservationStartAndEnd(changeEvent) {
 }
 
 var EventView = Marionette.ItemView.extend({
-	/*initialize: function() {
-		this.render();
-	},
-*/
 	render: function() {
 		var self = this;
 
 		this.parent.getCalendar()
 			.then(function calendarCatched(element) {
-				//console.log('Promise element', element);
 				self.addEvent(element);
 			})
 			.catch(function calendarError(error) {
@@ -52,10 +47,10 @@ var EventView = Marionette.ItemView.extend({
 	},
 
 	addEvent: function(element) {
-		//console.log('element:', element);
-		//console.log('#calendar', $('#calendar'));
 		if(this.model.get('roomId') === parseInt(roomId, 10))
 			element.prevObject.find('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
+
+		//if(this.model.get('userId') !== window.localStorage.getItem('userId')) {}
 	}
 	/*,
 
@@ -75,7 +70,7 @@ var CalendarView = Marionette.CollectionView.extend({
 		'click #logout': 'logout'
 	},
 
-	onBeforeAddChild: function(childView){
+	onBeforeAddChild: function(childView) {
 		childView.parent = this;
 	},
 
@@ -88,9 +83,8 @@ var CalendarView = Marionette.CollectionView.extend({
 	},
 
 	onDomRefresh: function() {
+		//this.$el.unbind();
 		this.createCalendar();
-		
-		//this.children.call("render");
 	},
 
 	createCalendar: function() {
@@ -149,10 +143,21 @@ var CalendarView = Marionette.CollectionView.extend({
 
 			editable: true,
 			eventLimit: true,
+
+			eventRender: function(event, element) {
+				if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
+					element.css('opacity', '0.55');
+					element.css('border-style', 'none');
+				}
+			},
 			
 			eventClick: function(clickEvent) {
-				var model = self.collection.findWhere({id: clickEvent.id});
-				Backbone.history.navigate('reservationDetails/' + model.get('id'), {trigger: true});
+				if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
+					Backbone.history.navigate('userReservationDetails/' + clickEvent.id, {trigger: true});
+					return;
+				}
+
+				Backbone.history.navigate('reservationDetails/' + clickEvent.id, {trigger:true});
 			},
 
 			eventResizeStop: function(resizeEvent) {
@@ -172,9 +177,9 @@ var CalendarView = Marionette.CollectionView.extend({
 				}
 			}
 		});
-
-		//console.log('Calendar created', $calendar);
-		this.calendarPromise.resolve($calendar);
+		
+		if(this.collection.length !== 0)
+			this.calendarPromise.resolve($calendar);
 	},
 
 	logout: function() {

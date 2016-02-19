@@ -43,10 +43,12 @@ var LoginView = Validate.extend({
 				return;
 			}
 
+			window.localStorage.setItem('userId', res.body.userId);
+
 			models.rooms.fetch({reset: true});
 			models.reservations.fetch({reset: true});
 			
-			Backbone.history.navigate('calendar/2', {trigger: true});
+			Backbone.history.navigate('calendar/3', {trigger: true});
 		})
 		.catch(function loginErr(err) {
 			console.log(err);

@@ -74,6 +74,7 @@ function login(req, res) {
 
       resData.msg = message.LoginSuccess;
       resData.success = true;
+      resData.userId = user.get('id');
 
       res(resData).code(200);
     });

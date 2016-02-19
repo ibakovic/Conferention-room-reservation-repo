@@ -9,6 +9,12 @@
     "watchify": "watchify -t browserify-handlebars ./app/src/js/index.js -o ./app/dist/index.js -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "browserify-shim": {
+    "nunjucks": "nunjucks"
+  },
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
   "author": "Ivan Baković",
   "license": "ISC",
   "dependencies": {
