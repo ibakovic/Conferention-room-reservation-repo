@@ -9,57 +9,57 @@ var registerTemplate = require('../../templates/register.html');
 var Validate = require('./validation.js');
 
 var RegisterView = Validate.extend({
-	template: registerTemplate,
+  template: registerTemplate,
 
-	ui: {
-		firstName: '#registerFirstName',
-		lastName: '#registerLastName',
-		username: '#registerUsername',
-		password: '#registerPassword',
-		email: '#registerEmail'
-	},
+  ui: {
+    firstName: '#registerFirstName',
+    lastName: '#registerLastName',
+    username: '#registerUsername',
+    password: '#registerPassword',
+    email: '#registerEmail'
+  },
 
-	events: {
-		'click #registerSubmit': 'registerSubmit',
-		'click #registerCancel': 'registerCancel'
-	},
+  events: {
+    'click #registerSubmit': 'registerSubmit',
+    'click #registerCancel': 'registerCancel'
+  },
 
-	registerSubmit: function() {
-		var self = this;
-		//ItemView ui hash
-		var firstName = this.ui.firstName.val().trim();
-		var lastName = this.ui.lastName.val().trim();
-		var username = this.ui.username.val().trim();
-		var password = this.ui.password.val().trim();
-		var email = this.ui.email.val().trim();
+  registerSubmit: function() {
+    var self = this;
 
-		if(!this.validate(this.ui))
-			return;
+    var firstName = this.ui.firstName.val().trim();
+    var lastName = this.ui.lastName.val().trim();
+    var username = this.ui.username.val().trim();
+    var password = this.ui.password.val().trim();
+    var email = this.ui.email.val().trim();
 
-		popsicle.request({
-			method: 'POST',
-			url: 'register',
-			body: {
-				firstName: firstName,
-				lastName: lastName,
-				username: username,
-				password: password,
-				email: email
-			}
-		})
-		.then(function registerComplete(res) {
-			alert(res.body.msg);
-			if(res.body.success)
-				Backbone.history.navigate('', {trigger: true});
-		})
-		.catch(function registerError(res) {
-			alert(res);
-		});
-	},
+    if(!this.validate(this.ui))
+      return;
 
-	registerCancel: function() {
-		Backbone.history.navigate('', {trigger: true});
-	}
+    popsicle.request({
+      method: 'POST',
+      url: 'register',
+      body: {
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        password: password,
+        email: email
+      }
+    })
+    .then(function registerComplete(res) {
+      alert(res.body.msg);
+      if(res.body.success)
+        Backbone.history.navigate('', {trigger: true});
+    })
+    .catch(function registerError(res) {
+      alert(res);
+    });
+  },
+
+  registerCancel: function() {
+    Backbone.history.navigate('', {trigger: true});
+  }
 });
 
 module.exports = RegisterView;

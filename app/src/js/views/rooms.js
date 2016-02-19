@@ -5,31 +5,29 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var popsicle = require('popsicle');
-//var router = require('../router.js');
 var roomsTemplate = require('../../templates/rooms.html');
 
 var RoomView = Marionette.ItemView.extend({
-	template: roomsTemplate,
+  template: roomsTemplate,
 
-	events: {
-		'click .roomName': 'getCalendar'
-	},
+  events: {
+    'click .roomName': 'getCalendar'
+  },
 
-	getCalendar: function() {
-		var roomId = this.model.get('roomId');
-		Backbone.history.navigate('calendar/' + roomId, {trigger: true});
-	}
+  getCalendar: function() {
+    var roomId = this.model.get('roomId');
+    Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+  }
 });
 
-//collection view
 var RoomsView = Marionette.CollectionView.extend({
-	childView: RoomView,
+  childView: RoomView,
 
-	roomId: 0,
+  roomId: 0,
 
-	getRoomId: function(roomId) {
-		this.roomId = roomId;
-	}
+  getRoomId: function(roomId) {
+    this.roomId = roomId;
+  }
 });
 
 module.exports = RoomsView;

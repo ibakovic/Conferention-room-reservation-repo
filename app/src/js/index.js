@@ -14,109 +14,107 @@ var models = require('./models/models.js');
 var resApp = new Marionette.Application();
 
 resApp.addRegions({
-	roomRegion: '#rooms',
-	mainRegion: '#app'
+  roomRegion: '#rooms',
+  mainRegion: '#app'
 });
 
 var routerController = Marionette.Object.extend({
-	start: function() {
-		if(document.cookie) {
-			Backbone.history.navigate('calendar/3', {trigger: true});
-			return;
-		}
+  start: function() {
+    if(document.cookie) {
+      Backbone.history.navigate('calendar/3', {trigger: true});
+      return;
+    }
 
-		resApp.roomRegion.$el.hide();
-		resApp.mainRegion.show(views.loginView, {preventDestroy: true});
-	},
+    resApp.roomRegion.$el.hide();
+    resApp.mainRegion.show(views.loginView, {preventDestroy: true});
+  },
 
-	register: function() {
-		if(document.cookie) {
-			Backbone.history.navigate('calendar/2', {trigger: true});
-			return;
-		}
+  register: function() {
+    if(document.cookie) {
+      Backbone.history.navigate('calendar/2', {trigger: true});
+      return;
+    }
 
-		resApp.roomRegion.$el.hide();
-		resApp.mainRegion.show(views.registerView, {preventDestroy: true});
-	},
+    resApp.roomRegion.$el.hide();
+    resApp.mainRegion.show(views.registerView, {preventDestroy: true});
+  },
 
-	calendar: function(roomId) {
-		if(!document.cookie) {
-			Backbone.history.navigate('', {trigger: true});
-			return;
-		}
+  calendar: function(roomId) {
+    if(!document.cookie) {
+      Backbone.history.navigate('', {trigger: true});
+      return;
+    }
 
-		//resApp.mainRegion.empty({preventDestroy: true});
+    views.calendarView.getRoomId(roomId);
+    resApp.mainRegion.show(views.calendarView, {preventDestroy: true, forceShow: true});
 
-		views.calendarView.getRoomId(roomId);
-		resApp.mainRegion.show(views.calendarView, {preventDestroy: true, forceShow: true});
+    views.roomsView.getRoomId(roomId);
+    resApp.roomRegion.$el.show();
+    resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
+  },
 
-		views.roomsView.getRoomId(roomId);
-		resApp.roomRegion.$el.show();
-		resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
-	},
+  userReservationDetails: function(id) {
+    if(!document.cookie) {
+      Backbone.history.navigate('', {trigger: true});
+      return;
+    }
 
-	userReservationDetails: function(id) {
-		if(!document.cookie) {
-			Backbone.history.navigate('', {trigger: true});
-			return;
-		}
+    resApp.roomRegion.$el.hide();
+    var model = new models.SingleReservation({id: id});
 
-		resApp.roomRegion.$el.hide();
-		var model = new models.SingleReservation({id: id});
+    model.fetch({success: function(model, response) {
+      model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+      model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
+      views.userDetailsView.getId(id);
+      views.userDetailsView.getModel(model);
+      resApp.mainRegion.show(views.userDetailsView, {preventDestroy: true});
+    }});
+  },
 
-		model.fetch({success: function(model, response) {
-			model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-			model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-			views.userDetailsView.getId(id);
-			views.userDetailsView.getModel(model);
-			resApp.mainRegion.show(views.userDetailsView, {preventDestroy: true});
-		}});
-	},
+  reservationDetails: function(id) {
+    if(!document.cookie) {
+      Backbone.history.navigate('', {trigger: true});
+      return;
+    }
 
-	reservationDetails: function(id) {
-		if(!document.cookie) {
-			Backbone.history.navigate('', {trigger: true});
-			return;
-		}
+    resApp.roomRegion.$el.hide();
+    var model = new models.SingleReservation({id: id});
 
-		resApp.roomRegion.$el.hide();
-		var model = new models.SingleReservation({id: id});
+    model.fetch({success: function(model, response) {
+      model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+      model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
+      views.detailsView.getId(id);
+      views.detailsView.getModel(model);
+      resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
+    }});
+  },
 
-		model.fetch({success: function(model, response) {
-			model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-			model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-			views.detailsView.getId(id);
-			views.detailsView.getModel(model);
-			resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
-		}});
-	},
+  confirmRegistration: function(id) {
+    resApp.roomRegion.$el.hide();
 
-	confirmRegistration: function(id) {
-		resApp.roomRegion.$el.hide();
-
-		views.confirmRegistration.getId(id);
-		resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
-	}
+    views.confirmRegistration.getId(id);
+    resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
+  }
 });
 
 var Router = Marionette.AppRouter.extend({
-	controller: new routerController(),
-	appRoutes: {
-		'':'start',
-		'register': 'register',
-		'calendar/:roomId': 'calendar',
-		'userReservationDetails/:id': 'userReservationDetails',
-		'reservationDetails/:id': 'reservationDetails',
-		'confirm/:id': 'confirmRegistration'
-	}
+  controller: new routerController(),
+  appRoutes: {
+    '':'start',
+    'register': 'register',
+    'calendar/:roomId': 'calendar',
+    'userReservationDetails/:id': 'userReservationDetails',
+    'reservationDetails/:id': 'reservationDetails',
+    'confirm/:id': 'confirmRegistration'
+  }
 });
 
 $('document').ready(function() {
-	resApp.on('start', function() {
-		var router = new Router();
+  resApp.on('start', function() {
+    var router = new Router();
 
-		Backbone.history.start();
-	});
+    Backbone.history.start();
+  });
 
-	resApp.start();
+  resApp.start();
 });

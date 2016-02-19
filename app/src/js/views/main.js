@@ -15,20 +15,16 @@ var loginView = new LoginView();
 var registerView = new RegisterView();
 var userDetailsView = new UserDetailsView({collection: models.reservations});
 var detailsView = new DetailsView({collection: models.reservations});
-var calendarView = new CalendarView({
-	//collection: new Backbone.Collection(),
-	//_collection: models.reservations,
-	collection: models.reservations
-});
+var calendarView = new CalendarView({collection: models.reservations});
 var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
 
 module.exports = {
-	loginView: loginView,
-	registerView: registerView,
-	userDetailsView: userDetailsView,
-	detailsView: detailsView,
-	calendarView: calendarView,
-	roomsView: roomsView,
-	confirmRegistration: confirmRegistration
+  loginView: loginView,
+  registerView: registerView,
+  userDetailsView: userDetailsView,
+  detailsView: detailsView,
+  calendarView: calendarView,
+  roomsView: roomsView,
+  confirmRegistration: confirmRegistration
 };
