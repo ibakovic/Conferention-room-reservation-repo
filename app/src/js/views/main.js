@@ -11,17 +11,14 @@ var RegisterView = require('./register.js');
 var RoomsView = require('./rooms.js');
 var ConfirmRegistration = require('./confirmRegistration.js');
 
-var loginView = new LoginView();
-var registerView = new RegisterView();
 var userDetailsView = new UserDetailsView({collection: models.reservations});
 var detailsView = new DetailsView({collection: models.reservations});
-var calendarView = new CalendarView({collection: models.reservations});
 var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
 
 module.exports = {
-  loginView: loginView,
-  registerView: registerView,
+  LoginView: LoginView,
+  RegisterView: RegisterView,
   userDetailsView: userDetailsView,
   detailsView: detailsView,
   CalendarView: CalendarView,

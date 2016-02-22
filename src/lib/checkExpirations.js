@@ -2,13 +2,14 @@
 
 var Cron = require('cron').CronJob;
 var moment = require('moment');
+var logger = require('minilog')('checkExpiration.js');
 var User = require('../models/models.js').User;
 
 var job = new Cron({
   cronTime: '* */15 * * * *',
   onTick: function() {
     var now = moment()._d;
-    console.log(now);
+    logger.log(now);
 
     User.where('verificationId', '<>', 'null').fetchAll()
     .then(function usersFound(users) {
@@ -18,12 +19,12 @@ var job = new Cron({
 
         if(timeDifference > 3) {
           user.destroy();
-          console.log('User ' + user.get('username') + ' deleted');
+          logger.log('User ' + user.get('username') + ' deleted');
         }
       });
     })
     .catch(function(err) {
-      console.log('err');
+      logger.error('err');
     });
   },
   start: true

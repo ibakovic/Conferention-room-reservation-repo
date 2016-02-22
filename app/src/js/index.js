@@ -25,7 +25,7 @@ var routerController = Marionette.Object.extend({
     }
 
     resApp.roomRegion.$el.hide();
-    resApp.mainRegion.show(views.loginView, {preventDestroy: true});
+    resApp.mainRegion.show(new views.LoginView());
   },
 
   register: function() {
@@ -35,7 +35,7 @@ var routerController = Marionette.Object.extend({
     }
 
     resApp.roomRegion.$el.hide();
-    resApp.mainRegion.show(views.registerView, {preventDestroy: true});
+    resApp.mainRegion.show(new views.RegisterView());
   },
 
   calendar: function(roomId) {
@@ -44,14 +44,16 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
+    resApp.mainRegion.empty({preventDestroy: true});
+
     resApp.mainRegion.show(new views.CalendarView({
       collection: models.reservations,
       roomId: roomId
-    }));
+    }), {preventDestroy: true});
 
     views.roomsView.getRoomId(roomId);
     resApp.roomRegion.$el.show();
-    resApp.roomRegion.show(views.roomsView, {preventDestroy: true});
+    resApp.roomRegion.show(views.roomsView);
   },
 
   userReservationDetails: function(id) {
@@ -68,7 +70,7 @@ var routerController = Marionette.Object.extend({
       model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
       views.userDetailsView.getId(id);
       views.userDetailsView.getModel(model);
-      resApp.mainRegion.show(views.userDetailsView, {preventDestroy: true});
+      resApp.mainRegion.show(views.userDetailsView);
     }});
   },
 
@@ -86,7 +88,7 @@ var routerController = Marionette.Object.extend({
       model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
       views.detailsView.getId(id);
       views.detailsView.getModel(model);
-      resApp.mainRegion.show(views.detailsView, {preventDestroy: true});
+      resApp.mainRegion.show(views.detailsView);
     }});
   },
 

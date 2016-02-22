@@ -7,6 +7,7 @@ var Marionette = require('backbone.marionette');
 var models = require('../models/models.js');
 var Validate = require('./validation.js');
 var loginTemplate = require('../../templates/login.html');
+var noty = require('noty');
 
 var LoginView = Validate.extend({
   template: loginTemplate,
@@ -39,7 +40,11 @@ var LoginView = Validate.extend({
     })
     .then(function LoginSent(res) {
       if(!res.body.success) {
-        alert(res.body.msg);
+        noty({
+          text: res.body.msg,
+          layout: 'center',
+          type: 'error'
+        });
         return;
       }
 
@@ -48,10 +53,20 @@ var LoginView = Validate.extend({
       models.rooms.fetch({reset: true});
       models.reservations.fetch({reset: true});
 
+      noty({
+          text: res.body.msg,
+          layout: 'center',
+          type: 'success'
+        });
+
       Backbone.history.navigate('calendar/3', {trigger: true});
     })
     .catch(function loginErr(err) {
-      console.log(err);
+      noty({
+        text: err,
+        layout: 'center',
+        type: 'error'
+      });
     });
   },
 

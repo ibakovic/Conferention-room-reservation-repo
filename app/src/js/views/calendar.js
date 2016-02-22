@@ -10,8 +10,10 @@ var fullCalendar = require('fullcalendar');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
 var q = require('q');
+var noty = require('noty');
 
 var EventView = Marionette.ItemView.extend({
+  className: 'childrenClass',
   render: function() {
     var self = this;
 
@@ -20,7 +22,11 @@ var EventView = Marionette.ItemView.extend({
         self.addEvent(element);
       })
       .catch(function calendarError(error) {
-        console.log(error);
+        noty({
+          text: error,
+          layout: 'center',
+          type: 'error'
+        });
       });
   },
 
@@ -70,7 +76,7 @@ var CalendarView = Marionette.CompositeView.extend({
     var self = this;
     var $calendar = this.$el.find('#calendar');
 
-    function changeReservationStartAndEnd(changeEvent) {
+    function changeReservationStartAndEnd(changeEvent, revertFunc) {
       var changes = {
         start: changeEvent._start._d,
         end: changeEvent._end._d
@@ -81,10 +87,19 @@ var CalendarView = Marionette.CompositeView.extend({
       reservation.save(changes, {
         wait: true,
         success: function(model, response) {
-          alert(response.msg);
+          noty({
+            text: response.msg,
+            layout: 'center',
+            type: 'success'
+          });
         },
         error: function(model, response) {
-          alert('Update failed!');
+          noty({
+            text: response.responseJSON.msg,
+            layout: 'center',
+            type: 'error'
+          });
+          revertFunc();
         }
       });
     }
@@ -97,6 +112,7 @@ var CalendarView = Marionette.CompositeView.extend({
       },
 
       defaultDate: moment().utc().valueOf(),
+      defaultView: 'agendaWeek',
       firstDay: 1,
       fixedWeekCount: false,
       selectOverlap: false,
@@ -108,7 +124,11 @@ var CalendarView = Marionette.CompositeView.extend({
 
       select: function(start, end) {
         if(moment(end._d).diff(start._d, 'minutes') > 180) {
-          alert('Time limit on a single reservation is 3h!');
+          noty({
+            text: 'Time limit on a single reservation is 3h!',
+            layout: 'center',
+            type: 'confirm'
+          });
           $calendar.fullCalendar('unselect');
           return;
         }
@@ -129,7 +149,11 @@ var CalendarView = Marionette.CompositeView.extend({
             //Preuzimam model iz baze samo zbog id-a
             self.collection.push(model.get('data'));
 
-            alert(response.msg);
+            noty({
+              text: response.msg,
+              layout: 'center',
+              type: 'success'
+            });
           }});
         }
         $calendar.fullCalendar('unselect');
@@ -154,12 +178,12 @@ var CalendarView = Marionette.CompositeView.extend({
         Backbone.history.navigate('reservationDetails/' + clickEvent.id, {trigger:true});
       },
 
-      eventResize: function(resizeEvent) {
-        changeReservationStartAndEnd(resizeEvent);
+      eventResize: function(resizeEvent, delta, revertFunc) {
+        changeReservationStartAndEnd(resizeEvent, revertFunc);
       },
 
-      eventDrop: function(dragEvent) {
-        changeReservationStartAndEnd(dragEvent);
+      eventDrop: function(dragEvent, delta, revertFunc) {
+        changeReservationStartAndEnd(dragEvent, revertFunc);
       }
     });
     this.calendarPromise.resolve($calendar);
@@ -174,7 +198,11 @@ var CalendarView = Marionette.CompositeView.extend({
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function loggoutErr(err) {
-      console.log(err);
+      noty({
+        text: err.body.msg,
+        layout: 'center',
+        type: 'error'
+      });
     });
   }
 });

@@ -4,7 +4,7 @@ var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var roomsTemplate = require('../../templates/rooms.html');
+var roomsTemplate = require('../../templates/room.html');
 
 var RoomView = Marionette.ItemView.extend({
   template: roomsTemplate,

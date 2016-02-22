@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var ValidationView = require('./validation.js');
+var noty = require('noty');
 var reservationDetailsTemplate = require('../../templates/userReservationDetails.html');
 
 var UserReservationDetailsView = ValidationView.extend({
@@ -39,10 +40,12 @@ var UserReservationDetailsView = ValidationView.extend({
     var title = this.ui.newTitle.html();
     var self = this;
 
-    console.log(this.ui.newTitle.html());
-
     if(!title) {
-      alert('Title missing!');
+      noty({
+        text: 'Title missing!',
+        layout: 'center',
+        type: 'error'
+      });
       return;
     }
 
@@ -54,11 +57,19 @@ var UserReservationDetailsView = ValidationView.extend({
     reservation.save(changes, {
       wait: true,
       success: function(model, response) {
-        alert(response.msg);
+        noty({
+          text: response.msg,
+          layout: 'center',
+          type: 'success'
+        });
         Backbone.history.navigate('calendar/' + roomId, {trigger: true});
       },
       error: function(model, response) {
-        alert('Not authorized to update that reservation!');
+        noty({
+          text: response.responseJSON.msg,
+          layout: 'center',
+          type: 'error'
+        });
       }
     });
   },
@@ -73,11 +84,19 @@ var UserReservationDetailsView = ValidationView.extend({
       reservation.destroy({
         wait: true,
         success: function(model, response) {
-          alert(response.msg);
+          noty({
+            text: response.msg,
+            layout: 'center',
+            type: 'error'
+          });
           Backbone.history.navigate('calendar/' + roomId, {trigger: true});
         },
         error: function(model, response) {
-          alert('Not authorized to delete this reservation!');
+          noty({
+            text: response.responseJSON.msg,
+            layout: 'center',
+            type: 'error'
+          });
         }
       });
     }

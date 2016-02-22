@@ -2,6 +2,8 @@
 
 var server = require('./src/lib/initializeServer.js');
 var nunjucs = require('nunjucks');
+require('minilog').enable();
+var logger = require('minilog')('app.js');
 
 //Listen for expirations
 //require('./src/lib/checkExpirations.js');
@@ -52,5 +54,5 @@ server.start(function(err) {
     throw err;
   }
 
-  console.log('Server runing at:', server.info.uri);
+  logger.log('Server runing at:', server.info.uri);
 });

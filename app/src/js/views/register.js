@@ -7,6 +7,7 @@ var isEmail = require('is-email');
 var Marionette = require('backbone.marionette');
 var registerTemplate = require('../../templates/register.html');
 var Validate = require('./validation.js');
+var noty = require('noty');
 
 var RegisterView = Validate.extend({
   template: registerTemplate,
@@ -48,12 +49,27 @@ var RegisterView = Validate.extend({
       }
     })
     .then(function registerComplete(res) {
-      alert(res.body.msg);
-      if(res.body.success)
-        Backbone.history.navigate('', {trigger: true});
+      if(!res.body.msg) {
+        noty({
+          text: res.body.msg,
+          layout: 'center',
+          type: 'error'
+        });
+      }
+
+      noty({
+        text: res.body.msg,
+        layout: 'center',
+        type: 'success'
+      });
+      Backbone.history.navigate('', {trigger: true});
     })
     .catch(function registerError(res) {
-      alert(res);
+      noty({
+        text: res.body.msg,
+        layout: 'center',
+        type: 'error'
+      });
     });
   },
 
