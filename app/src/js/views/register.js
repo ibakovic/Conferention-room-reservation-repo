@@ -53,14 +53,16 @@ var RegisterView = Validate.extend({
         noty({
           text: res.body.msg,
           layout: 'center',
-          type: 'error'
+          type: 'error',
+          timeout: 3000
         });
       }
 
       noty({
         text: res.body.msg,
         layout: 'center',
-        type: 'success'
+        type: 'success',
+        timeout: 3000
       });
       Backbone.history.navigate('', {trigger: true});
     })
@@ -68,7 +70,8 @@ var RegisterView = Validate.extend({
       noty({
         text: res.body.msg,
         layout: 'center',
-        type: 'error'
+        type: 'error',
+        timeout: 3000
       });
     });
   },

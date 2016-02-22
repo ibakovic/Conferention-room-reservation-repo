@@ -13,9 +13,9 @@ var q = require('q');
 var noty = require('noty');
 
 var EventView = Marionette.ItemView.extend({
-  className: 'childrenClass',
   render: function() {
     var self = this;
+    this.$el.unwrap();
 
     this.parent.getCalendar()
       .then(function calendarCatched(element) {
@@ -25,13 +25,14 @@ var EventView = Marionette.ItemView.extend({
         noty({
           text: error,
           layout: 'center',
-          type: 'error'
+          type: 'error',
+          timeout: 3000
         });
       });
   },
 
   addEvent: function(element) {
-    if(this.model.get('roomId') === parseInt(this.parent.roomId, 10))
+    if(this.model.get('roomId') === this.parent.roomId)
       $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
   }
   /*,
@@ -57,7 +58,7 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   initialize: function(options) {
-    this.roomId = options.roomId;
+    this.roomId = parseInt(options.roomId, 10);
   },
 
   onBeforeAddChild: function(childView) {
@@ -90,14 +91,16 @@ var CalendarView = Marionette.CompositeView.extend({
           noty({
             text: response.msg,
             layout: 'center',
-            type: 'success'
+            type: 'success',
+            timeout: 3000
           });
         },
         error: function(model, response) {
           noty({
             text: response.responseJSON.msg,
             layout: 'center',
-            type: 'error'
+            type: 'error',
+            timeout: 3000
           });
           revertFunc();
         }
@@ -127,7 +130,8 @@ var CalendarView = Marionette.CompositeView.extend({
           noty({
             text: 'Time limit on a single reservation is 3h!',
             layout: 'center',
-            type: 'confirm'
+            type: 'error',
+            timeout: 3000
           });
           $calendar.fullCalendar('unselect');
           return;
@@ -140,7 +144,7 @@ var CalendarView = Marionette.CompositeView.extend({
             title: title,
             start: start,
             end: end,
-            roomId: parseInt(self.roomId, 10)
+            roomId: self.roomId
           };
 
           var newEvent = new self.collection.model(eventData);
@@ -152,7 +156,8 @@ var CalendarView = Marionette.CompositeView.extend({
             noty({
               text: response.msg,
               layout: 'center',
-              type: 'success'
+              type: 'success',
+              timeout: 3000
             });
           }});
         }
@@ -195,13 +200,20 @@ var CalendarView = Marionette.CompositeView.extend({
       url: 'logout'
     })
     .then(function loggedOut(res) {
+      noty({
+        text: 'Good bye!',
+        layout: 'center',
+        type: 'success',
+        timeout: 3000
+      });
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function loggoutErr(err) {
       noty({
         text: err.body.msg,
         layout: 'center',
-        type: 'error'
+        type: 'error',
+        timeout: 3000
       });
     });
   }

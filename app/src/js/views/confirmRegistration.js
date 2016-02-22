@@ -31,7 +31,8 @@ var ConfirmRegistration = Marionette.ItemView.extend({
       noty({
         text: res.body.msg,
         layout: 'center',
-        type: 'success'
+        type: 'success',
+        timeout: 3000
       });
 
       if(res.body.success)
@@ -41,7 +42,8 @@ var ConfirmRegistration = Marionette.ItemView.extend({
       noty({
         text: err,
         layout: 'center',
-        type: 'error'
+        type: 'error',
+        timeout: 3000
       });
     });
   }

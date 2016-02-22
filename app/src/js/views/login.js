@@ -43,7 +43,8 @@ var LoginView = Validate.extend({
         noty({
           text: res.body.msg,
           layout: 'center',
-          type: 'error'
+          type: 'error',
+          timeout: 3000
         });
         return;
       }
@@ -56,7 +57,8 @@ var LoginView = Validate.extend({
       noty({
           text: res.body.msg,
           layout: 'center',
-          type: 'success'
+          type: 'success',
+          timeout: 3000
         });
 
       Backbone.history.navigate('calendar/3', {trigger: true});
@@ -65,7 +67,8 @@ var LoginView = Validate.extend({
       noty({
         text: err,
         layout: 'center',
-        type: 'error'
+        type: 'error',
+        timeout: 3000
       });
     });
   },

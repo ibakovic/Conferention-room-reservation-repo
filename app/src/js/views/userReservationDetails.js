@@ -44,7 +44,8 @@ var UserReservationDetailsView = ValidationView.extend({
       noty({
         text: 'Title missing!',
         layout: 'center',
-        type: 'error'
+        type: 'error',
+        timeout: 3000
       });
       return;
     }
@@ -60,7 +61,8 @@ var UserReservationDetailsView = ValidationView.extend({
         noty({
           text: response.msg,
           layout: 'center',
-          type: 'success'
+          type: 'success',
+          timeout: 3000
         });
         Backbone.history.navigate('calendar/' + roomId, {trigger: true});
       },
@@ -68,7 +70,8 @@ var UserReservationDetailsView = ValidationView.extend({
         noty({
           text: response.responseJSON.msg,
           layout: 'center',
-          type: 'error'
+          type: 'error',
+          timeout: 3000
         });
       }
     });
@@ -80,25 +83,47 @@ var UserReservationDetailsView = ValidationView.extend({
     var self = this;
     var path = 'reservations/' + this.model.get('id');
 
-    if(confirm('Are you sure you want to remove this reservation?')) {
-      reservation.destroy({
-        wait: true,
-        success: function(model, response) {
-          noty({
-            text: response.msg,
-            layout: 'center',
-            type: 'error'
+    noty({
+      text: 'Are you sure you want to remove this reservation?',
+      layout: 'center',
+      type: 'information',
+      buttons: [{
+        addClass: 'btn btn-success',
+        text: 'Yes',
+        onClick: function($noty) {
+          reservation.destroy({
+            wait: true,
+            success: function(model, response) {
+              noty({
+                text: response.msg,
+                layout: 'center',
+                type: 'error',
+                timeout: 3000
+              });
+              Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+            },
+            error: function(model, response) {
+              noty({
+                text: response.responseJSON.msg,
+                layout: 'center',
+                type: 'error',
+                timeout: 3000
+              });
+            }
           });
-          Backbone.history.navigate('calendar/' + roomId, {trigger: true});
-        },
-        error: function(model, response) {
-          noty({
-            text: response.responseJSON.msg,
-            layout: 'center',
-            type: 'error'
-          });
+          $noty.close();
         }
-      });
+      },{
+        addClass: 'btn btn-danger',
+        text: 'No',
+        onClick: function($noty) {
+          $noty.close();
+        }
+      }]
+    });
+
+    if(confirm) {
+
     }
   },
 
