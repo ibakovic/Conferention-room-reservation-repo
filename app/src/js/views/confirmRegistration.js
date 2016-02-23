@@ -32,7 +32,7 @@ var ConfirmRegistration = Marionette.ItemView.extend({
         text: res.body.msg,
         layout: 'center',
         type: 'success',
-        timeout: 3000
+        timeout: 2500
       });
 
       if(res.body.success)
@@ -43,7 +43,7 @@ var ConfirmRegistration = Marionette.ItemView.extend({
         text: err,
         layout: 'center',
         type: 'error',
-        timeout: 3000
+        timeout: 2500
       });
     });
   }

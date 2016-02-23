@@ -44,7 +44,7 @@ var LoginView = Validate.extend({
           text: res.body.msg,
           layout: 'center',
           type: 'error',
-          timeout: 3000
+          timeout: 2500
         });
         return;
       }
@@ -52,23 +52,23 @@ var LoginView = Validate.extend({
       window.localStorage.setItem('userId', res.body.userId);
 
       models.rooms.fetch({reset: true});
-      models.reservations.fetch({reset: true});
+      models.reservations.fetch();
 
       noty({
           text: res.body.msg,
           layout: 'center',
           type: 'success',
-          timeout: 3000
+          timeout: 2500
         });
 
       Backbone.history.navigate('calendar/3', {trigger: true});
     })
     .catch(function loginErr(err) {
       noty({
-        text: err,
+        text: err.message,
         layout: 'center',
         type: 'error',
-        timeout: 3000
+        timeout: 2500
       });
     });
   },

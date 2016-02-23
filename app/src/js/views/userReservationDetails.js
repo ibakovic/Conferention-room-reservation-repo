@@ -5,11 +5,10 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
-var ValidationView = require('./validation.js');
 var noty = require('noty');
 var reservationDetailsTemplate = require('../../templates/userReservationDetails.html');
 
-var UserReservationDetailsView = ValidationView.extend({
+var UserReservationDetailsView = Marionette.ItemView.extend({
   template: reservationDetailsTemplate,
 
   id: 0,
@@ -22,10 +21,6 @@ var UserReservationDetailsView = ValidationView.extend({
     'click #updateTitle': 'updateTitle',
     'click #deleteReservation': 'deleteReservation',
     'click #cancelReservation': 'cancelReservation'
-  },
-
-  getModel: function(model) {
-    this.model = model;
   },
 
   getId: function(id) {
@@ -45,7 +40,7 @@ var UserReservationDetailsView = ValidationView.extend({
         text: 'Title missing!',
         layout: 'center',
         type: 'error',
-        timeout: 3000
+        timeout: 2500
       });
       return;
     }
@@ -62,7 +57,7 @@ var UserReservationDetailsView = ValidationView.extend({
           text: response.msg,
           layout: 'center',
           type: 'success',
-          timeout: 3000
+          timeout: 2500
         });
         Backbone.history.navigate('calendar/' + roomId, {trigger: true});
       },
@@ -71,7 +66,7 @@ var UserReservationDetailsView = ValidationView.extend({
           text: response.responseJSON.msg,
           layout: 'center',
           type: 'error',
-          timeout: 3000
+          timeout: 2500
         });
       }
     });
@@ -98,7 +93,7 @@ var UserReservationDetailsView = ValidationView.extend({
                 text: response.msg,
                 layout: 'center',
                 type: 'error',
-                timeout: 3000
+                timeout: 2500
               });
               Backbone.history.navigate('calendar/' + roomId, {trigger: true});
             },
@@ -107,7 +102,7 @@ var UserReservationDetailsView = ValidationView.extend({
                 text: response.responseJSON.msg,
                 layout: 'center',
                 type: 'error',
-                timeout: 3000
+                timeout: 2500
               });
             }
           });

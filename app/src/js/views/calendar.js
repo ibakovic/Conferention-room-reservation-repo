@@ -6,6 +6,11 @@ var popsicle = require('popsicle');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
+
+if (window.__agent) {
+  window.__agent.start(Backbone, Marionette);
+}
+
 var fullCalendar = require('fullcalendar');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
@@ -26,7 +31,7 @@ var EventView = Marionette.ItemView.extend({
           text: error,
           layout: 'center',
           type: 'error',
-          timeout: 3000
+          timeout: 2500
         });
       });
   },
@@ -34,6 +39,8 @@ var EventView = Marionette.ItemView.extend({
   addEvent: function(element) {
     if(this.model.get('roomId') === this.parent.roomId)
       $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
+
+    this.$el.remove();
   }
   /*,
 
@@ -73,6 +80,10 @@ var CalendarView = Marionette.CompositeView.extend({
     this.createCalendar();
   },
 
+  getRoomId: function(roomId) {
+    this.roomId = parseInt(roomId, 10);
+  },
+
   createCalendar: function() {
     var self = this;
     var $calendar = this.$el.find('#calendar');
@@ -92,7 +103,7 @@ var CalendarView = Marionette.CompositeView.extend({
             text: response.msg,
             layout: 'center',
             type: 'success',
-            timeout: 3000
+            timeout: 2500
           });
         },
         error: function(model, response) {
@@ -100,7 +111,7 @@ var CalendarView = Marionette.CompositeView.extend({
             text: response.responseJSON.msg,
             layout: 'center',
             type: 'error',
-            timeout: 3000
+            timeout: 2500
           });
           revertFunc();
         }
@@ -131,7 +142,7 @@ var CalendarView = Marionette.CompositeView.extend({
             text: 'Time limit on a single reservation is 3h!',
             layout: 'center',
             type: 'error',
-            timeout: 3000
+            timeout: 2500
           });
           $calendar.fullCalendar('unselect');
           return;
@@ -157,7 +168,7 @@ var CalendarView = Marionette.CompositeView.extend({
               text: response.msg,
               layout: 'center',
               type: 'success',
-              timeout: 3000
+              timeout: 2500
             });
           }});
         }
@@ -204,7 +215,7 @@ var CalendarView = Marionette.CompositeView.extend({
         text: 'Good bye!',
         layout: 'center',
         type: 'success',
-        timeout: 3000
+        timeout: 2500
       });
       Backbone.history.navigate('', {trigger: true});
     })
@@ -213,7 +224,7 @@ var CalendarView = Marionette.CompositeView.extend({
         text: err.body.msg,
         layout: 'center',
         type: 'error',
-        timeout: 3000
+        timeout: 2500
       });
     });
   }

@@ -20,7 +20,7 @@ resApp.addRegions({
 var routerController = Marionette.Object.extend({
   start: function() {
     if(document.cookie) {
-      Backbone.history.navigate('calendar/3', {trigger: true});
+      Backbone.history.navigate('calendar/2', {trigger: true});
       return;
     }
 
@@ -44,8 +44,6 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.mainRegion.empty({preventDestroy: true});
-
     resApp.mainRegion.show(new views.CalendarView({
       collection: models.reservations,
       roomId: roomId
@@ -65,13 +63,8 @@ var routerController = Marionette.Object.extend({
     resApp.roomRegion.$el.hide();
     var model = new models.SingleReservation({id: id});
 
-    model.fetch({success: function(model, response) {
-      model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-      model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-      views.userDetailsView.getId(id);
-      views.userDetailsView.getModel(model);
-      resApp.mainRegion.show(views.userDetailsView);
-    }});
+    views.userDetailsView.getId(id);
+    resApp.mainRegion.show(views.userDetailsView);
   },
 
   reservationDetails: function(id) {
@@ -83,13 +76,12 @@ var routerController = Marionette.Object.extend({
     resApp.roomRegion.$el.hide();
     var model = new models.SingleReservation({id: id});
 
-    model.fetch({success: function(model, response) {
-      model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-      model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-      views.detailsView.getId(id);
-      views.detailsView.getModel(model);
-      resApp.mainRegion.show(views.detailsView);
-    }});
+    //model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+    //model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
+    views.detailsView.getId(id);
+
+    resApp.mainRegion.show(views.detailsView);
+
   },
 
   confirmRegistration: function(id) {

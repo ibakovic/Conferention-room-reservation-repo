@@ -54,7 +54,7 @@ var RegisterView = Validate.extend({
           text: res.body.msg,
           layout: 'center',
           type: 'error',
-          timeout: 3000
+          timeout: 2500
         });
       }
 
@@ -62,7 +62,7 @@ var RegisterView = Validate.extend({
         text: res.body.msg,
         layout: 'center',
         type: 'success',
-        timeout: 3000
+        timeout: 2500
       });
       Backbone.history.navigate('', {trigger: true});
     })
@@ -71,7 +71,7 @@ var RegisterView = Validate.extend({
         text: res.body.msg,
         layout: 'center',
         type: 'error',
-        timeout: 3000
+        timeout: 2500
       });
     });
   },

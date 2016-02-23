@@ -8,7 +8,7 @@ var moment = require('moment');
 var ValidationView = require('./validation.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
-var ReservationDetailsView = ValidationView.extend({
+var ReservationDetailsView = Marionette.ItemView.extend({
   template: reservationDetailsTemplate,
 
   id: 0,
@@ -21,13 +21,12 @@ var ReservationDetailsView = ValidationView.extend({
     'click #returnToCalendar': 'returnToCalendar'
   },
 
-  getModel: function(model) {
-    this.model = model;
-  },
-
   getId: function(id) {
     this.id = parseInt(id, 10);
     this.model = this.collection.findWhere({id: this.id});
+
+    //this.model.set({start: moment(this.model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
+    //this.model.set({end: moment(this.model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
   },
 
   returnToCalendar: function() {

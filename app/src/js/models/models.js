@@ -37,8 +37,8 @@ var Rooms = Backbone.Collection.extend({
 var rooms = new Rooms();
 
 if(document.cookie) {
-  rooms.fetch({reset: true});
-  reservations.fetch({reset: true});
+  rooms.fetch();
+  reservations.fetch();
 }
 
 module.exports = {
