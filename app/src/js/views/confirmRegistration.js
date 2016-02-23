@@ -32,7 +32,7 @@ var ConfirmRegistration = Marionette.ItemView.extend({
         text: res.body.msg,
         layout: 'center',
         type: 'success',
-        timeout: 2500
+        timeout: 4500
       });
 
       if(res.body.success)

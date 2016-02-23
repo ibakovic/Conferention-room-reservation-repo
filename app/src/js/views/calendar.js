@@ -6,11 +6,6 @@ var popsicle = require('popsicle');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
-
-if (window.__agent) {
-  window.__agent.start(Backbone, Marionette);
-}
-
 var fullCalendar = require('fullcalendar');
 var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
@@ -24,7 +19,7 @@ var EventView = Marionette.ItemView.extend({
 
     this.parent.getCalendar()
       .then(function calendarCatched(element) {
-        self.addEvent(element);
+        self.showEvent(element);
       })
       .catch(function calendarError(error) {
         noty({
@@ -36,7 +31,7 @@ var EventView = Marionette.ItemView.extend({
       });
   },
 
-  addEvent: function(element) {
+  showEvent: function(element) {
     if(this.model.get('roomId') === this.parent.roomId)
       $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
 
@@ -108,7 +103,7 @@ var CalendarView = Marionette.CompositeView.extend({
         },
         error: function(model, response) {
           noty({
-            text: response.responseJSON.msg,
+            text: 'Unauthorized to change this event!',
             layout: 'center',
             type: 'error',
             timeout: 2500

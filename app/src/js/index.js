@@ -7,6 +7,11 @@ var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
+
+if (window.__agent) {
+  window.__agent.start(Backbone, Marionette);
+}
+
 var views = require('./views/main.js');
 var models = require('./models/models.js');
 
@@ -61,10 +66,10 @@ var routerController = Marionette.Object.extend({
     }
 
     resApp.roomRegion.$el.hide();
-    var model = new models.SingleReservation({id: id});
 
-    views.userDetailsView.getId(id);
-    resApp.mainRegion.show(views.userDetailsView);
+    var reservation = models.reservations.findWhere({id: parseInt(id, 10)});
+
+    resApp.mainRegion.show(new views.UserDetailsView({model: reservation}));
   },
 
   reservationDetails: function(id) {
@@ -74,13 +79,13 @@ var routerController = Marionette.Object.extend({
     }
 
     resApp.roomRegion.$el.hide();
-    var model = new models.SingleReservation({id: id});
+
+    var reservation = models.reservations.findWhere({id: parseInt(id, 10)});
 
     //model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
     //model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-    views.detailsView.getId(id);
 
-    resApp.mainRegion.show(views.detailsView);
+    resApp.mainRegion.show(new views.DetailsView({model: reservation}));
 
   },
 

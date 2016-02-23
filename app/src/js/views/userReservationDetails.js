@@ -23,14 +23,8 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     'click #cancelReservation': 'cancelReservation'
   },
 
-  getId: function(id) {
-    this.id = parseInt(id, 10);
-    this.model = this.collection.findWhere({id: this.id});
-  },
-
   updateTitle: function() {
-    var reservation = this.collection.findWhere({id: this.id});
-    var roomId = reservation.get('roomId');
+    var roomId = this.model.get('roomId');
     var path = 'reservations/' + this.model.get('id');
     var title = this.ui.newTitle.html();
     var self = this;
@@ -50,7 +44,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       title: title
     };
 
-    reservation.save(changes, {
+    this.model.save(changes, {
       wait: true,
       success: function(model, response) {
         noty({
@@ -73,8 +67,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   deleteReservation: function() {
-    var reservation = this.collection.findWhere({id: this.id});
-    var roomId = reservation.get('roomId');
+    var roomId = this.model.get('roomId');
     var self = this;
     var path = 'reservations/' + this.model.get('id');
 
@@ -86,7 +79,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
         addClass: 'btn btn-success',
         text: 'Yes',
         onClick: function($noty) {
-          reservation.destroy({
+          self.model.destroy({
             wait: true,
             success: function(model, response) {
               noty({

@@ -21,14 +21,6 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     'click #returnToCalendar': 'returnToCalendar'
   },
 
-  getId: function(id) {
-    this.id = parseInt(id, 10);
-    this.model = this.collection.findWhere({id: this.id});
-
-    //this.model.set({start: moment(this.model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-    //this.model.set({end: moment(this.model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-  },
-
   returnToCalendar: function() {
     Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
   }

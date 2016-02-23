@@ -9,7 +9,9 @@
   "EmailSent": "E-mail sent",
   "EmailNotSent": "Failed to send e-mail",
   "EmailSubject": "Verification for registration confirmation",
+  "EmailSubjectUserDeleted": "Conference room booking account deleted",
   "EmailText": "Click on this link to verify your registration: ",
+  "EmailTextUserDeleted": "Dear user,\n\nYour registration confirmation was not recieved and because of that your account was deleted.",
 
   "UsernameExists": "This username already exists!",
 

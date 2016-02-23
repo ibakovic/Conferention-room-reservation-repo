@@ -6,7 +6,7 @@ require('minilog').enable();
 var logger = require('minilog')('app.js');
 
 //Listen for expirations
-//require('./src/lib/checkExpirations.js');
+require('./src/lib/checkExpirations.js');
 
 //All dependecies
 require('./src/lib/serverRegisters.js')(server);
