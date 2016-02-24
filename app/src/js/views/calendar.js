@@ -7,7 +7,6 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var fullCalendar = require('fullcalendar');
-var DetailsView = require('./reservationDetails.js');
 var calendarTemplate = require('../../templates/calendar.html');
 var q = require('q');
 var noty = require('noty');
@@ -56,6 +55,7 @@ var CalendarView = Marionette.CompositeView.extend({
   calendarPromise: q.defer(),
 
   events: {
+    'click #userDetails': 'userDetails',
     'click #logout': 'logout'
   },
 
@@ -198,6 +198,10 @@ var CalendarView = Marionette.CompositeView.extend({
       }
     });
     this.calendarPromise.resolve($calendar);
+  },
+
+  userDetails: function() {
+    Backbone.history.navigate('userDetails', {trigger: true});
   },
 
   logout: function() {

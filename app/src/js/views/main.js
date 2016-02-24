@@ -3,13 +3,15 @@
 var models = require('../models/models.js');
 var Backbone = require('backbone');
 
-var UserDetailsView = require('./userReservationDetails.js');
-var DetailsView = require('./reservationDetails.js');
+var UserReservationView = require('./userReservationDetails.js');
+var ReservationView = require('./reservationDetails.js');
 var LoginView = require('./login.js');
 var CalendarView = require('./calendar.js');
 var RegisterView = require('./register.js');
 var RoomsView = require('./rooms.js');
 var ConfirmRegistration = require('./confirmRegistration.js');
+var UserDetailsView = require('./userDetails.js');
+var ResetPassword = require('./resetPassword.js');
 
 var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
@@ -17,9 +19,11 @@ var confirmRegistration = new ConfirmRegistration();
 module.exports = {
   LoginView: LoginView,
   RegisterView: RegisterView,
-  UserDetailsView: UserDetailsView,
-  DetailsView: DetailsView,
+  UserReservationView: UserReservationView,
+  ReservationView: ReservationView,
   CalendarView: CalendarView,
   roomsView: roomsView,
-  confirmRegistration: confirmRegistration
+  confirmRegistration: confirmRegistration,
+  UserDetailsView: UserDetailsView,
+  ResetPassword: ResetPassword
 };

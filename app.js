@@ -11,6 +11,9 @@ require('./src/lib/checkExpirations.js');
 //All dependecies
 require('./src/lib/serverRegisters.js')(server);
 
+//User routes
+require('./src/routes/user.js')(server);
+
 //Rooms routes
 require('./src/routes/rooms.js')(server);
 

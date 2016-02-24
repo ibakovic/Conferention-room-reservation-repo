@@ -1,6 +1,8 @@
 {
   "CredentialsRequired": "Username and password required!",
   "PasswordInvalid": "Invalid password!",
+  "PasswordNotFound": "New password required!",
+  "PasswordUpdated": "Password updated!",
   "FirstLastNameNotFound": "First and last name required!",
 
   "EmailNotFound": "E-mail required!",
@@ -31,6 +33,7 @@
   "ReservationDeleted": "Reservation deleted!",
 
   "UserNotFound": "User not found!",
+  "UserFound": "User found!",
   "UserNotSaved": "Failed to save your data!",
   "UserSaved": "Registration completed!",
 
@@ -55,5 +58,7 @@
   "ConfirmationNotFound": "Confirmation from this url was not found!",
   "ConfirmationFailed": "Confirmation failed! \nNot registered yet!",
 
-  "RoomIdNotFound": "Room ID was not found!"
+  "RoomIdNotFound": "Room ID was not found!",
+
+  "NotAuthrized": "You're not authorized to make changes!"
 }

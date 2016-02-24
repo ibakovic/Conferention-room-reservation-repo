@@ -19,7 +19,7 @@ function userDeletedMail (email) {
     text: message.EmailTextUserDeleted
   };
 
-  transporter.sendMail(function userDeletedEmail(err, info) {
+  transporter.sendMail(mailOptions, function userDeletedEmail(err, info) {
     if (err) {
       logger.error('Error: ', err);
       return;
@@ -30,7 +30,7 @@ function userDeletedMail (email) {
 }
 
 var job = new Cron({
-  cronTime: '* */1 * * * *',
+  cronTime: '*/15 */15 * * * *',
   onTick: function() {
     var now = moment()._d;
     logger.log(now);

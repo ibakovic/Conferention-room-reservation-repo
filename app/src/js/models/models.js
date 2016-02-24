@@ -3,6 +3,15 @@
 var Backbone = require('backbone');
 var _ = require('lodash');
 
+var User = Backbone.Model.extend({
+  url: '/user',
+  parse: function parse(response) {
+    return response.data;
+  }
+});
+
+var user = new User();
+
 var SingleReservation = Backbone.Model.extend({
   urlRoot: '/reservations',
   parse: function(response) {
@@ -37,6 +46,7 @@ var Rooms = Backbone.Collection.extend({
 var rooms = new Rooms();
 
 if(document.cookie) {
+  user.fetch();
   rooms.fetch();
   reservations.fetch();
 }
@@ -46,5 +56,6 @@ module.exports = {
   Reservation: Reservation,
   reservations: reservations,
   Room: Room,
-  rooms: rooms
+  rooms: rooms,
+  user: user
 };

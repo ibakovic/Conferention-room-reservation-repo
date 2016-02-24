@@ -21,6 +21,15 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     'click #returnToCalendar': 'returnToCalendar'
   },
 
+  initialize: function(options) {
+    this.id = options.reservationId;
+  },
+
+  onDomRefresh: function() {
+    console.log(this.model);
+    Backbone.history.navigate('reservationDetails/' + this.id, {trigger: true});
+  },
+
   returnToCalendar: function() {
     Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
   }

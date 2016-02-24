@@ -69,7 +69,10 @@ var routerController = Marionette.Object.extend({
 
     var reservation = models.reservations.findWhere({id: parseInt(id, 10)});
 
-    resApp.mainRegion.show(new views.UserDetailsView({model: reservation}));
+    resApp.mainRegion.show(new views.UserReservationView({
+      model: reservation,
+      reservationId: id
+    }));
   },
 
   reservationDetails: function(id) {
@@ -85,8 +88,10 @@ var routerController = Marionette.Object.extend({
     //model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
     //model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
 
-    resApp.mainRegion.show(new views.DetailsView({model: reservation}));
-
+    resApp.mainRegion.show(new views.ReservationView({
+      model: reservation,
+      reservationId: id
+    }));
   },
 
   confirmRegistration: function(id) {
@@ -94,6 +99,27 @@ var routerController = Marionette.Object.extend({
 
     views.confirmRegistration.getId(id);
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
+  },
+
+  userDetails: function () {
+    if(!document.cookie) {
+      Backbone.history.navigate('', {trigger: true});
+      return;
+    }
+
+    resApp.roomRegion.$el.hide();
+
+    resApp.mainRegion.show(new views.UserDetailsView({model: models.user}), {preventDestroy: true});
+  },
+
+  resetPassword: function(urlId) {
+    if(!document.cookie) {
+      Backbone.history.navigate('', {trigger: true});
+      return;
+    }
+
+    resApp.roomRegion.$el.hide();
+    resApp.mainRegion.show(new views.ResetPassword({urlId: urlId}), {preventDestroy: true});
   }
 });
 
@@ -105,7 +131,9 @@ var Router = Marionette.AppRouter.extend({
     'calendar/:roomId': 'calendar',
     'userReservationDetails/:id': 'userReservationDetails',
     'reservationDetails/:id': 'reservationDetails',
-    'confirm/:id': 'confirmRegistration'
+    'confirm/:id': 'confirmRegistration',
+    'userDetails': 'userDetails',
+    'resetPassword/:urlId': 'resetPassword'
   }
 });
 
@@ -113,7 +141,9 @@ $('document').ready(function() {
   resApp.on('start', function() {
     var router = new Router();
 
-    Backbone.history.start();
+    if(!Backbone.history.start()) {
+      Backbone.history.navigate('', {trigger: true});
+    }
   });
 
   resApp.start();

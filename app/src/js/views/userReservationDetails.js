@@ -23,6 +23,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     'click #cancelReservation': 'cancelReservation'
   },
 
+  initialize: function(options) {
+    this.id = options.reservationId;
+  },
+
+  onDomRefresh: function() {
+    Backbone.history.navigate('userReservationDetails/' + this.id);
+  },
+
   updateTitle: function() {
     var roomId = this.model.get('roomId');
     var path = 'reservations/' + this.model.get('id');
