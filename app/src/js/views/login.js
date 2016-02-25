@@ -32,7 +32,7 @@ var LoginView = Validate.extend({
 
     popsicle.request({
       method: 'POST',
-      url:'login',
+      url: 'login',
       body: {
         username: username,
         password: password
@@ -53,6 +53,7 @@ var LoginView = Validate.extend({
 
       models.rooms.fetch({reset: true});
       models.reservations.fetch();
+      models.user.fetch();
 
       noty({
           text: res.body.msg,

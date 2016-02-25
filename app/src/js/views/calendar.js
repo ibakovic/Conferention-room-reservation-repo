@@ -55,7 +55,7 @@ var CalendarView = Marionette.CompositeView.extend({
   calendarPromise: q.defer(),
 
   events: {
-    'click #userDetails': 'userDetails',
+    'click #userDetailsRedirect': 'userDetails',
     'click #logout': 'logout'
   },
 

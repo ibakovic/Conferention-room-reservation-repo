@@ -1,5 +1,6 @@
 'use strict';
 
+var noty = require('noty');
 var popsicle = require('popsicle');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -28,6 +29,46 @@ var ResetPasswordView = Validation.extend({
     if(!this.validate(this.ui)) {
       return;
     }
+
+    if(this.ui.newPassword.val().trim() !== this.ui.newPasswordConfirmation.val().trim()) {
+      noty({
+        text: 'Passwords in both fields must match',
+        layout: 'center',
+        type: 'error',
+        timeout: 2500
+      });
+
+      return;
+    }
+
+    var self = this;
+    var url = 'user/' + this.urlId;
+
+    popsicle.request({
+      method: 'PUT',
+      url: url,
+      body: {
+        password: self.ui.newPassword.val().trim()
+      }
+    })
+    .then(function(response) {
+      noty({
+        text: response.body.msg,
+        layout: 'center',
+        type: 'information',
+        timeout: 2500
+      });
+
+      Backbone.history.navigate('userDetails', {trigger: true});
+    })
+    .catch(function(err) {
+      noty({
+        text: err.message,
+        layout: 'center',
+        type: 'error',
+        timeout: 2500
+      });
+    });
   },
 
   cancel: function() {

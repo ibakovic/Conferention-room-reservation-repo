@@ -56,7 +56,7 @@ function login(req, res) {
       return;
     }
 
-    if(!comparePasswords(req.payload.password, user.attributes.password)) {
+    if(!comparePasswords(req.payload.password, user.get('password'))) {
       resData.msg = message.PasswordInvalid;
       res(resData).code(400);
       return;

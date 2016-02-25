@@ -1,7 +1,8 @@
 'use strict';
 
-var noty = require('noty');
+var popsicle = require('popsicle');
 var $ = require('jquery');
+var noty = require('noty');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var userDetaisTemplate = require('../../templates/userDetails.html');
@@ -27,7 +28,24 @@ var UserDetailsView = Marionette.ItemView.extend({
     this.render();
   },
 
-  resetPassword: function() {},
+  resetPassword: function() {
+    var self = this;
+    popsicle.request({
+      method: 'POST',
+      url: 'resetMail'
+    })
+    .then(function resetPasswordRedirect(response) {
+      noty({
+        text: response.body.msg,
+        layout: 'center',
+        type: 'success',
+        timeout: 2500
+      });
+    })
+    .catch(function resetPasswrodFail(err) {
+      console.log(err);
+    });
+  },
 
   backToCalendar: function() {
     Backbone.history.navigate('calendar/2', {trigger: true});
