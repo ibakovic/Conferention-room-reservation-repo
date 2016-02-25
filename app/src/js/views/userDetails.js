@@ -39,7 +39,7 @@ var UserDetailsView = Marionette.ItemView.extend({
         text: response.body.msg,
         layout: 'center',
         type: 'success',
-        timeout: 2500
+        timeout: 4000
       });
     })
     .catch(function resetPasswrodFail(err) {

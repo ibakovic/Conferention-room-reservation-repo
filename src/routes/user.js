@@ -121,28 +121,6 @@ function updatePassword(req, res) {
 
     res(resData).code(400);
   });
-/*
-  var setPassword = {password: bcrypt.hashSync(req.payload.password, bcrypt.genSaltSync(10))};
-
-  User.where(userOptions).save(setPassword, {method: 'update'})
-    .then(function updatePasswordSuccess(user) {
-      if(!user) {
-        resData.msg = message.UserNotFound;
-        res(resData).code(400);
-        return;
-      }
-
-      resData.msg = message.PasswordUpdated;
-      resData.success = true;
-
-      res(resData).code(200);
-    })
-    .catch(function updatePasswordError(err) {
-      resData = {};
-      resData.msg = err.message;
-
-      res(resData).code(400);
-    });*/
 }
 
 /**

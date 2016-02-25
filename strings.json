@@ -9,6 +9,7 @@
   "EmailExists": "A user with this e-mail already exists!",
   "EmailWrongFormat": "Incorrect e-mail format submitted!",
   "EmailSent": "E-mail sent!",
+  "EmailSentResetPassword": "Password is set for reset! \n Check your e-mail for a link to update password. \n Expiration for password update is 2 hours!",
   "EmailNotSent": "Failed to send e-mail",
   "EmailSubject": "Verification for registration confirmation",
   "EmailSubjectUserDeleted": "Conference room booking account deleted",

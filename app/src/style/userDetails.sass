@@ -2,9 +2,21 @@ $defaultMargin: 2%
 
 #userDetails
   font-size: 200%
+  text-align: center
+
+  #userDetailsTitle
+    font-weight: bold
+    color: #66BBCC
 
   .userDetailsWrapper
     margin-top: $defaultMargin
     margin-bottom: $defaultMargin
-    width: 60%
-    margin-left: 20%
+    text-align: left
+
+    .userDetailsLabel
+      width: 49%
+      text-align: right
+      margin-right: $defaultMargin
+
+  #resetPasswordButton, #backToCalendarButton
+    width: 25%
