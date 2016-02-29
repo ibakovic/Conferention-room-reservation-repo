@@ -23,12 +23,18 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     'click #cancelReservation': 'cancelReservation'
   },
 
-  initialize: function(options) {
-    this.id = options.reservationId;
+  collectionEvents: {
+    'add': 'collectionChanged'
   },
 
-  onDomRefresh: function() {
-    Backbone.history.navigate('userReservationDetails/' + this.id);
+  collectionChanged: function() {
+    this.model = this.collection.findWhere({id: this.id});
+    this.render();
+  },
+
+  initialize: function(options) {
+    this.id = parseInt(options.reservationId, 10);
+    this.model = this.collection.findWhere({id: this.id});
   },
 
   updateTitle: function() {

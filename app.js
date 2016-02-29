@@ -1,7 +1,6 @@
 'use strict';
 
 var server = require('./src/lib/initializeServer.js');
-var nunjucs = require('nunjucks');
 require('minilog').enable();
 var logger = require('minilog')('app.js');
 

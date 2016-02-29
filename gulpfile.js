@@ -16,6 +16,6 @@ gulp.task('sass:watch', function () {
 
 gulp.task('lint', function() {
   return gulp.src(['./*.js', './src/**/*.js', './app/src/js/*.js', './app/src/js/**/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
+  .pipe(jshint())
+  .pipe(jshint.reporter('default'));
 });

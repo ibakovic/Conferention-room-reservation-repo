@@ -9,6 +9,8 @@ var Validate = require('./validation.js');
 var loginTemplate = require('../../templates/login.html');
 var noty = require('noty');
 
+//console.log(loginTemplate);
+
 var LoginView = Validate.extend({
   template: loginTemplate,
 

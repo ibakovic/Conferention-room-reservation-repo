@@ -67,10 +67,8 @@ var routerController = Marionette.Object.extend({
 
     resApp.roomRegion.$el.hide();
 
-    var reservation = models.reservations.findWhere({id: parseInt(id, 10)});
-
     resApp.mainRegion.show(new views.UserReservationView({
-      model: reservation,
+      collection: models.reservations,
       reservationId: id
     }));
   },
@@ -83,15 +81,17 @@ var routerController = Marionette.Object.extend({
 
     resApp.roomRegion.$el.hide();
 
-    var reservation = models.reservations.findWhere({id: parseInt(id, 10)});
+    var reservation = new models.SingleReservation({id: parseInt(id, 10)});
 
+    reservation.fetch({
+      success: function(model, response) {
+        resApp.mainRegion.show(new views.ReservationView({
+          model: model
+        }));
+      }
+    });
     //model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
     //model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
-
-    resApp.mainRegion.show(new views.ReservationView({
-      model: reservation,
-      reservationId: id
-    }));
   },
 
   confirmRegistration: function(id) {
@@ -101,7 +101,7 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
   },
 
-  userDetails: function () {
+  userDetails: function (roomId) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -109,7 +109,10 @@ var routerController = Marionette.Object.extend({
 
     resApp.roomRegion.$el.hide();
 
-    resApp.mainRegion.show(new views.UserDetailsView({model: models.user}), {preventDestroy: true});
+    resApp.mainRegion.show(new views.UserDetailsView({
+      model: models.user,
+      roomId: roomId
+    }), {preventDestroy: true});
   },
 
   resetPassword: function(urlId) {
@@ -132,7 +135,7 @@ var Router = Marionette.AppRouter.extend({
     'userReservationDetails/:id': 'userReservationDetails',
     'reservationDetails/:id': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
-    'userDetails': 'userDetails',
+    'userDetails/:roomId': 'userDetails',
     'resetPassword/:urlId': 'resetPassword'
   }
 });

@@ -28,6 +28,10 @@ var UserDetailsView = Marionette.ItemView.extend({
     this.render();
   },
 
+  initialize: function(options) {
+    this.roomId = parseInt(options.roomId, 10);
+  },
+
   resetPassword: function() {
     var self = this;
     popsicle.request({
@@ -48,7 +52,7 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   backToCalendar: function() {
-    Backbone.history.navigate('calendar/2', {trigger: true});
+    Backbone.history.navigate('calendar/' + this.roomId, {trigger: true});
   }
 });
 

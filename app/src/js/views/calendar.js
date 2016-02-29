@@ -17,8 +17,8 @@ var EventView = Marionette.ItemView.extend({
     this.$el.unwrap();
 
     this.parent.getCalendar()
-      .then(function calendarCatched(element) {
-        self.showEvent(element);
+      .then(function calendarCatched($calendar) {
+        self.showEvent($calendar);
       })
       .catch(function calendarError(error) {
         noty({
@@ -30,9 +30,9 @@ var EventView = Marionette.ItemView.extend({
       });
   },
 
-  showEvent: function(element) {
+  showEvent: function($calendar) {
     if(this.model.get('roomId') === this.parent.roomId)
-      $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
+      $calendar.fullCalendar('renderEvent', this.model.attributes, true);
 
     this.$el.remove();
   }
@@ -59,6 +59,38 @@ var CalendarView = Marionette.CompositeView.extend({
     'click #logout': 'logout'
   },
 
+  changeReservationStartAndEnd: function(changeEvent, revertFunc) {
+    var changes = {
+      start: changeEvent._start._d,
+      end: changeEvent._end._d
+    };
+
+    var reservation = this.collection.findWhere({id: changeEvent.id});
+
+    reservation.save(changes, {
+      wait: true,
+      success: function(model, response) {
+        noty({
+          text: response.msg,
+          layout: 'center',
+          type: 'success',
+          timeout: 2500
+        });
+      },
+      error: function(model, response) {
+        noty({
+          text: 'Unauthorized to change this event!',
+          layout: 'center',
+          type: 'error',
+          timeout: 2500
+        });
+        revertFunc();
+      }
+    });
+  },
+
+  select: function() {},
+
   initialize: function(options) {
     this.roomId = parseInt(options.roomId, 10);
   },
@@ -75,43 +107,9 @@ var CalendarView = Marionette.CompositeView.extend({
     this.createCalendar();
   },
 
-  getRoomId: function(roomId) {
-    this.roomId = parseInt(roomId, 10);
-  },
-
   createCalendar: function() {
     var self = this;
     var $calendar = this.$el.find('#calendar');
-
-    function changeReservationStartAndEnd(changeEvent, revertFunc) {
-      var changes = {
-        start: changeEvent._start._d,
-        end: changeEvent._end._d
-      };
-
-      var reservation = self.collection.findWhere({id: changeEvent.id});
-
-      reservation.save(changes, {
-        wait: true,
-        success: function(model, response) {
-          noty({
-            text: response.msg,
-            layout: 'center',
-            type: 'success',
-            timeout: 2500
-          });
-        },
-        error: function(model, response) {
-          noty({
-            text: 'Unauthorized to change this event!',
-            layout: 'center',
-            type: 'error',
-            timeout: 2500
-          });
-          revertFunc();
-        }
-      });
-    }
 
     $calendar.fullCalendar({
       header: {
@@ -190,18 +188,19 @@ var CalendarView = Marionette.CompositeView.extend({
       },
 
       eventResize: function(resizeEvent, delta, revertFunc) {
-        changeReservationStartAndEnd(resizeEvent, revertFunc);
+        self.changeReservationStartAndEnd(resizeEvent, revertFunc);
       },
 
       eventDrop: function(dragEvent, delta, revertFunc) {
-        changeReservationStartAndEnd(dragEvent, revertFunc);
+        self.changeReservationStartAndEnd(dragEvent, revertFunc);
       }
     });
+
     this.calendarPromise.resolve($calendar);
   },
 
   userDetails: function() {
-    Backbone.history.navigate('userDetails', {trigger: true});
+    Backbone.history.navigate('userDetails/' + this.roomId, {trigger: true});
   },
 
   logout: function() {

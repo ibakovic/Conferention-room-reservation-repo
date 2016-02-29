@@ -1,7 +1,4 @@
 var sass = require('hapi-sass');
-var nunjucks = require('nunjucks');
-
-nunjucks.configure('../../app/src/templates', {autoescape: true});
 
 var options = {
     src: '../../app/src/style/style.sass',
@@ -55,19 +52,6 @@ module.exports = function(server) {
 
           return callback(null, true, cached.account);
         });
-      }
-    });
-  });
-
-  //Use default templating engine
-  server.register(require('vision'), function(err) {
-    if (err) {
-      throw err;
-    }
-
-    server.views({
-      engines: {
-        html: nunjucks
       }
     });
   });
