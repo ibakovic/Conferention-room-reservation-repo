@@ -43,7 +43,7 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(new views.RegisterView());
   },
 
-  calendar: function(roomId) {
+  calendar: function(roomId, start, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -51,15 +51,17 @@ var routerController = Marionette.Object.extend({
 
     resApp.mainRegion.show(new views.CalendarView({
       collection: models.reservations,
-      roomId: roomId
-    }), {preventDestroy: true});
+      roomId: roomId,
+      start: start,
+      calendarView: calendarView
+    }));
 
     views.roomsView.getRoomId(roomId);
     resApp.roomRegion.$el.show();
     resApp.roomRegion.show(views.roomsView);
   },
 
-  userReservationDetails: function(id) {
+  userReservationDetails: function(id, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -69,11 +71,12 @@ var routerController = Marionette.Object.extend({
 
     resApp.mainRegion.show(new views.UserReservationView({
       collection: models.reservations,
-      reservationId: id
+      reservationId: id,
+      calendarView: calendarView
     }));
   },
 
-  reservationDetails: function(id) {
+  reservationDetails: function(id, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -86,7 +89,8 @@ var routerController = Marionette.Object.extend({
     reservation.fetch({
       success: function(model, response) {
         resApp.mainRegion.show(new views.ReservationView({
-          model: model
+          model: model,
+          calendarView: calendarView
         }));
       }
     });
@@ -101,7 +105,7 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
   },
 
-  userDetails: function (roomId) {
+  userDetails: function (roomId, dateNumber, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -111,8 +115,10 @@ var routerController = Marionette.Object.extend({
 
     resApp.mainRegion.show(new views.UserDetailsView({
       model: models.user,
-      roomId: roomId
-    }), {preventDestroy: true});
+      roomId: roomId,
+      dateNumber: dateNumber,
+      calendarView: calendarView
+    }));
   },
 
   resetPassword: function(urlId) {
@@ -131,11 +137,11 @@ var Router = Marionette.AppRouter.extend({
   appRoutes: {
     '':'start',
     'register': 'register',
-    'calendar/:roomId': 'calendar',
-    'userReservationDetails/:id': 'userReservationDetails',
-    'reservationDetails/:id': 'reservationDetails',
+    'calendar/:roomId/:start/:calendarView': 'calendar',
+    'userReservationDetails/:id/:calendarView': 'userReservationDetails',
+    'reservationDetails/:id/:calendarView': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
-    'userDetails/:roomId': 'userDetails',
+    'userDetails/:roomId/:dateNumber/:calendarView': 'userDetails',
     'resetPassword/:urlId': 'resetPassword'
   }
 });

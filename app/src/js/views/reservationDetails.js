@@ -5,6 +5,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
+var format = require('string-template');
 var ValidationView = require('./validation.js');
 var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
 
@@ -22,7 +23,14 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   },
 
   returnToCalendar: function() {
-    Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
+    var start = moment(this.model.get('start')).utc().valueOf();
+    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.model.get('roomId'),
+      start: start,
+      calendarView: this.calendarView
+    });
+
+    Backbone.history.navigate(calendarLink, {trigger: true});
   }
 });
 

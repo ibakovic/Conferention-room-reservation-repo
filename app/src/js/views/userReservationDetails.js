@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var noty = require('noty');
+var format = require('string-template');
 var reservationDetailsTemplate = require('../../templates/userReservationDetails.html');
 
 var UserReservationDetailsView = Marionette.ItemView.extend({
@@ -35,6 +36,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   initialize: function(options) {
     this.id = parseInt(options.reservationId, 10);
     this.model = this.collection.findWhere({id: this.id});
+    this.calendarView = options.calendarView;
   },
 
   updateTitle: function() {
@@ -67,7 +69,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
           type: 'success',
           timeout: 2500
         });
-        Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+        var start = moment(self.model.get('start')).utc().valueOf();
+        var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+          roomId: self.model.get('roomId'),
+          start: start,
+          calendarView: self.calendarView
+        });
+
+        Backbone.history.navigate(calendarLink, {trigger: true});
       },
       error: function(model, response) {
         noty({
@@ -102,7 +111,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
                 type: 'error',
                 timeout: 2500
               });
-              Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+              var start = moment(self.model.get('start')).utc().valueOf();
+              var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+                roomId: self.model.get('roomId'),
+                start: start,
+                calendarView: self.calendarView
+              });
+
+              Backbone.history.navigate(calendarLink, {trigger: true});
             },
             error: function(model, response) {
               noty({
@@ -130,7 +146,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   cancelReservation: function() {
-    Backbone.history.navigate('calendar/' + this.model.get('roomId'), {trigger: true});
+    var start = moment(this.model.get('start')).utc().valueOf();
+    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.model.get('roomId'),
+      start: start,
+      calendarView: this.calendarView
+    });
+
+    Backbone.history.navigate(calendarLink, {trigger: true});
   }
 });
 

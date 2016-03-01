@@ -8,6 +8,8 @@ var models = require('../models/models.js');
 var Validate = require('./validation.js');
 var loginTemplate = require('../../templates/login.html');
 var noty = require('noty');
+var moment = require('moment');
+var format = require('string-template');
 
 //console.log(loginTemplate);
 
@@ -64,7 +66,13 @@ var LoginView = Validate.extend({
           timeout: 2500
         });
 
-      Backbone.history.navigate('calendar/3', {trigger: true});
+      var now = moment().utc().valueOf();
+
+      var calendarLink = format('calendar/3/{now}/agendaWeek', {
+        now: now
+      });
+
+      Backbone.history.navigate(calendarLink, {trigger: true});
     })
     .catch(function loginErr(err) {
       noty({

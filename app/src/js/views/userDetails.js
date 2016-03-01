@@ -3,6 +3,7 @@
 var popsicle = require('popsicle');
 var $ = require('jquery');
 var noty = require('noty');
+var format = require('string-template');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var userDetaisTemplate = require('../../templates/userDetails.html');
@@ -29,7 +30,9 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   initialize: function(options) {
+    this.dateNumber = parseInt(options.dateNumber, 10);
     this.roomId = parseInt(options.roomId, 10);
+    this.calendarView = options.calendarView;
   },
 
   resetPassword: function() {
@@ -52,7 +55,12 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   backToCalendar: function() {
-    Backbone.history.navigate('calendar/' + this.roomId, {trigger: true});
+    var calendarLink = format('calendar/{roomId}/{dateNumber}/{calendarView}', {
+      roomId: this.roomId,
+      dateNumber: this.dateNumber,
+      calendarView: this.calendarView
+    });
+    Backbone.history.navigate(calendarLink, {trigger: true});
   }
 });
 
