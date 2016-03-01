@@ -166,6 +166,7 @@ var CalendarView = Marionette.CompositeView.extend({
       defaultDate: self.start,
       defaultView: self.calendarView,
       firstDay: 1,
+      allDaySlot: false,
       fixedWeekCount: false,
       selectOverlap: false,
       eventOverlap: false,
@@ -218,6 +219,14 @@ var CalendarView = Marionette.CompositeView.extend({
       viewRender: function(view, element) {
         self.calendarView = view.type;
         self.start = moment($calendar.fullCalendar('getDate')).utc().valueOf();
+
+        var calendarLink = format('calendar/{roomId}/{start}/{view}', {
+          roomId: self.roomId,
+          start: self.start,
+          view: self.calendarView
+        });
+
+        Backbone.history.navigate(calendarLink);
       }
     });
 

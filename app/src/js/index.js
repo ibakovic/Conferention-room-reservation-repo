@@ -8,6 +8,8 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 
+var now = moment().utc().valueOf();
+
 if (window.__agent) {
   window.__agent.start(Backbone, Marionette);
 }
@@ -25,7 +27,7 @@ resApp.addRegions({
 var routerController = Marionette.Object.extend({
   start: function() {
     if(document.cookie) {
-      Backbone.history.navigate('calendar/2', {trigger: true});
+      Backbone.history.navigate('calendar/2/' + now + '/weekAgenda', {trigger: true});
       return;
     }
 
@@ -35,7 +37,7 @@ var routerController = Marionette.Object.extend({
 
   register: function() {
     if(document.cookie) {
-      Backbone.history.navigate('calendar/2', {trigger: true});
+      Backbone.history.navigate('calendar/2/' + now + '/weekAgenda', {trigger: true});
       return;
     }
 

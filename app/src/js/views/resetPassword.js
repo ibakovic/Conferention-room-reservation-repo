@@ -6,6 +6,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var Validation = require('./validation.js');
+var moment = require('moment');
 var resetPasswordTemplate = require('../../templates/resetPassword.html');
 
 var ResetPasswordView = Validation.extend({
@@ -23,6 +24,9 @@ var ResetPasswordView = Validation.extend({
 
   initialize: function(options) {
     this.urlId = options.urlId;
+
+    var now = moment().utc().valueOf();
+    this.calendarLink = 'calendar/3/' + now + '/agendaWeek';
   },
 
   resetPassword: function() {
@@ -59,7 +63,7 @@ var ResetPasswordView = Validation.extend({
         timeout: 2500
       });
 
-      Backbone.history.navigate('userDetails', {trigger: true});
+      Backbone.history.navigate(self.calendarLink, {trigger: true});
     })
     .catch(function(err) {
       noty({
@@ -72,7 +76,7 @@ var ResetPasswordView = Validation.extend({
   },
 
   cancel: function() {
-    Backbone.history.navigate('userDetails', {trigger: true});
+    Backbone.history.navigate(this.calendarLink, {trigger: true});
   }
 });
 
