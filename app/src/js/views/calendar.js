@@ -187,7 +187,8 @@ var CalendarView = Marionette.CompositeView.extend({
       },
 
       eventClick: function(clickEvent) {
-        userResDetLink = '';
+        var userResDetLink = '';
+        console.log(self.calendarView);
         if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
           userResDetLink = format('userReservationDetails/{id}/{view}', {
             id: clickEvent.id,
@@ -215,7 +216,7 @@ var CalendarView = Marionette.CompositeView.extend({
       },
 
       viewRender: function(view, element) {
-        self.view = view.type;
+        self.calendarView = view.type;
         self.start = moment($calendar.fullCalendar('getDate')).utc().valueOf();
       }
     });
@@ -227,7 +228,7 @@ var CalendarView = Marionette.CompositeView.extend({
     var userDetailsLink = format('userDetails/{roomId}/{start}/{view}', {
       roomId: this.roomId,
       start: this.start,
-      view: this.view
+      view: this.calendarView
     });
 
     Backbone.history.navigate(userDetailsLink, {trigger: true});

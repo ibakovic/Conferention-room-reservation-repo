@@ -22,6 +22,10 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     'click #returnToCalendar': 'returnToCalendar'
   },
 
+  initialize: function(options) {
+    this.calendarView = options.calendarView;
+  },
+
   returnToCalendar: function() {
     var start = moment(this.model.get('start')).utc().valueOf();
     var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
