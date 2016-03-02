@@ -1,5 +1,6 @@
 'use strict';
 
+var format = require('string-template');
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -15,17 +16,27 @@ var RoomView = Marionette.ItemView.extend({
 
   getCalendar: function() {
     var roomId = this.model.get('roomId');
-    Backbone.history.navigate('calendar/' + roomId, {trigger: true});
+
+    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: roomId,
+      start: this.parent.start,
+      calendarView: this.parent.calendarView
+    });
+    Backbone.history.navigate(calendarLink, {trigger: true});
   }
 });
 
 var RoomsView = Marionette.CollectionView.extend({
   childView: RoomView,
 
-  roomId: 0,
+  onBeforeAddChild: function(childView) {
+    childView.parent = this;
+  },
 
-  getRoomId: function(roomId) {
+  getRoomId: function(roomId, start, calendarView) {
     this.roomId = roomId;
+    this.start = start;
+    this.calendarView = calendarView;
   }
 });
 

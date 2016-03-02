@@ -32,8 +32,7 @@ var EventView = Marionette.ItemView.extend({
   },
 
   showEvent: function($calendar) {
-    if(this.model.get('roomId') === this.parent.roomId)
-      $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
+    $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
 
     this.$el.remove();
   }
@@ -189,9 +188,9 @@ var CalendarView = Marionette.CompositeView.extend({
 
       eventClick: function(clickEvent) {
         var userResDetLink = '';
-        console.log(self.calendarView);
         if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
-          userResDetLink = format('userReservationDetails/{id}/{view}', {
+          userResDetLink = format('userReservationDetails/{roomId}/{id}/{view}', {
+            roomId: self.roomId,
             id: clickEvent.id,
             view: self.calendarView
           });
@@ -200,7 +199,8 @@ var CalendarView = Marionette.CompositeView.extend({
           return;
         }
 
-          userResDetLink = format('reservationDetails/{id}/{view}', {
+          userResDetLink = format('reservationDetails/{roomId}/{id}/{view}', {
+            roomId: self.roomId,
             id: clickEvent.id,
             view: self.calendarView
           });

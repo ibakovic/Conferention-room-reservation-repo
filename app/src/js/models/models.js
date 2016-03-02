@@ -2,6 +2,7 @@
 
 var Backbone = require('backbone');
 var _ = require('lodash');
+var deffers = require('../promises/roomReservation.js');
 
 var User = Backbone.Model.extend({
   url: '/user',
@@ -33,6 +34,28 @@ var Reservations = Backbone.Collection.extend({
 
 var reservations = new Reservations();
 
+var RoomOneReservations = Backbone.Collection.extend({
+  url: '/reservations/rooms/1',
+  model: Reservation,
+
+  parse: function(response) {
+    return response.data;
+  }
+});
+
+var roomOneReservations = new RoomOneReservations();
+
+var RoomTwoReservations = Backbone.Collection.extend({
+  url: '/reservations/rooms/2',
+  model: Reservation,
+
+  parse: function(response) {
+    return response.data;
+  }
+});
+
+var roomTwoReservations = new RoomTwoReservations();
+
 var Room = Backbone.Model.extend();
 
 var Rooms = Backbone.Collection.extend({
@@ -48,7 +71,17 @@ var rooms = new Rooms();
 if(document.cookie) {
   user.fetch();
   rooms.fetch();
-  reservations.fetch();
+  roomOneReservations.fetch({
+    success: function(collection, response) {
+      deffers.defRoomOne.resolve(collection);
+    }
+  });
+
+  roomTwoReservations.fetch({
+    success: function(collection, response) {
+      deffers.defRoomTwo.resolve(collection);
+    }
+  });
 }
 
 module.exports = {
@@ -57,5 +90,7 @@ module.exports = {
   reservations: reservations,
   Room: Room,
   rooms: rooms,
-  user: user
+  user: user,
+  roomOneReservations: roomOneReservations,
+  roomTwoReservations: roomTwoReservations
 };

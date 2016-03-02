@@ -8,6 +8,8 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 
+var defers = require('./promises/roomReservation.js');
+
 var now = moment().utc().valueOf();
 
 if (window.__agent) {
@@ -27,7 +29,7 @@ resApp.addRegions({
 var routerController = Marionette.Object.extend({
   start: function() {
     if(document.cookie) {
-      Backbone.history.navigate('calendar/2/' + now + '/weekAgenda', {trigger: true});
+      Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }
 
@@ -37,7 +39,7 @@ var routerController = Marionette.Object.extend({
 
   register: function() {
     if(document.cookie) {
-      Backbone.history.navigate('calendar/2/' + now + '/weekAgenda', {trigger: true});
+      Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }
 
@@ -51,34 +53,59 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.mainRegion.show(new views.CalendarView({
-      collection: models.reservations,
-      roomId: roomId,
-      start: start,
-      calendarView: calendarView
-    }));
+    if(roomId === '1') {
+      defers.defRoomOne.promise
+      .then(function(collection1) {
+        resApp.mainRegion.show(new views.CalendarView({
+          collection: collection1,
+          roomId: roomId,
+          start: start,
+          calendarView: calendarView
+        }));
+      });
+    }
 
-    views.roomsView.getRoomId(roomId);
+    if(roomId === '2') {
+      defers.defRoomTwo.promise
+      .then(function(collection2) {
+        resApp.mainRegion.show(new views.CalendarView({
+          collection: collection2,
+          roomId: roomId,
+          start: start,
+          calendarView: calendarView
+        }));
+      });
+    }
+
+    views.roomsView.getRoomId(roomId, start, calendarView);
     resApp.roomRegion.$el.show();
     resApp.roomRegion.show(views.roomsView);
   },
 
-  userReservationDetails: function(id, calendarView) {
+  userReservationDetails: function(roomId, id, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
 
+    var collection;
+    if(roomId === '1') {
+      collection = models.roomOneReservations;
+    }
+
+    if(roomId === '2')
+      collection = models.roomTwoReservations;
+
     resApp.roomRegion.$el.hide();
 
     resApp.mainRegion.show(new views.UserReservationView({
-      collection: models.reservations,
+      collection: collection,
       reservationId: id,
       calendarView: calendarView
     }));
   },
 
-  reservationDetails: function(id, calendarView) {
+  reservationDetails: function(roomId, id, calendarView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -140,8 +167,8 @@ var Router = Marionette.AppRouter.extend({
     '':'start',
     'register': 'register',
     'calendar/:roomId/:start/:calendarView': 'calendar',
-    'userReservationDetails/:id/:calendarView': 'userReservationDetails',
-    'reservationDetails/:id/:calendarView': 'reservationDetails',
+    'userReservationDetails/:roomId/:id/:calendarView': 'userReservationDetails',
+    'reservationDetails/:roomId/:id/:calendarView': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
     'userDetails/:roomId/:dateNumber/:calendarView': 'userDetails',
     'resetPassword/:urlId': 'resetPassword'
