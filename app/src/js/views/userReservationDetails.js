@@ -15,7 +15,9 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   id: 0,
 
   ui: {
-    newTitle: '#newTitle'
+    newTitle: '#newTitle',
+    detailsStart: '#userDetailsStart',
+    detailsEnd: '#userDetailsEnd'
   },
 
   events: {
@@ -26,6 +28,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   initialize: function(options) {
     this.calendarView = options.calendarView;
+  },
+
+  onShow: function() {
+    var newStart = moment(this.model.get('start')).format('DD.MM.YYYY HH:mm');
+    var newEnd = moment(this.model.get('end')).format('DD.MM.YYYY HH:mm');
+
+    this.ui.detailsStart.text(newStart);
+    this.ui.detailsEnd.text(newEnd);
   },
 
   updateTitle: function() {
