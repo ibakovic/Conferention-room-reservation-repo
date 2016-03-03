@@ -24,18 +24,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     'click #cancelReservation': 'cancelReservation'
   },
 
-  collectionEvents: {
-    'add': 'collectionChanged'
-  },
-
-  collectionChanged: function() {
-    this.model = this.collection.findWhere({id: this.id});
-    this.render();
-  },
-
   initialize: function(options) {
-    this.id = parseInt(options.reservationId, 10);
-    this.model = this.collection.findWhere({id: this.id});
     this.calendarView = options.calendarView;
   },
 
@@ -147,6 +136,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   cancelReservation: function() {
     var start = moment(this.model.get('start')).utc().valueOf();
+
     var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
       roomId: this.model.get('roomId'),
       start: start,

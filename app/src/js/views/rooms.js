@@ -17,11 +17,20 @@ var RoomView = Marionette.ItemView.extend({
   getCalendar: function() {
     var roomId = this.model.get('roomId');
 
+    if(roomId === 1) {
+      window.localStorage.setItem('fetchCollection', 'roomOneReservations');
+    }
+
+    else {
+      window.localStorage.setItem('fetchCollection', 'roomTwoReservations');
+    }
+
     var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
       roomId: roomId,
       start: this.parent.start,
       calendarView: this.parent.calendarView
     });
+
     Backbone.history.navigate(calendarLink, {trigger: true});
   }
 });

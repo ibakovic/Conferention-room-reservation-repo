@@ -32,7 +32,7 @@ var EventView = Marionette.ItemView.extend({
   },
 
   showEvent: function($calendar) {
-    $('#calendar').fullCalendar('renderEvent', this.model.attributes, true);
+    this.parent.ui.$calendar.fullCalendar('renderEvent', this.model.attributes, true);
 
     this.$el.remove();
   }
@@ -226,7 +226,7 @@ var CalendarView = Marionette.CompositeView.extend({
           view: self.calendarView
         });
 
-        Backbone.history.navigate(calendarLink);
+        Backbone.history.navigate(calendarLink, {trigger: true});
       }
     });
 

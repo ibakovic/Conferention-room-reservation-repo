@@ -2,7 +2,7 @@
 
 var Backbone = require('backbone');
 var _ = require('lodash');
-var deffers = require('../promises/roomReservation.js');
+var defer = require('../promises/roomReservation.js');
 
 var User = Backbone.Model.extend({
   url: '/user',
@@ -71,17 +71,22 @@ var rooms = new Rooms();
 if(document.cookie) {
   user.fetch();
   rooms.fetch();
-  roomOneReservations.fetch({
-    success: function(collection, response) {
-      deffers.defRoomOne.resolve(collection);
-    }
-  });
 
-  roomTwoReservations.fetch({
-    success: function(collection, response) {
-      deffers.defRoomTwo.resolve(collection);
-    }
-  });
+  if(window.localStorage.getItem('fetchCollection') === 'roomOneReservations') {
+    roomOneReservations.fetch({
+      success: function(collection1, response) {
+        defer.resolve(collection1);
+      }
+    });
+  }
+
+  if(window.localStorage.getItem('fetchCollection') === 'roomTwoReservations') {
+    roomTwoReservations.fetch({
+      success: function(collection2, response) {
+        defer.resolve(collection2);
+      }
+    });
+  }
 }
 
 module.exports = {

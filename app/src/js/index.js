@@ -7,8 +7,8 @@ var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-
-var defers = require('./promises/roomReservation.js');
+var noty = require('noty');
+var defer = require('./promises/roomReservation.js');
 
 var now = moment().utc().valueOf();
 
@@ -47,39 +47,71 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(new views.RegisterView());
   },
 
-  calendar: function(roomId, start, calendarView) {
+  calendar: function(roomId, start, eventView) {
     if(!document.cookie) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
 
-    if(roomId === '1') {
-      defers.defRoomOne.promise
-      .then(function(collection1) {
+    views.roomsView.getRoomId(roomId, start, eventView);
+    resApp.roomRegion.$el.show();
+    resApp.roomRegion.show(views.roomsView);
+
+    var firstCollection;
+    var secondCollection;
+
+    if(window.localStorage.getItem('fetchCollection') === 'roomOneReservations') {
+      firstCollection = models.roomOneReservations;
+      secondCollection = models.roomTwoReservations;
+    }
+
+    if(window.localStorage.getItem('fetchCollection') === 'roomTwoReservations') {
+      firstCollection = models.roomTwoReservations;
+      secondCollection = models.roomOneReservations;
+    }
+
+    if((firstCollection.length !== 0) && (secondCollection.length !== 0)) {
+      defer.resolve(firstCollection);
+      resApp.mainRegion.show(new views.CalendarView({
+        collection: firstCollection,
+        roomId: roomId,
+        start: start,
+        calendarView: eventView
+      }));
+
+      return;
+    }
+
+    firstCollection.fetch({
+      success: function(collection1, response) {
+        defer.resolve(collection1);
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection1,
           roomId: roomId,
           start: start,
-          calendarView: calendarView
+          calendarView: eventView
         }));
-      });
-    }
 
-    if(roomId === '2') {
-      defers.defRoomTwo.promise
-      .then(function(collection2) {
-        resApp.mainRegion.show(new views.CalendarView({
-          collection: collection2,
-          roomId: roomId,
-          start: start,
-          calendarView: calendarView
-        }));
-      });
-    }
+        var newRoomId = parseInt(roomId, 10) + 1;
 
-    views.roomsView.getRoomId(roomId, start, calendarView);
-    resApp.roomRegion.$el.show();
-    resApp.roomRegion.show(views.roomsView);
+        if(newRoomId % 2 === 0)
+          newRoomId = 2;
+        else
+          newRoomId = 1;
+
+        secondCollection.fetch();
+      },
+      error: function(error) {
+        console.log(error);
+
+         noty({
+          text: 'Failed to load your data!',
+          layout: 'center',
+          type: 'error',
+          timeout: 2500
+        });
+      }
+    });
   },
 
   userReservationDetails: function(roomId, id, calendarView) {
@@ -88,21 +120,20 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    var collection;
-    if(roomId === '1') {
-      collection = models.roomOneReservations;
-    }
+    defer.promise
+    .then(function(collection) {
+      resApp.roomRegion.$el.hide();
 
-    if(roomId === '2')
-      collection = models.roomTwoReservations;
+      var reservation = collection.findWhere({id: parseInt(id, 10)});
 
-    resApp.roomRegion.$el.hide();
-
-    resApp.mainRegion.show(new views.UserReservationView({
-      collection: collection,
-      reservationId: id,
-      calendarView: calendarView
-    }));
+      resApp.mainRegion.show(new views.UserReservationView({
+        model: reservation,
+        calendarView: calendarView
+      }));
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
   },
 
   reservationDetails: function(roomId, id, calendarView) {
@@ -110,6 +141,10 @@ var routerController = Marionette.Object.extend({
       Backbone.history.navigate('', {trigger: true});
       return;
     }
+
+    /*
+      needs a model from the collection
+     */
 
     resApp.roomRegion.$el.hide();
 

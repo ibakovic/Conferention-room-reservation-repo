@@ -2,10 +2,6 @@
 
 var q = require('q');
 
-var defRoomOne = q.defer();
-var defRoomTwo = q.defer();
+var defer = q.defer();
 
-module.exports = {
-  defRoomOne: defRoomOne,
-  defRoomTwo: defRoomTwo
-};
+module.exports = defer;
