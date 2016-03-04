@@ -8,6 +8,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var noty = require('noty');
+var q = require('q');
 var defer = require('./promises/roomReservation.js');
 
 var now = moment().utc().valueOf();
@@ -71,7 +72,9 @@ var routerController = Marionette.Object.extend({
     }
 
     if((firstCollection.length !== 0) && (secondCollection.length !== 0)) {
+      defer = q.defer();
       defer.resolve(firstCollection);
+
       resApp.mainRegion.show(new views.CalendarView({
         collection: firstCollection,
         roomId: roomId,
@@ -84,6 +87,7 @@ var routerController = Marionette.Object.extend({
 
     firstCollection.fetch({
       success: function(collection1, response) {
+        defer = q.defer();
         defer.resolve(collection1);
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection1,

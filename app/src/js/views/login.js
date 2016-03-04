@@ -13,8 +13,6 @@ var format = require('string-template');
 var deffers = require('../promises/roomReservation.js');
 var q = require('q');
 
-//console.log(loginTemplate);
-
 var LoginView = Validate.extend({
   template: loginTemplate,
 

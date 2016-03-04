@@ -35,7 +35,6 @@ var rprView = Validation.extend({
       }
     })
     .then(function resetPasswordRequestSuccess(response) {
-      console.log(response);
       noty({
         text: response.body.msg,
         layout: 'center',

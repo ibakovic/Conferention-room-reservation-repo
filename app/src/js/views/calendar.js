@@ -32,7 +32,14 @@ var EventView = Marionette.ItemView.extend({
   },
 
   showEvent: function($calendar) {
-    this.parent.ui.$calendar.fullCalendar('renderEvent', this.model.attributes, true);
+    var renderEventOptions = this.model.attributes;
+    renderEventOptions.editable = false;
+
+    if(this.model.get('userId') === parseInt(window.localStorage.getItem('userId'))) {
+      renderEventOptions.editable = true;
+    }
+
+    $calendar.fullCalendar('renderEvent', this.model.attributes, true);
 
     this.$el.remove();
   }
@@ -52,7 +59,7 @@ var CalendarView = Marionette.CompositeView.extend({
 
   roomId: 0,
 
-  calendarPromise: q.defer(),
+  calendarPromise: null,
 
   ui: {
     $calendar: '#calendar'
@@ -137,6 +144,8 @@ var CalendarView = Marionette.CompositeView.extend({
     this.roomId = parseInt(options.roomId, 10);
     this.start = parseInt(options.start, 10);
     this.calendarView = options.calendarView;
+
+    this.calendarPromise = q.defer();
   },
 
   onBeforeAddChild: function(childView) {
