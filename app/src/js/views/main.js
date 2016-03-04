@@ -12,6 +12,7 @@ var RoomsView = require('./rooms.js');
 var ConfirmRegistration = require('./confirmRegistration.js');
 var UserDetailsView = require('./userDetails.js');
 var ResetPassword = require('./resetPassword.js');
+var ResetPasswordRequest = require('./resetPasswordRequest.js');
 
 var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
@@ -25,5 +26,6 @@ module.exports = {
   roomsView: roomsView,
   confirmRegistration: confirmRegistration,
   UserDetailsView: UserDetailsView,
-  ResetPassword: ResetPassword
+  ResetPassword: ResetPassword,
+  ResetPasswordRequest: ResetPasswordRequest
 };

@@ -26,7 +26,6 @@ var ResetPasswordView = Validation.extend({
     this.urlId = options.urlId;
 
     var now = moment().utc().valueOf();
-    this.calendarLink = 'calendar/3/' + now + '/agendaWeek';
   },
 
   resetPassword: function() {
@@ -63,7 +62,7 @@ var ResetPasswordView = Validation.extend({
         timeout: 2500
       });
 
-      Backbone.history.navigate(self.calendarLink, {trigger: true});
+      Backbone.history.navigate('', {trigger: true});
     })
     .catch(function(err) {
       noty({
@@ -76,7 +75,7 @@ var ResetPasswordView = Validation.extend({
   },
 
   cancel: function() {
-    Backbone.history.navigate(this.calendarLink, {trigger: true});
+    Backbone.history.navigate('', {trigger: true});
   }
 });
 

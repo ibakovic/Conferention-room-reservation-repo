@@ -25,7 +25,8 @@ var LoginView = Validate.extend({
 
   events: {
     'click #loginSubmit': 'loginSubmit',
-    'click #signUp': 'signUp'
+    'click #signUp': 'signUp',
+    'click #resetPasswordRequest': 'resetPasswordRequest'
   },
 
   loginSubmit: function() {
@@ -101,6 +102,10 @@ var LoginView = Validate.extend({
 
   signUp: function() {
     Backbone.history.navigate('register', {trigger: true});
+  },
+
+  resetPasswordRequest: function() {
+    Backbone.history.navigate('resetPasswordRequest', {trigger: true});
   }
 });
 

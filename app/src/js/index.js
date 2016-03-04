@@ -186,13 +186,18 @@ var routerController = Marionette.Object.extend({
   },
 
   resetPassword: function(urlId) {
-    if(!document.cookie) {
-      Backbone.history.navigate('', {trigger: true});
+    resApp.roomRegion.$el.hide();
+    resApp.mainRegion.show(new views.ResetPassword({urlId: urlId}), {preventDestroy: true});
+  },
+
+  resetPasswordRequest: function() {
+    if(document.cookie) {
+      Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }
 
     resApp.roomRegion.$el.hide();
-    resApp.mainRegion.show(new views.ResetPassword({urlId: urlId}), {preventDestroy: true});
+    resApp.mainRegion.show(new views.ResetPasswordRequest());
   }
 });
 
@@ -206,7 +211,8 @@ var Router = Marionette.AppRouter.extend({
     'reservationDetails/:roomId/:id/:calendarView': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
     'userDetails/:roomId/:dateNumber/:calendarView': 'userDetails',
-    'resetPassword/:urlId': 'resetPassword'
+    'resetPassword/:urlId': 'resetPassword',
+    'resetPasswordRequest': 'resetPasswordRequest'
   }
 });
 

@@ -64,5 +64,6 @@
 
   "RoomIdNotFound": "Room ID was not found!",
 
-  "NotAuthrized": "You're not authorized to make changes!"
+  "NotAuthrized": "You're not authorized to make changes!",
+  "userStringNotFound": "Username or password required!"
 }

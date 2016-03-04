@@ -10,6 +10,9 @@ require('./src/lib/checkExpirations.js');
 //All dependecies
 require('./src/lib/serverRegisters.js')(server);
 
+//Change password routes
+require('./src/routes/changePassword.js')(server);
+
 //User routes
 require('./src/routes/user.js')(server);
 

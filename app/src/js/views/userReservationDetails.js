@@ -17,13 +17,16 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   ui: {
     newTitle: '#newTitle',
     detailsStart: '#userDetailsStart',
-    detailsEnd: '#userDetailsEnd'
+    detailsEnd: '#userDetailsEnd',
+    updateTitle: '#updateTitle',
+    deleteReservation: '#deleteReservation',
+    cancelReservation: '#cancelReservation'
   },
 
   events: {
-    'click #updateTitle': 'updateTitle',
-    'click #deleteReservation': 'deleteReservation',
-    'click #cancelReservation': 'cancelReservation'
+    'click @ui.updateTitle': 'updateTitle',
+    'click @ui.deleteReservation': 'deleteReservation',
+    'click @ui.cancelReservation': 'cancelReservation'
   },
 
   initialize: function(options) {

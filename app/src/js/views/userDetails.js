@@ -6,6 +6,7 @@ var noty = require('noty');
 var format = require('string-template');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
+var moment = require('moment');
 var userDetaisTemplate = require('../../templates/userDetails.html');
 
 var UserDetailsView = Marionette.ItemView.extend({
@@ -13,7 +14,8 @@ var UserDetailsView = Marionette.ItemView.extend({
 
   ui: {
     resetPassword: '#resetPasswordButton',
-    back: '#backToCalendarButton'
+    back: '#backToCalendarButton',
+    userCreatedAt: '#userCreatedAt'
   },
 
   events: {
@@ -35,11 +37,20 @@ var UserDetailsView = Marionette.ItemView.extend({
     this.calendarView = options.calendarView;
   },
 
+  onRender: function() {
+    var newCreatedAt = moment(this.model.get('createdAt')).format('DD.MM.YYYY HH:mm');
+    this.ui.userCreatedAt.text(newCreatedAt);
+  },
+
   resetPassword: function() {
     var self = this;
+
     popsicle.request({
       method: 'POST',
-      url: 'resetMail'
+      url: 'resetMail',
+      body: {
+        userStringId: self.model.get('username')
+      }
     })
     .then(function resetPasswordRedirect(response) {
       noty({
