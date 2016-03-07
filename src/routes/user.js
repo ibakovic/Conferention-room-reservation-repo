@@ -30,34 +30,34 @@ function getUserInfo(req, res) {
   var userOptions = {id: parseInt(req.auth.credentials, 10)};
 
   User.where(userOptions).fetch()
-    .then(function getUserSuccess(user) {
-      if(!user) {
-        resData.msg = message.UserNotFound;
-        res(resData).code(400);
-        return;
-      }
-
-      resData.msg = message.UserFound;
-      resData.success = true;
-      resData.data = {
-        username: user.get('username'),
-        id: user.get('id'),
-        firstName: user.get('firstName'),
-        lastName: user.get('lastName'),
-        email: user.get('email'),
-        createdAt: user.get('createdAt'),
-        password: ''
-      };
-
-      res(resData).code(200);
-    })
-    .catch(function getUserError(err) {
-      resData = {};
-      resData.success = false;
-      resData.msg = err.message;
-
+  .then(function getUserSuccess(user) {
+    if(!user) {
+      resData.msg = message.UserNotFound;
       res(resData).code(400);
-    });
+      return;
+    }
+
+    resData.msg = message.UserFound;
+    resData.success = true;
+    resData.data = {
+      username: user.get('username'),
+      id: user.get('id'),
+      firstName: user.get('firstName'),
+      lastName: user.get('lastName'),
+      email: user.get('email'),
+      createdAt: user.get('createdAt'),
+      password: ''
+    };
+
+    res(resData).code(200);
+  })
+  .catch(function getUserError(err) {
+    resData = {};
+    resData.success = false;
+    resData.msg = err.message;
+
+    res(resData).code(400);
+  });
 }
 
 var routeObjects = [{

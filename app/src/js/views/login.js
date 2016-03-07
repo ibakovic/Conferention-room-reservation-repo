@@ -58,21 +58,7 @@ var LoginView = Validate.extend({
       window.localStorage.setItem('fetchCollection', 'roomOneReservations');
 
       models.rooms.fetch({reset: true});
-      //models.reservations.fetch();
       models.user.fetch();
-/*
-      models.roomOneReservations.fetch({
-        success: function(collection, response) {
-          deffers.defRoomOne.resolve(collection);
-        }
-      });
-
-      models.roomTwoReservations.fetch({
-        success: function(collection, response) {
-          deffers.defRoomTwo.resolve(collection);
-        }
-      });
-*/
       noty({
           text: res.body.msg,
           layout: 'center',

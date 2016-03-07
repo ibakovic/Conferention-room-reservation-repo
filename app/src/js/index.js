@@ -189,9 +189,12 @@ var routerController = Marionette.Object.extend({
     }));
   },
 
-  resetPassword: function(urlId) {
+  resetPassword: function(urlId, md5) {
     resApp.roomRegion.$el.hide();
-    resApp.mainRegion.show(new views.ResetPassword({urlId: urlId}), {preventDestroy: true});
+    resApp.mainRegion.show(new views.ResetPassword({
+      urlId: urlId,
+      md5: md5
+    }), {preventDestroy: true});
   },
 
   resetPasswordRequest: function() {
@@ -215,7 +218,7 @@ var Router = Marionette.AppRouter.extend({
     'reservationDetails/:roomId/:id/:calendarView': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
     'userDetails/:roomId/:dateNumber/:calendarView': 'userDetails',
-    'resetPassword/:urlId': 'resetPassword',
+    'resetPassword/:urlId/:md5': 'resetPassword',
     'resetPasswordRequest': 'resetPasswordRequest'
   }
 });

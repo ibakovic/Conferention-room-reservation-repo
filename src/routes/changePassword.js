@@ -7,6 +7,7 @@ var nodemailer = require('nodemailer');
 var randomString = require('randomstring');
 var format = require('string-template');
 var moment = require('moment');
+var md5 = require('md5');
 var logger = require('minilog')('changePassword.js');
 
 /**
@@ -23,6 +24,7 @@ var logger = require('minilog')('changePassword.js');
  * @augments res using ApiResponse format
  */
 function updatePassword(req, res) {
+  var response = res;
   var resData = {};
   resData.success = false;
 
@@ -33,7 +35,6 @@ function updatePassword(req, res) {
   }
 
   var userOptions = {
-    id: parseInt(req.auth.credentials, 10),
     resetPasswordId: req.params.resetPasswordId
   };
 
@@ -41,6 +42,17 @@ function updatePassword(req, res) {
   .then(function updatePasswordFetchSuccess(user) {
     if(!user) {
       resData.msg = message.UserNotFound;
+      res(resData).code(400);
+      return;
+    }
+
+    var md5Request = user.get('username') + '/' + req.params.resetPasswordId;
+    md5Request = md5(md5Request);
+
+    if(md5Request !== req.params.md5) {
+      resData.msg = message.PasswordResetCorrupted;
+      resData.md5 = req.params.md5;
+      resData.md5Request = md5Request;
       res(resData).code(400);
       return;
     }
@@ -61,6 +73,7 @@ function updatePassword(req, res) {
 
       resData.msg = message.PasswordUpdated;
       resData.success = true;
+      resData.data = response;
 
       res(resData).code(200);
     })
@@ -117,11 +130,15 @@ function resetPasswordEmail(req, res) {
     resetPasswordId = resetPasswordId.replace(/\//g,'*');
     resetPasswordId = resetPasswordId.replace(/\./g,'*');
 
-    var url = format('{protocol}://{host}:{port}/#resetPassword/{id}', {
+    var md5Content = user.get('username') + '/' + resetPasswordId;
+    var md5Response = md5(md5Content);
+
+    var url = format('{protocol}://{host}:{port}/#resetPassword/{id}/{md5}', {
       protocol: req.server.info.protocol,
       host: req.info.hostname,
       port: req.server.info.port,
-      id: resetPasswordId
+      id: resetPasswordId,
+      md5: md5Response
     });
 
     var mailOptions = {
@@ -155,7 +172,7 @@ function resetPasswordEmail(req, res) {
 
         resData.msg = message.EmailSentResetPassword;
         resData.success = true;
-        resData.data = updatedUser;
+        resData.md5 = md5Response;
 
         res(resData).code(200);
       })
@@ -178,7 +195,7 @@ function resetPasswordEmail(req, res) {
 module.exports = function(server) {
   server.route({
     method: 'PUT',
-    path: '/user/{resetPasswordId}',
+    path: '/user/{resetPasswordId}/{md5}',
     config: {
       handler: updatePassword,
       auth: {

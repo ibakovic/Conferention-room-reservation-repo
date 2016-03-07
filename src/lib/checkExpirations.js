@@ -29,6 +29,34 @@ function userMail (email, subject, text) {
   });
 }
 
+function expirationCheck(now, users, field, subject, text) {
+  users.forEach(function(user) {
+    var passwordResetDiff = moment(now).diff(user.get(field), 'minutes');
+
+    var passwordResetSet = {
+      resetPasswordId: null
+    };
+
+    if(passwordResetDiff >= 30) {
+      if(field === 'resetPasswordCreatedAt')
+        passwordResetSet.resetPasswordCreatedAt = null;
+
+      if(field === 'createdAt')
+        passwordResetSet.createdAt = null;
+
+      user.save(passwordResetSet, {method: 'update'})
+      .then(function(updatedUser) {
+        logger.log('Time runned out!');
+
+        userMail(updatedUser.get('email'), subject, text);
+      })
+      .catch(function(err) {
+        logger.error(err);
+      });
+    }
+  });
+}
+
 var job = new Cron({
   cronTime: '*/15 */15 * * * *',
   onTick: function() {
@@ -37,26 +65,7 @@ var job = new Cron({
 
     User.where('resetPasswordCreatedAt', '<>', 'null').fetchAll()
     .then(function(users) {
-      users.forEach(function(user) {
-        var passwordResetDiff = moment(now).diff(user.get('resetPasswordCreatedAt'), 'minutes');
-
-        if(passwordResetDiff >= 120) {
-          var passwordResetSet = {
-            resetPasswordCreatedAt: null,
-            resetPasswordId: null
-          };
-
-          user.save(passwordResetSet, {method: 'update'})
-          .then(function(updatedUser) {
-            logger.log('Password reset failed!');
-
-            userMail(updatedUser.get('email'), message.EmailSubjectResetPassword, message.EmailTextResetPasswordFail);
-          })
-          .catch(function(err) {
-            logger.error(err);
-          });
-        }
-      });
+      expirationCheck(now, users, 'resetPasswordCreatedAt', message.EmailSubjectResetPassword, message.EmailTextResetPasswordFail);
     })
     .catch(function(err) {
       logger.error('err: ', err);
@@ -64,19 +73,7 @@ var job = new Cron({
 
     User.where('verificationId', '<>', 'null').fetchAll()
     .then(function usersFound(users) {
-      users.forEach(function(user) {
-
-        var timeDifference = moment(now).diff(user.get('createdAt'), 'minutes');
-
-        if(timeDifference >= 30) {
-          logger.warn('User about to be deleted!');
-          user.destroy();
-
-          logger.log('User ' + user.get('username') + ' deleted');
-          //send e-mail
-          userMail(user.get('email'), message.EmailSubjectUserDeleted, message.EmailTextUserDeleted);
-        }
-      });
+      expirationCheck(now, users, 'createdAt', message.EmailSubjectUserDeleted, message.EmailTextUserDeleted);
     })
     .catch(function(err) {
       logger.error('err: ', err);

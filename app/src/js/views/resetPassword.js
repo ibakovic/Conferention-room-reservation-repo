@@ -12,6 +12,10 @@ var resetPasswordTemplate = require('../../templates/resetPassword.html');
 var ResetPasswordView = Validation.extend({
   template: resetPasswordTemplate,
 
+  urlId: '',
+
+  md5: '',
+
   ui: {
     newPassword: '#newPassword',
     newPasswordConfirmation: '#newPasswordConfirmation'
@@ -24,6 +28,7 @@ var ResetPasswordView = Validation.extend({
 
   initialize: function(options) {
     this.urlId = options.urlId;
+    this.md5 = options.md5;
 
     var now = moment().utc().valueOf();
   },
@@ -33,7 +38,10 @@ var ResetPasswordView = Validation.extend({
       return;
     }
 
-    if(this.ui.newPassword.val().trim() !== this.ui.newPasswordConfirmation.val().trim()) {
+    var newPassword = this.ui.newPassword.val().trim();
+    var newPasswordConfirmation = this.ui.newPasswordConfirmation.val().trim();
+
+    if(newPassword !== newPasswordConfirmation) {
       noty({
         text: 'Passwords in both fields must match',
         layout: 'center',
@@ -45,7 +53,7 @@ var ResetPasswordView = Validation.extend({
     }
 
     var self = this;
-    var url = 'user/' + this.urlId;
+    var url = 'user/' + this.urlId + '/' + this.md5;
 
     popsicle.request({
       method: 'PUT',

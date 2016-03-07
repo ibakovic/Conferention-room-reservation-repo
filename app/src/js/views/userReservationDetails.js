@@ -29,6 +29,60 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     'click @ui.cancelReservation': 'cancelReservation'
   },
 
+  updateTitleSuccess: function(model, response) {
+    noty({
+      text: response.msg,
+      layout: 'center',
+      type: 'success',
+      timeout: 2500
+    });
+    var start = moment(this.model.get('start')).utc().valueOf();
+    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.model.get('roomId'),
+      start: start,
+      calendarView: this.calendarView
+    });
+
+    Backbone.history.navigate(calendarLink, {trigger: true});
+  },
+
+  error: function(model, response) {
+    noty({
+      text: response.responseJSON.msg,
+      layout: 'center',
+      type: 'error',
+      timeout: 2500
+    });
+  },
+
+  deleteReservationSuccess: function(model, response) {
+    noty({
+      text: response.msg,
+      layout: 'center',
+      type: 'error',
+      timeout: 2500
+    });
+    var start = moment(this.model.get('start')).utc().valueOf();
+    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.model.get('roomId'),
+      start: start,
+      calendarView: this.calendarView
+    });
+
+    Backbone.history.navigate(calendarLink, {trigger: true});
+  },
+
+  deleteReservationYes: function($noty) {
+    var self = this;
+
+    this.model.destroy({
+      wait: true,
+      success: self.deleteReservationSuccess.bind(self),
+      error: self.error.bind(self)
+    });
+    $noty.close();
+  },
+
   initialize: function(options) {
     this.calendarView = options.calendarView;
   },
@@ -64,30 +118,8 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
     this.model.save(changes, {
       wait: true,
-      success: function(model, response) {
-        noty({
-          text: response.msg,
-          layout: 'center',
-          type: 'success',
-          timeout: 2500
-        });
-        var start = moment(self.model.get('start')).utc().valueOf();
-        var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-          roomId: self.model.get('roomId'),
-          start: start,
-          calendarView: self.calendarView
-        });
-
-        Backbone.history.navigate(calendarLink, {trigger: true});
-      },
-      error: function(model, response) {
-        noty({
-          text: response.responseJSON.msg,
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
-      }
+      success: self.updateTitleSuccess.bind(self),
+      error: self.error.bind(self)
     });
   },
 
@@ -103,36 +135,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       buttons: [{
         addClass: 'btn btn-success',
         text: 'Yes',
-        onClick: function($noty) {
-          self.model.destroy({
-            wait: true,
-            success: function(model, response) {
-              noty({
-                text: response.msg,
-                layout: 'center',
-                type: 'error',
-                timeout: 2500
-              });
-              var start = moment(self.model.get('start')).utc().valueOf();
-              var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-                roomId: self.model.get('roomId'),
-                start: start,
-                calendarView: self.calendarView
-              });
-
-              Backbone.history.navigate(calendarLink, {trigger: true});
-            },
-            error: function(model, response) {
-              noty({
-                text: response.responseJSON.msg,
-                layout: 'center',
-                type: 'error',
-                timeout: 2500
-              });
-            }
-          });
-          $noty.close();
-        }
+        onClick: self.deleteReservationYes.bind(self)
       },{
         addClass: 'btn btn-danger',
         text: 'No',
@@ -141,10 +144,6 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
         }
       }]
     });
-
-    if(confirm) {
-
-    }
   },
 
   cancelReservation: function() {

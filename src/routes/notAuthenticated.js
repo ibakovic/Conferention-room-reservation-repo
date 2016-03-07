@@ -7,6 +7,7 @@ var moment = require('moment');
 var isEmail = require('is-email');
 var nodemailer = require('nodemailer');
 var format = require('string-template');
+var logger = require('minilog')('notAuthenticated.js');
 var uuid = 1;
 
 /**
@@ -292,3 +293,6 @@ module.exports = function(server) {
     handler: logout
   });
 };
+
+
+//res(resData).header('content-md5', 'md5 content').code(200);
