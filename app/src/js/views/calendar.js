@@ -70,8 +70,23 @@ var CalendarView = Marionette.CompositeView.extend({
     'click #logout': 'logout'
   },
 
+  addEventSuccess: function(model, response) {
+    //Preuzimam model iz baze samo zbog id-a
+    this.collection.push(model.get('data'));
+
+    noty({
+      text: response.msg,
+      layout: 'center',
+      type: 'success',
+      timeout: 2500
+    });
+  },
+
   changeReservationStartAndEnd: function(changeEvent, revertFunc) {
+    var self =this;
+
     var changes = {
+      roomId: self.roomId,
       start: changeEvent._start._d,
       end: changeEvent._end._d
     };
@@ -125,19 +140,43 @@ var CalendarView = Marionette.CompositeView.extend({
 
       var newEvent = new self.collection.model(eventData);
 
-      newEvent.save(null, {success: function(model, response) {
-        //Preuzimam model iz baze samo zbog id-a
-        self.collection.push(model.get('data'));
-
-        noty({
-          text: response.msg,
-          layout: 'center',
-          type: 'success',
-          timeout: 2500
-        });
-      }});
+      newEvent.save(null, {
+        success: self.addEventSuccess.bind(self),
+        error: function(model, response) {
+          console.log(response);
+        }
+      });
     }
     $('#calendar').fullCalendar('unselect');
+  },
+
+  renderEvent: function(event, element) {
+    if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
+      element.css('opacity', '0.55');
+      element.css('border-style', 'none');
+    }
+  },
+
+  clickEvent: function(clickEvent) {
+    var userResDetLink = '';
+    if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
+      userResDetLink = format('userReservationDetails/{roomId}/{id}/{view}', {
+        roomId: this.roomId,
+        id: clickEvent.id,
+        view: this.calendarView
+      });
+
+      Backbone.history.navigate(userResDetLink, {trigger: true});
+      return;
+    }
+
+    userResDetLink = format('reservationDetails/{roomId}/{id}/{view}', {
+      roomId: this.roomId,
+      id: clickEvent.id,
+      view: this.calendarView
+    });
+
+    Backbone.history.navigate(userResDetLink, {trigger:true});
   },
 
   initialize: function(options) {
@@ -188,34 +227,9 @@ var CalendarView = Marionette.CompositeView.extend({
       editable: true,
       eventLimit: true,
 
-      eventRender: function(event, element) {
-        if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
-          element.css('opacity', '0.55');
-          element.css('border-style', 'none');
-        }
-      },
+      eventRender: self.renderEvent.bind(self),
 
-      eventClick: function(clickEvent) {
-        var userResDetLink = '';
-        if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
-          userResDetLink = format('userReservationDetails/{roomId}/{id}/{view}', {
-            roomId: self.roomId,
-            id: clickEvent.id,
-            view: self.calendarView
-          });
-
-          Backbone.history.navigate(userResDetLink, {trigger: true});
-          return;
-        }
-
-          userResDetLink = format('reservationDetails/{roomId}/{id}/{view}', {
-            roomId: self.roomId,
-            id: clickEvent.id,
-            view: self.calendarView
-          });
-
-        Backbone.history.navigate(userResDetLink, {trigger:true});
-      },
+      eventClick: self.clickEvent.bind(self),
 
       eventResize: function(resizeEvent, delta, revertFunc) {
         self.changeReservationStartAndEnd(resizeEvent, revertFunc);

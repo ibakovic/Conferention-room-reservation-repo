@@ -5,9 +5,28 @@ var User = require('../models/models.js').User;
 var Room = require('../models/models.js').Room;
 var Reservation = require('../models/models.js').Reservation;
 var moment = require('moment');
+var logger = require('minilog')('reservations.js');
 var success;
 var message = require('../../strings.json');
 var serverRouter = require('../lib/serverRoutes.js');
+
+function overlapCheck(id, reservations, roomId, start, end) {
+  var success = true;
+
+  _.map(reservations.models, function(reservation) {
+    if(roomId === reservation.get('roomId')) {
+      if(reservation.get('id') !== id) {
+        if(moment(start).diff(reservation.get('end'), 'minutes') < 0) {
+          if(moment(end).diff(reservation.get('start'), 'minutes') > 0) {
+            success = false;
+          }
+        }
+      }
+    }
+  });
+
+  return success;
+}
 
 /**
  * @typedef ApiResponse
@@ -140,16 +159,7 @@ function createReservation(req, res) {
 
   Reservation.fetchAll()
   .then(function overlapValidationAdd(reservations) {
-    var success = true;
-    _.map(reservations.models, function(reservation) {
-      if(parseInt(req.payload.roomId, 10) === reservation.attributes.roomId) {
-        if(moment(req.payload.start).diff(reservation.attributes.end, 'minutes') < 0) {
-          if(moment(req.payload.end).diff(reservation.attributes.start, 'minutes') > 0) {
-            success = false;
-          }
-        }
-      }
-    });
+    var success = overlapCheck(0, reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
 
     if(!success) {
       resData.msg = message.Overlap;
@@ -220,18 +230,7 @@ function updateStartAndEnd(req, response) {
 
   Reservation.fetchAll()
   .then(function overlapValidateChange(reservations) {
-    var success = true;
-    _.map(reservations.models, function(reservation) {
-      if(parseInt(req.params.roomId, 10) === reservation.attributes.roomId) {
-        if(reservation.attributes.id !== parseInt(req.params.id, 10)) {
-          if(moment(req.payload.start).diff(reservation.attributes.end, 'minutes') < 0) {
-            if(moment(req.payload.end).diff(reservation.attributes.start, 'minutes') > 0) {
-              success = false;
-            }
-          }
-        }
-      }
-    });
+    var success = overlapCheck(parseInt(req.params.id, 10), reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
 
     if(!success) {
       resData.msg = message.Overlap;
