@@ -6,8 +6,8 @@ var popsicle = require('popsicle');
 var Marionette = require('backbone.marionette');
 var models = require('../models/models.js');
 var Validate = require('./validation.js');
-var loginTemplate = require('../../templates/login.html');
-var noty = require('noty');
+var loginTemplate = require('../../templates/login.hbs');
+var noty = require('../lib/alert.js');
 var moment = require('moment');
 var format = require('string-template');
 var deffers = require('../promises/roomReservation.js');
@@ -18,13 +18,16 @@ var LoginView = Validate.extend({
 
   ui: {
     username: '#loginUsername',
-    password: '#loginPassword'
+    password: '#loginPassword',
+    btnSubmit: '#loginSubmit',
+    btnSignUp: '#signUp',
+    btnResetPassword: '#resetPasswordRequest'
   },
 
   events: {
-    'click #loginSubmit': 'loginSubmit',
-    'click #signUp': 'signUp',
-    'click #resetPasswordRequest': 'resetPasswordRequest'
+    'click @ui.btnSubmit': 'loginSubmit',
+    'click @ui.btnSignUp': 'signUp',
+    'click @ui.btnResetPassword': 'resetPasswordRequest'
   },
 
   loginSubmit: function() {
@@ -45,12 +48,7 @@ var LoginView = Validate.extend({
     })
     .then(function LoginSent(res) {
       if(!res.body.success) {
-        noty({
-          text: res.body.msg,
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
+        noty(res.body.msg, 'error', 2500);
         return;
       }
 
@@ -59,12 +57,7 @@ var LoginView = Validate.extend({
 
       models.rooms.fetch({reset: true});
       models.user.fetch();
-      noty({
-          text: res.body.msg,
-          layout: 'center',
-          type: 'success',
-          timeout: 2500
-        });
+      noty(res.body.msg, 'success', 2500);
 
       var now = moment().utc().valueOf();
 
@@ -75,12 +68,7 @@ var LoginView = Validate.extend({
       Backbone.history.navigate(calendarLink, {trigger: true});
     })
     .catch(function loginErr(err) {
-      noty({
-        text: err.message,
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty(err.message, 'error', 2500);
     });
   },
 

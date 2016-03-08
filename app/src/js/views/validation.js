@@ -12,6 +12,9 @@ var Validation = Marionette.ItemView.extend({
 
     function validate() {
       _.forEach(elements, function(element) {
+        if(element[0].tagName !== 'INPUT')
+          return;
+
         if(!element.val().trim()) {
           writeError(element, 'This field is required!');
         }

@@ -5,9 +5,9 @@ var Backbone = require('backbone');
 var popsicle = require('popsicle');
 var isEmail = require('is-email');
 var Marionette = require('backbone.marionette');
-var registerTemplate = require('../../templates/register.html');
+var registerTemplate = require('../../templates/register.hbs');
 var Validate = require('./validation.js');
-var noty = require('noty');
+var noty = require('../lib/alert.js');
 
 var RegisterView = Validate.extend({
   template: registerTemplate,
@@ -17,12 +17,14 @@ var RegisterView = Validate.extend({
     lastName: '#registerLastName',
     username: '#registerUsername',
     password: '#registerPassword',
-    email: '#registerEmail'
+    email: '#registerEmail',
+    btnSubmit: '#registerSubmit',
+    btnCancel: '#registerCancel'
   },
 
   events: {
-    'click #registerSubmit': 'registerSubmit',
-    'click #registerCancel': 'registerCancel'
+    'click @ui.btnSubmit': 'registerSubmit',
+    'click @ui.btnCancel': 'registerCancel'
   },
 
   registerSubmit: function() {
@@ -49,30 +51,16 @@ var RegisterView = Validate.extend({
       }
     })
     .then(function registerComplete(res) {
-      if(!res.body.msg) {
-        noty({
-          text: res.body.msg,
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
+      if(!res.body.success) {
+        noty(res.body.msg, 'error', 2500);
+        return;
       }
 
-      noty({
-        text: res.body.msg,
-        layout: 'center',
-        type: 'success',
-        timeout: 2500
-      });
+      noty(res.body.msg, 'success', 2500);
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function registerError(res) {
-      noty({
-        text: res.body.msg,
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty(res.body.msg, 'error', 2500);
     });
   },
 

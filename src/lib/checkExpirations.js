@@ -38,11 +38,12 @@ function expirationCheck(now, users, field, subject, text) {
     };
 
     if(passwordResetDiff >= 30) {
-      if(field === 'resetPasswordCreatedAt')
-        passwordResetSet.resetPasswordCreatedAt = null;
+      if(field === 'createdAt') {
+        user.destroy();
+        return;
+      }
 
-      if(field === 'createdAt')
-        passwordResetSet.createdAt = null;
+      passwordResetSet.resetPasswordCreatedAt = null;
 
       user.save(passwordResetSet, {method: 'update'})
       .then(function(updatedUser) {

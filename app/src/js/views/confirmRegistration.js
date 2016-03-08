@@ -4,16 +4,20 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var popsicle = require('popsicle');
-var noty = require('noty');
-var registrationConfirmTemplate = require('../../templates/confirmRegistration.html');
+var noty = require('../lib/alert.js');
+var registrationConfirmTemplate = require('../../templates/confirmRegistration.hbs');
 
 var ConfirmRegistration = Marionette.ItemView.extend({
   template: registrationConfirmTemplate,
 
   confirmId: '',
 
+  ui: {
+    btnReturn: '#returnToLogin'
+  },
+
   events: {
-    'click #returnToLogin': 'returnToLogin'
+    'click @ui.btnReturn': 'returnToLogin'
   },
 
   getId: function(id) {
@@ -28,23 +32,13 @@ var ConfirmRegistration = Marionette.ItemView.extend({
       url: 'confirm/' + self.confirmId
     })
     .then(function confirmationRequested(res) {
-      noty({
-        text: res.body.msg,
-        layout: 'center',
-        type: 'success',
-        timeout: 4500
-      });
+      noty(res.body.msg, 'success', 4500);
 
       if(res.body.success)
         Backbone.history.navigate('', {trigger: true});
     })
     .catch(function confirmationError(err) {
-      noty({
-        text: err,
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty(err, 'error', 2500);
     });
   }
 });

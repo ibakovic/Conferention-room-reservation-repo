@@ -7,9 +7,9 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var fullCalendar = require('fullcalendar');
-var calendarTemplate = require('../../templates/calendar.html');
+var calendarTemplate = require('../../templates/calendar.hbs');
 var q = require('q');
-var noty = require('noty');
+var noty = require('../lib/alert.js');
 var format = require('string-template');
 
 var EventView = Marionette.ItemView.extend({
@@ -18,24 +18,19 @@ var EventView = Marionette.ItemView.extend({
     this.$el.unwrap();
 
     this.parent.getCalendar()
-      .then(function calendarCatched($calendar) {
-        self.showEvent($calendar);
-      })
-      .catch(function calendarError(error) {
-        noty({
-          text: error,
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
-      });
+    .then(function calendarCatched($calendar) {
+      self.showEvent($calendar);
+    })
+    .catch(function calendarError(error) {
+      noty( error, 'error', 2500);
+    });
   },
 
   showEvent: function($calendar) {
     var renderEventOptions = this.model.attributes;
     renderEventOptions.editable = false;
 
-    if(this.model.get('userId') === parseInt(window.localStorage.getItem('userId'))) {
+    if(this.model.get('userId') === this.parent.userIdLocalStorage) {
       renderEventOptions.editable = true;
     }
 
@@ -61,25 +56,24 @@ var CalendarView = Marionette.CompositeView.extend({
 
   calendarPromise: null,
 
+  userIdLocalStorage: 0,
+
   ui: {
-    $calendar: '#calendar'
+    $calendar: '#calendar',
+    btnUserDetails: '#userDetailsRedirect',
+    btnLogout: '#logout'
   },
 
   events: {
-    'click #userDetailsRedirect': 'userDetails',
-    'click #logout': 'logout'
+    'click @ui.btnUserDetails': 'userDetails',
+    'click @ui.btnLogout': 'logout'
   },
 
   addEventSuccess: function(model, response) {
     //Preuzimam model iz baze samo zbog id-a
     this.collection.push(model.get('data'));
 
-    noty({
-      text: response.msg,
-      layout: 'center',
-      type: 'success',
-      timeout: 2500
-    });
+    noty(response.msg, 'success', 2500);
   },
 
   changeReservationStartAndEnd: function(changeEvent, revertFunc) {
@@ -96,20 +90,10 @@ var CalendarView = Marionette.CompositeView.extend({
     reservation.save(changes, {
       wait: true,
       success: function(model, response) {
-        noty({
-          text: response.msg,
-          layout: 'center',
-          type: 'success',
-          timeout: 2500
-        });
+        noty(response.msg, 'success', 2500);
       },
       error: function(model, response) {
-        noty({
-          text: 'Unauthorized to change this event!',
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
+        noty('Unauthorized to change this event!', 'error', 2500);
         revertFunc();
       }
     });
@@ -118,12 +102,7 @@ var CalendarView = Marionette.CompositeView.extend({
   select: function(start, end) {
     var self = this;
     if(moment(end._d).diff(start._d, 'minutes') > 180) {
-      noty({
-        text: 'Time limit on a single reservation is 3h!',
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty('Time limit on a single reservation is 3h!', 'error', 2500);
       $('#calendar').fullCalendar('unselect');
       return;
     }
@@ -151,7 +130,7 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   renderEvent: function(event, element) {
-    if(event.userId !== parseInt(window.localStorage.getItem('userId'), 10)) {
+    if(event.userId !== this.userIdLocalStorage) {
       element.css('opacity', '0.55');
       element.css('border-style', 'none');
     }
@@ -159,7 +138,7 @@ var CalendarView = Marionette.CompositeView.extend({
 
   clickEvent: function(clickEvent) {
     var userResDetLink = '';
-    if(clickEvent.userId === parseInt(window.localStorage.getItem('userId'))) {
+    if(clickEvent.userId === this.userIdLocalStorage) {
       userResDetLink = format('userReservationDetails/{roomId}/{id}/{view}', {
         roomId: this.roomId,
         id: clickEvent.id,
@@ -183,6 +162,7 @@ var CalendarView = Marionette.CompositeView.extend({
     this.roomId = parseInt(options.roomId, 10);
     this.start = parseInt(options.start, 10);
     this.calendarView = options.calendarView;
+    this.userIdLocalStorage = parseInt(window.localStorage.getItem('userId'), 10);
 
     this.calendarPromise = q.defer();
   },
@@ -272,21 +252,11 @@ var CalendarView = Marionette.CompositeView.extend({
       url: 'logout'
     })
     .then(function loggedOut(res) {
-      noty({
-        text: 'Good bye!',
-        layout: 'center',
-        type: 'success',
-        timeout: 2500
-      });
+      noty('Good bye!', 'success', 2500);
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function loggoutErr(err) {
-      noty({
-        text: err.body.msg,
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty(err.body.msg, 'error', 2500);
     });
   }
 });

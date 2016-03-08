@@ -1,23 +1,25 @@
 'use strict';
 
 var $ = require('jquery');
-var noty = require('noty');
+var noty = require('../lib/alert.js');
 var popsicle = require('popsicle');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var Validation = require('./validation.js');
-var rprTemplate = require('../../templates/resetPasswordRequest.html');
+var rprTemplate = require('../../templates/resetPasswordRequest.hbs');
 
 var rprView = Validation.extend({
   template: rprTemplate,
 
   ui: {
-    username: '#rprUsername'
+    username: '#rprUsername',
+    btnResetPassword: '#resetPasswordRequest',
+    btnCancel: '#rprCancel'
   },
 
   events: {
-    'click #resetPasswordRequest': 'resetPasswordRequest',
-    'click #rprCancel': 'cancel'
+    'click @ui.btnResetPassword': 'resetPasswordRequest',
+    'click @ui.btnCancel': 'cancel'
   },
 
   resetPasswordRequest: function() {
@@ -35,13 +37,7 @@ var rprView = Validation.extend({
       }
     })
     .then(function resetPasswordRequestSuccess(response) {
-      noty({
-        text: response.body.msg,
-        layout: 'center',
-        type: 'success',
-        timeout: 4000
-      });
-
+      noty(response.body.msg, 'success', 4000);
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function resetPasswordRequestFailure(error) {

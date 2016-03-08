@@ -5,13 +5,17 @@ var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var roomsTemplate = require('../../templates/room.html');
+var roomsTemplate = require('../../templates/room.hbs');
 
 var RoomView = Marionette.ItemView.extend({
   template: roomsTemplate,
 
+  ui: {
+    btnRoomName: '.roomName'
+  },
+
   events: {
-    'click .roomName': 'getCalendar'
+    'click @ui.btnRoomName': 'getCalendar'
   },
 
   getCalendar: function() {

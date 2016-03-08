@@ -10,6 +10,7 @@ var Marionette = require('backbone.marionette');
 var noty = require('noty');
 var q = require('q');
 var defer = require('./promises/roomReservation.js');
+var isLoggedIn = require('./lib/isLoggedIn.js');
 
 var now = moment().utc().valueOf();
 
@@ -29,7 +30,7 @@ resApp.addRegions({
 
 var routerController = Marionette.Object.extend({
   start: function() {
-    if(document.cookie) {
+    if(isLoggedIn()) {
       Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }
@@ -39,7 +40,7 @@ var routerController = Marionette.Object.extend({
   },
 
   register: function() {
-    if(document.cookie) {
+    if(isLoggedIn()) {
       Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }
@@ -49,7 +50,7 @@ var routerController = Marionette.Object.extend({
   },
 
   calendar: function(roomId, start, eventView) {
-    if(!document.cookie) {
+    if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
@@ -119,7 +120,7 @@ var routerController = Marionette.Object.extend({
   },
 
   userReservationDetails: function(roomId, id, calendarView) {
-    if(!document.cookie) {
+    if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
@@ -141,7 +142,7 @@ var routerController = Marionette.Object.extend({
   },
 
   reservationDetails: function(roomId, id, calendarView) {
-    if(!document.cookie) {
+    if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
@@ -174,7 +175,7 @@ var routerController = Marionette.Object.extend({
   },
 
   userDetails: function (roomId, dateNumber, calendarView) {
-    if(!document.cookie) {
+    if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
@@ -198,7 +199,7 @@ var routerController = Marionette.Object.extend({
   },
 
   resetPasswordRequest: function() {
-    if(document.cookie) {
+    if(isLoggedIn()) {
       Backbone.history.navigate('calendar/2/' + now + '/agendaWeek', {trigger: true});
       return;
     }

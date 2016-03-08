@@ -2,12 +2,11 @@
 
 var $ = require('jquery');
 var _ = require('lodash');
-var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var format = require('string-template');
 var ValidationView = require('./validation.js');
-var reservationDetailsTemplate = require('../../templates/reservationDetails.html');
+var reservationDetailsTemplate = require('../../templates/reservationDetails.hbs');
 
 var ReservationDetailsView = Marionette.ItemView.extend({
   template: reservationDetailsTemplate,
@@ -17,11 +16,11 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   ui: {
     detailsStart: '#eventDetailStart',
     detailsEnd: '#eventDetailEnd',
-    returnToCalendar: '#returnToCalendar'
+    btnReturnToCalendar: '#returnToCalendar'
   },
 
   events: {
-    'click #returnToCalendar': 'returnToCalendar'
+    'click @ui.btnReturnToCalendar': 'returnToCalendar'
   },
 
   initialize: function(options) {
@@ -37,14 +36,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   },
 
   returnToCalendar: function() {
-    var start = moment(this.model.get('start')).utc().valueOf();
-    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-      roomId: this.model.get('roomId'),
-      start: start,
-      calendarView: this.calendarView
-    });
-
-    Backbone.history.navigate(calendarLink, {trigger: true});
+    window.history.back();
   }
 });
 

@@ -2,12 +2,11 @@
 
 var popsicle = require('popsicle');
 var $ = require('jquery');
-var noty = require('noty');
+var noty = require('../lib/alert.js');
 var format = require('string-template');
-var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
-var userDetaisTemplate = require('../../templates/userDetails.html');
+var userDetaisTemplate = require('../../templates/userDetails.hbs');
 
 var UserDetailsView = Marionette.ItemView.extend({
   template: userDetaisTemplate,
@@ -53,12 +52,7 @@ var UserDetailsView = Marionette.ItemView.extend({
       }
     })
     .then(function resetPasswordRedirect(response) {
-      noty({
-        text: response.body.msg,
-        layout: 'center',
-        type: 'success',
-        timeout: 4000
-      });
+      noty(response.body.msg, 'success', 4000);
     })
     .catch(function resetPasswrodFail(err) {
       console.log(err);
@@ -66,12 +60,7 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   backToCalendar: function() {
-    var calendarLink = format('calendar/{roomId}/{dateNumber}/{calendarView}', {
-      roomId: this.roomId,
-      dateNumber: this.dateNumber,
-      calendarView: this.calendarView
-    });
-    Backbone.history.navigate(calendarLink, {trigger: true});
+    window.history.back();
   }
 });
 

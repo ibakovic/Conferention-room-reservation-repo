@@ -2,12 +2,12 @@
 
 var $ = require('jquery');
 var _ = require('lodash');
-var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var noty = require('noty');
+var notification = require('../lib/alert.js');
 var format = require('string-template');
-var reservationDetailsTemplate = require('../../templates/userReservationDetails.html');
+var reservationDetailsTemplate = require('../../templates/userReservationDetails.hbs');
 
 var UserReservationDetailsView = Marionette.ItemView.extend({
   template: reservationDetailsTemplate,
@@ -30,46 +30,18 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   updateTitleSuccess: function(model, response) {
-    noty({
-      text: response.msg,
-      layout: 'center',
-      type: 'success',
-      timeout: 2500
-    });
-    var start = moment(this.model.get('start')).utc().valueOf();
-    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-      roomId: this.model.get('roomId'),
-      start: start,
-      calendarView: this.calendarView
-    });
+    notification(response.msg, 'success', 2500);
 
-    Backbone.history.navigate(calendarLink, {trigger: true});
+    window.history.back();
   },
 
   error: function(model, response) {
-    noty({
-      text: response.responseJSON.msg,
-      layout: 'center',
-      type: 'error',
-      timeout: 2500
-    });
+    notification(response.responseJSON.msg, 'error', 2500);
   },
 
   deleteReservationSuccess: function(model, response) {
-    noty({
-      text: response.msg,
-      layout: 'center',
-      type: 'error',
-      timeout: 2500
-    });
-    var start = moment(this.model.get('start')).utc().valueOf();
-    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-      roomId: this.model.get('roomId'),
-      start: start,
-      calendarView: this.calendarView
-    });
-
-    Backbone.history.navigate(calendarLink, {trigger: true});
+    notification(response.msg, 'error', 2500);
+    window.history.back();
   },
 
   deleteReservationYes: function($noty) {
@@ -102,12 +74,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     var self = this;
 
     if(!title) {
-      noty({
-        text: 'Title missing!',
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      notification('Title missing!', 'error', 2500);
       return;
     }
 
@@ -147,15 +114,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   cancelReservation: function() {
-    var start = moment(this.model.get('start')).utc().valueOf();
-
-    var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
-      roomId: this.model.get('roomId'),
-      start: start,
-      calendarView: this.calendarView
-    });
-
-    Backbone.history.navigate(calendarLink, {trigger: true});
+    window.history.back();
   }
 });
 

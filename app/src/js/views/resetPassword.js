@@ -1,13 +1,13 @@
 'use strict';
 
-var noty = require('noty');
+var noty = require('../lib/alert.js');
 var popsicle = require('popsicle');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var Validation = require('./validation.js');
 var moment = require('moment');
-var resetPasswordTemplate = require('../../templates/resetPassword.html');
+var resetPasswordTemplate = require('../../templates/resetPassword.hbs');
 
 var ResetPasswordView = Validation.extend({
   template: resetPasswordTemplate,
@@ -18,12 +18,14 @@ var ResetPasswordView = Validation.extend({
 
   ui: {
     newPassword: '#newPassword',
-    newPasswordConfirmation: '#newPasswordConfirmation'
+    newPasswordConfirmation: '#newPasswordConfirmation',
+    btnReset: '#resetPasswordButton',
+    btnCancel: '#resetPasswordCancel'
   },
 
   events: {
-    'click #resetPasswordButton': 'resetPassword',
-    'click #resetPasswordCancel': 'cancel'
+    'click @ui.btnReset': 'resetPassword',
+    'click @ui.btnCancel': 'cancel'
   },
 
   initialize: function(options) {
@@ -42,13 +44,7 @@ var ResetPasswordView = Validation.extend({
     var newPasswordConfirmation = this.ui.newPasswordConfirmation.val().trim();
 
     if(newPassword !== newPasswordConfirmation) {
-      noty({
-        text: 'Passwords in both fields must match',
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
-
+      noty('Passwords in both fields must match', 'error', 2500);
       return;
     }
 
@@ -63,22 +59,12 @@ var ResetPasswordView = Validation.extend({
       }
     })
     .then(function(response) {
-      noty({
-        text: response.body.msg,
-        layout: 'center',
-        type: 'information',
-        timeout: 2500
-      });
+      noty(response.body.msg, 'information', 2500);
 
       Backbone.history.navigate('', {trigger: true});
     })
     .catch(function(err) {
-      noty({
-        text: err.message,
-        layout: 'center',
-        type: 'error',
-        timeout: 2500
-      });
+      noty(err.message, 'error', 2500);
     });
   },
 
