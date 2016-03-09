@@ -139,20 +139,18 @@ var CalendarView = Marionette.CompositeView.extend({
   clickEvent: function(clickEvent) {
     var userResDetLink = '';
     if(clickEvent.userId === this.userIdLocalStorage) {
-      userResDetLink = format('userReservationDetails/{roomId}/{id}/{view}', {
+      userResDetLink = format('userReservationDetails/{roomId}/{id}', {
         roomId: this.roomId,
-        id: clickEvent.id,
-        view: this.calendarView
+        id: clickEvent.id
       });
 
       Backbone.history.navigate(userResDetLink, {trigger: true});
       return;
     }
 
-    userResDetLink = format('reservationDetails/{roomId}/{id}/{view}', {
+    userResDetLink = format('reservationDetails/{roomId}/{id}', {
       roomId: this.roomId,
-      id: clickEvent.id,
-      view: this.calendarView
+      id: clickEvent.id
     });
 
     Backbone.history.navigate(userResDetLink, {trigger:true});
@@ -237,7 +235,7 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   userDetails: function() {
-    var userDetailsLink = format('userDetails/{roomId}/{start}/{view}', {
+    var userDetailsLink = format('userDetails', {
       roomId: this.roomId,
       start: this.start,
       view: this.calendarView

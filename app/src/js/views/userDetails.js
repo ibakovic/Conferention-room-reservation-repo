@@ -30,12 +30,6 @@ var UserDetailsView = Marionette.ItemView.extend({
     this.render();
   },
 
-  initialize: function(options) {
-    this.dateNumber = parseInt(options.dateNumber, 10);
-    this.roomId = parseInt(options.roomId, 10);
-    this.calendarView = options.calendarView;
-  },
-
   onRender: function() {
     var newCreatedAt = moment(this.model.get('createdAt')).format('DD.MM.YYYY HH:mm');
     this.ui.userCreatedAt.text(newCreatedAt);

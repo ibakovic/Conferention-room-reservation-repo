@@ -54,8 +54,6 @@ var LoginView = Validate.extend({
       window.localStorage.setItem('userId', res.body.userId);
       window.localStorage.setItem('fetchCollection', 1);
 
-      models.rooms.fetch({reset: true});
-      models.user.fetch();
       noty(res.body.msg, 'success', 2500);
 
       var now = moment().utc().valueOf();

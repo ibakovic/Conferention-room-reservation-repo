@@ -9,7 +9,7 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var noty = require('./lib/alert.js');
 var q = require('q');
-var defer = require('./promises/roomReservation.js');
+var defer = q.defer();
 var isLoggedIn = require('./lib/isLoggedIn.js');
 
 var now = moment().utc().valueOf();
@@ -90,8 +90,24 @@ var routerController = Marionette.Object.extend({
       if(secondCollection.models[0].get('roomId') === intRoomId)
         collection = secondCollection;
 
-      defer = q.defer();
-      defer.resolve(collection);
+      defer.promise
+      .then(function(model) {
+        console.log(model);
+        var reservation = collection.findWhere({id: model.get('id')});
+        reservation.set(model.attributes);
+
+        resApp.mainRegion.show(new views.CalendarView({
+          collection: collection,
+          roomId: roomId,
+          start: start,
+          calendarView: eventView
+        }));
+
+        return;
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
 
       resApp.mainRegion.show(new views.CalendarView({
         collection: collection,
@@ -151,37 +167,36 @@ var routerController = Marionette.Object.extend({
     });
   },
 
-  userReservationDetails: function(roomId, id, calendarView) {
+  userReservationDetails: function(roomId, id) {
     if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
 
-    defer.promise
-    .then(function(collection) {
-      resApp.roomRegion.empty();
+    resApp.roomRegion.empty();
 
-      var reservation = collection.findWhere({id: parseInt(id, 10)});
+    var reservation = new models.SingleReservation({id: parseInt(id, 10)});
 
-      resApp.mainRegion.show(new views.UserReservationView({
-        model: reservation,
-        calendarView: calendarView
-      }));
-    })
-    .catch(function(err) {
-      console.log(err);
+    reservation.fetch({
+      success: function reservationFetchSuccess(model, response) {
+        resApp.mainRegion.show(new views.UserReservationView({
+          model: model
+        }));
+
+        defer = q.defer();
+        defer.resolve(model);
+      },
+      error: function(error) {
+        console.log(error);
+      }
     });
   },
 
-  reservationDetails: function(roomId, id, calendarView) {
+  reservationDetails: function(roomId, id) {
     if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
-
-    /*
-      needs a model from the collection
-     */
 
     resApp.roomRegion.empty();
 
@@ -190,13 +205,10 @@ var routerController = Marionette.Object.extend({
     reservation.fetch({
       success: function(model, response) {
         resApp.mainRegion.show(new views.ReservationView({
-          model: model,
-          calendarView: calendarView
+          model: model
         }));
       }
     });
-    //model.set({start: moment(model.get('start')).utc().format('DD.MM.YYYY. HH:mm')});
-    //model.set({end: moment(model.get('end')).utc().format('DD.MM.YYYY. HH:mm')});
   },
 
   confirmRegistration: function(id) {
@@ -206,7 +218,7 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
   },
 
-  userDetails: function (roomId, dateNumber, calendarView) {
+  userDetails: function () {
     if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
@@ -217,10 +229,7 @@ var routerController = Marionette.Object.extend({
     models.user.fetch({
       success: function userFetchSuccess(user, response) {
         resApp.mainRegion.show(new views.UserDetailsView({
-          model: user,
-          roomId: roomId,
-          dateNumber: dateNumber,
-          calendarView: calendarView
+          model: user
         }));
       },
       error: function userFetchError(model, response) {
@@ -254,10 +263,10 @@ var Router = Marionette.AppRouter.extend({
     '':'start',
     'register': 'register',
     'calendar/:roomId/:start/:calendarView': 'calendar',
-    'userReservationDetails/:roomId/:id/:calendarView': 'userReservationDetails',
-    'reservationDetails/:roomId/:id/:calendarView': 'reservationDetails',
+    'userReservationDetails/:roomId/:id': 'userReservationDetails',
+    'reservationDetails/:roomId/:id': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
-    'userDetails/:roomId/:dateNumber/:calendarView': 'userDetails',
+    'userDetails': 'userDetails',
     'resetPassword/:urlId/:md5': 'resetPassword',
     'resetPasswordRequest': 'resetPasswordRequest'
   }

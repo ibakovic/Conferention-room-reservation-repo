@@ -52,6 +52,8 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       success: self.deleteReservationSuccess.bind(self),
       error: self.error.bind(self)
     });
+
+    location.reload();
     $noty.close();
   },
 

@@ -23,10 +23,6 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     'click @ui.btnReturnToCalendar': 'returnToCalendar'
   },
 
-  initialize: function(options) {
-    this.calendarView = options.calendarView;
-  },
-
   onShow: function() {
     var newStart = moment(this.model.get('start')).format('DD.MM.YYYY HH:mm');
     var newEnd = moment(this.model.get('end')).format('DD.MM.YYYY HH:mm');
