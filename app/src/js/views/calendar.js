@@ -228,6 +228,13 @@ var CalendarView = Marionette.CompositeView.extend({
         });
 
         Backbone.history.navigate(calendarLink, {trigger: true});
+      },
+
+      dayClick: function(date, event, view) {
+        if(view.type === 'month') {
+          self.ui.$calendar.fullCalendar('gotoDate', date);
+          self.ui.$calendar.fullCalendar('changeView', "agendaDay");
+        }
       }
     });
 

@@ -92,7 +92,9 @@ var routerController = Marionette.Object.extend({
 
       defer.promise
       .then(function(model) {
-        console.log(model);
+        if(!model) {
+          return;
+        }
         var reservation = collection.findWhere({id: model.get('id')});
         reservation.set(model.attributes);
 
@@ -131,8 +133,6 @@ var routerController = Marionette.Object.extend({
 
     firstCollection.fetch({
       success: function(collection1, response) {
-        defer = q.defer();
-        defer.resolve(collection1);
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection1,
           roomId: roomId,
