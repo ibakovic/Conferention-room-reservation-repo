@@ -18,7 +18,7 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   events: {
-    'click @ui.resetPassword': 'resetPassword',
+    'click @ui.resetPassword': 'resetPasswordRequest',
     'click @ui.back': 'backToCalendar'
   },
 
@@ -41,7 +41,7 @@ var UserDetailsView = Marionette.ItemView.extend({
     this.ui.userCreatedAt.text(newCreatedAt);
   },
 
-  resetPassword: function() {
+  resetPasswordRequest: function() {
     var self = this;
 
     popsicle.request({

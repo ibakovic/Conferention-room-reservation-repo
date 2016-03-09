@@ -7,12 +7,14 @@ var moment = require('moment');
 var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var noty = require('noty');
+var noty = require('./lib/alert.js');
 var q = require('q');
 var defer = require('./promises/roomReservation.js');
 var isLoggedIn = require('./lib/isLoggedIn.js');
 
 var now = moment().utc().valueOf();
+var firstCollection;
+var secondCollection;
 
 if (window.__agent) {
   window.__agent.start(Backbone, Marionette);
@@ -35,7 +37,7 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
     resApp.mainRegion.show(new views.LoginView());
   },
 
@@ -45,7 +47,7 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
     resApp.mainRegion.show(new views.RegisterView());
   },
 
@@ -55,29 +57,44 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    views.roomsView.getRoomId(roomId, start, eventView);
-    resApp.roomRegion.$el.show();
-    resApp.roomRegion.show(views.roomsView);
-
-    var firstCollection;
-    var secondCollection;
-
-    if(window.localStorage.getItem('fetchCollection') === 'roomOneReservations') {
-      firstCollection = models.roomOneReservations;
-      secondCollection = models.roomTwoReservations;
+    //Avoid fetching rooms if possible
+    if(models.rooms.length !== 0) {
+      resApp.roomRegion.show(new views.RoomsView({
+        collection: models.rooms,
+        start: start,
+        eventView: eventView
+      }));
+    }
+    else {
+      models.rooms.fetch({
+        success: function roomsFetchSuccess(roomsCollection, response) {
+          resApp.roomRegion.show(new views.RoomsView({
+            collection: roomsCollection,
+            start: start,
+            eventView: eventView
+          }));
+        },
+        error: function roomsFetchError(error) {
+          console.log(error);
+        }
+      });
     }
 
-    if(window.localStorage.getItem('fetchCollection') === 'roomTwoReservations') {
-      firstCollection = models.roomTwoReservations;
-      secondCollection = models.roomOneReservations;
-    }
+    if(firstCollection && secondCollection && (firstCollection.length !== 0) && (secondCollection.length !== 0)) {
+      var intRoomId = parseInt(roomId, 10);
+      var collection;
 
-    if((firstCollection.length !== 0) && (secondCollection.length !== 0)) {
+      if(firstCollection.models[0].get('roomId') === intRoomId)
+        collection = firstCollection;
+
+      if(secondCollection.models[0].get('roomId') === intRoomId)
+        collection = secondCollection;
+
       defer = q.defer();
-      defer.resolve(firstCollection);
+      defer.resolve(collection);
 
       resApp.mainRegion.show(new views.CalendarView({
-        collection: firstCollection,
+        collection: collection,
         roomId: roomId,
         start: start,
         calendarView: eventView
@@ -85,6 +102,16 @@ var routerController = Marionette.Object.extend({
 
       return;
     }
+
+    var Reservations = Backbone.Collection.extend({
+      url: '/reservations/rooms/' + roomId,
+      model: models.Reservation,
+      parse: function(response) {
+        return response.data;
+      }
+    });
+
+    firstCollection = new Reservations();
 
     firstCollection.fetch({
       success: function(collection1, response) {
@@ -104,17 +131,22 @@ var routerController = Marionette.Object.extend({
         else
           newRoomId = 1;
 
+        Reservations = Backbone.Collection.extend({
+          url: '/reservations/rooms/' + newRoomId,
+          model: models.Reservation,
+          parse: function(response) {
+            return response.data;
+          }
+        });
+
+        secondCollection = new Reservations();
+
         secondCollection.fetch();
       },
       error: function(error) {
         console.log(error);
 
-         noty({
-          text: 'Failed to load your data!',
-          layout: 'center',
-          type: 'error',
-          timeout: 2500
-        });
+         noty('Failed to load your data!', 'error', 2500);
       }
     });
   },
@@ -127,7 +159,7 @@ var routerController = Marionette.Object.extend({
 
     defer.promise
     .then(function(collection) {
-      resApp.roomRegion.$el.hide();
+      resApp.roomRegion.empty();
 
       var reservation = collection.findWhere({id: parseInt(id, 10)});
 
@@ -151,7 +183,7 @@ var routerController = Marionette.Object.extend({
       needs a model from the collection
      */
 
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
 
     var reservation = new models.SingleReservation({id: parseInt(id, 10)});
 
@@ -168,7 +200,7 @@ var routerController = Marionette.Object.extend({
   },
 
   confirmRegistration: function(id) {
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
 
     views.confirmRegistration.getId(id);
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
@@ -180,18 +212,25 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
 
-    resApp.mainRegion.show(new views.UserDetailsView({
-      model: models.user,
-      roomId: roomId,
-      dateNumber: dateNumber,
-      calendarView: calendarView
-    }));
+    models.user.fetch({
+      success: function userFetchSuccess(user, response) {
+        resApp.mainRegion.show(new views.UserDetailsView({
+          model: user,
+          roomId: roomId,
+          dateNumber: dateNumber,
+          calendarView: calendarView
+        }));
+      },
+      error: function userFetchError(model, response) {
+        console.log(response);
+      }
+    });
   },
 
   resetPassword: function(urlId, md5) {
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
     resApp.mainRegion.show(new views.ResetPassword({
       urlId: urlId,
       md5: md5
@@ -204,7 +243,7 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.$el.hide();
+    resApp.roomRegion.empty();
     resApp.mainRegion.show(new views.ResetPasswordRequest());
   }
 });

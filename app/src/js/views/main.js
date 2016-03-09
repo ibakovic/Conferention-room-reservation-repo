@@ -14,7 +14,6 @@ var UserDetailsView = require('./userDetails.js');
 var ResetPassword = require('./resetPassword.js');
 var ResetPasswordRequest = require('./resetPasswordRequest.js');
 
-var roomsView = new RoomsView({collection: models.rooms});
 var confirmRegistration = new ConfirmRegistration();
 
 module.exports = {
@@ -23,7 +22,7 @@ module.exports = {
   UserReservationView: UserReservationView,
   ReservationView: ReservationView,
   CalendarView: CalendarView,
-  roomsView: roomsView,
+  RoomsView: RoomsView,
   confirmRegistration: confirmRegistration,
   UserDetailsView: UserDetailsView,
   ResetPassword: ResetPassword,

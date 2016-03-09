@@ -10,7 +10,6 @@ var loginTemplate = require('../../templates/login.hbs');
 var noty = require('../lib/alert.js');
 var moment = require('moment');
 var format = require('string-template');
-var deffers = require('../promises/roomReservation.js');
 var q = require('q');
 
 var LoginView = Validate.extend({
@@ -53,7 +52,7 @@ var LoginView = Validate.extend({
       }
 
       window.localStorage.setItem('userId', res.body.userId);
-      window.localStorage.setItem('fetchCollection', 'roomOneReservations');
+      window.localStorage.setItem('fetchCollection', 1);
 
       models.rooms.fetch({reset: true});
       models.user.fetch();

@@ -22,11 +22,11 @@ var RoomView = Marionette.ItemView.extend({
     var roomId = this.model.get('roomId');
 
     if(roomId === 1) {
-      window.localStorage.setItem('fetchCollection', 'roomOneReservations');
+      window.localStorage.setItem('fetchCollection', 1);
     }
 
     else {
-      window.localStorage.setItem('fetchCollection', 'roomTwoReservations');
+      window.localStorage.setItem('fetchCollection', 2);
     }
 
     var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
@@ -46,10 +46,9 @@ var RoomsView = Marionette.CollectionView.extend({
     childView.parent = this;
   },
 
-  getRoomId: function(roomId, start, calendarView) {
-    this.roomId = roomId;
-    this.start = start;
-    this.calendarView = calendarView;
+  initialize: function(options) {
+    this.start = options.start;
+    this.calendarView = options.eventView;
   }
 });
 

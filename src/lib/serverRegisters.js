@@ -22,6 +22,20 @@ module.exports = function(server) {
     }
   );
 
+  server.register(require('inert'), function(err) {
+    if (err) {
+      throw err;
+    }
+
+    server.route({
+      method: 'GET',
+      path: '/fullcalendar.css',
+      handler: function (request, reply) {
+        reply.file('../../node_modules/fullcalendar/dist/fullcalendar.css');
+      }
+    });
+  });
+
   //Authentication validatin and strategy
   server.register(require('hapi-auth-cookie'), function(err) {
 
