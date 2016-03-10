@@ -293,6 +293,3 @@ module.exports = function(server) {
     handler: logout
   });
 };
-
-
-//res(resData).header('content-md5', 'md5 content').code(200);

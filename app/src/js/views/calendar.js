@@ -100,6 +100,11 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   select: function(start, end) {
+    if(window.localStorage.getItem('monthView')) {
+      window.localStorage.setItem('monthView', false);
+      return;
+    }
+
     var self = this;
     if(moment(end._d).diff(start._d, 'minutes') > 180) {
       noty('Time limit on a single reservation is 3h!', 'error', 2500);
@@ -121,8 +126,8 @@ var CalendarView = Marionette.CompositeView.extend({
 
       newEvent.save(null, {
         success: self.addEventSuccess.bind(self),
-        error: function(model, response) {
-          console.log(response);
+        error: function(error) {
+          console.log(error);
         }
       });
     }
@@ -232,6 +237,7 @@ var CalendarView = Marionette.CompositeView.extend({
 
       dayClick: function(date, event, view) {
         if(view.type === 'month') {
+          window.localStorage.setItem('monthView', true);
           self.ui.$calendar.fullCalendar('gotoDate', date);
           self.ui.$calendar.fullCalendar('changeView', "agendaDay");
         }
