@@ -143,6 +143,28 @@ var routerController = Marionette.Object.extend({
 
     firstCollection.fetch({
       success: function(collection1, response) {
+        defer.promise
+        .then(function fetchDeferSuccess(model) {
+          var reservation = collection1.findWhere({id: model.get('id')});
+
+          if(window.localStorage.getItem('deleteModel') === 'true') {
+            reservation.destroy({
+              success: function deleteItemSuccess(model, response) {
+                window.localStorage.setItem('deleteModel', 'false');
+                resApp.mainRegion.show(new views.CalendarView({
+                  collection: collection1,
+                  roomId: roomId,
+                  start: start,
+                  calendarView: eventView
+                }));
+              }
+            });
+          }
+        })
+        .catch(function fetchDeferError(error) {
+          console.log(error);
+        });
+
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection1,
           roomId: roomId,

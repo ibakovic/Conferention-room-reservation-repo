@@ -156,7 +156,7 @@ var CalendarView = Marionette.CompositeView.extend({
       }]
     });
 
-    $('#noty_topLeft_layout_container').attr('style', 'top: 0; left: 0; position: fixed; width: 100%; height: 100%; margin: 0px; padding: 40%; padding-top: 20%; list-style-type: none; z-index: 10000000;');
+    $('#noty_topLeft_layout_container').attr('style', 'top: 0; left: 0; position: fixed; width: 100%; height: 100%; margin: 0; padding: 40%; padding-top: 20%; list-style-type: none; z-index: 10000000;');
   },
 
   renderEvent: function(event, element) {
