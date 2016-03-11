@@ -51,6 +51,7 @@
     "install": "^0.4.1",
     "jshint": "^2.9.1",
     "node-sass": "^3.4.2",
+    "node-sass-css-importer": "0.0.3",
     "npm": "^3.5.3"
   }
 }

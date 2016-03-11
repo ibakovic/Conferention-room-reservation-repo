@@ -25,30 +25,6 @@ require('./src/routes/reservations.js')(server);
 //Login and register
 require('./src/routes/notAuthenticated.js')(server);
 
-//Fullcalendar style
-server.register(require('inert'), function(err) {
-  if (err) {
-    throw err;
-  }
-
-  server.route({
-    method: 'GET',
-    path: '/fullcalendar.css',
-    config: {
-      handler: function (request, reply) {
-        reply.file('../../node_modules/fullcalendar/dist/fullcalendar.css');
-      },
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': { redirectTo: false }
-      }
-    }
-  });
-});
-
 //Handle static data
 server.register(require('inert'), function(err) {
   if (err) {

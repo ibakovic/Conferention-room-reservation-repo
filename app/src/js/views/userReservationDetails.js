@@ -36,7 +36,8 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   error: function(model, response) {
-    notification(response.responseJSON.msg, 'error', 2500);
+    //notification(response.responseJSON.msg, 'error', 2500);
+    console.log(response);
   },
 
   deleteReservationSuccess: function(model, response) {
@@ -46,15 +47,16 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   deleteReservationYes: function($noty) {
     var self = this;
-
+/*
     this.model.destroy({
       wait: true,
       success: self.deleteReservationSuccess.bind(self),
       error: self.error.bind(self)
     });
-
-    location.reload();
+*/
+    window.localStorage.setItem('deleteModel', 'true');
     $noty.close();
+    window.history.back();
   },
 
   initialize: function(options) {

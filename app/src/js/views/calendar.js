@@ -10,6 +10,7 @@ var fullCalendar = require('fullcalendar');
 var calendarTemplate = require('../../templates/calendar.hbs');
 var q = require('q');
 var noty = require('../lib/alert.js');
+var notyPrompt = require('noty');
 var format = require('string-template');
 
 var EventView = Marionette.ItemView.extend({
@@ -100,7 +101,7 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   select: function(start, end) {
-    if(window.localStorage.getItem('monthView')) {
+    if(window.localStorage.getItem('monthView') === 'true') {
       window.localStorage.setItem('monthView', false);
       return;
     }
@@ -112,26 +113,50 @@ var CalendarView = Marionette.CompositeView.extend({
       return;
     }
 
-    var title = prompt('Event Title:');
-    var eventData;
-    if (title) {
-      eventData = {
-        title: title,
-        start: start,
-        end: end,
-        roomId: self.roomId
-      };
+    function promptYes($noty) {
+      var title = $('#promptInput').val().trim();
 
-      var newEvent = new self.collection.model(eventData);
+      var eventData;
+      if (title) {
+        eventData = {
+          title: title,
+          start: start,
+          end: end,
+          roomId: self.roomId
+        };
 
-      newEvent.save(null, {
-        success: self.addEventSuccess.bind(self),
-        error: function(error) {
-          console.log(error);
-        }
-      });
+        var newEvent = new self.collection.model(eventData);
+
+        newEvent.save(null, {
+          success: self.addEventSuccess.bind(self),
+          error: function(error) {
+            console.log(error);
+          }
+        });
+      }
+      $('#calendar').fullCalendar('unselect');
+
+      $noty.close();
     }
-    $('#calendar').fullCalendar('unselect');
+
+    notyPrompt({
+      layout: 'topLeft',
+      type: 'success',
+      template: 'Event title:<br><input type="text" id="promptInput">',
+      buttons: [{
+        addClass: 'btn btn-success',
+        text: 'Yes',
+        onClick: promptYes
+      }, {
+        addClass: 'btn btn-danger',
+        text: 'No',
+        onClick: function promptNo($noty) {
+          $noty.close();
+        }
+      }]
+    });
+
+    $('#noty_topLeft_layout_container').attr('style', 'top: 0; left: 0; position: fixed; width: 100%; height: 100%; margin: 0px; padding: 40%; padding-top: 20%; list-style-type: none; z-index: 10000000;');
   },
 
   renderEvent: function(event, element) {

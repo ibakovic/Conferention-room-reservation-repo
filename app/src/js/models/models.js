@@ -20,6 +20,8 @@ var SingleReservation = Backbone.Model.extend({
   }
 });
 
+var singleReservation = new SingleReservation();
+
 var Reservation = Backbone.Model.extend({
   urlRoot: '/reservations'
 });
@@ -38,6 +40,7 @@ var rooms = new Rooms();
 
 module.exports = {
   SingleReservation: SingleReservation,
+  singleReservation: singleReservation,
   Reservation: Reservation,
   Room: Room,
   rooms: rooms,

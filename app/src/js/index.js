@@ -95,8 +95,18 @@ var routerController = Marionette.Object.extend({
         if(!model) {
           return;
         }
+
         var reservation = collection.findWhere({id: model.get('id')});
-        reservation.set(model.attributes);
+
+        if(window.localStorage.getItem('deleteModel') === 'true') {
+          reservation.destroy({
+            success: function deleteItemSuccess(model, response) {
+              window.localStorage.setItem('deleteModel', 'false');
+            }
+          });
+        }
+        else
+          reservation.set(model.attributes);
 
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection,
