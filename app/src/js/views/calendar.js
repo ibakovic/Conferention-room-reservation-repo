@@ -142,7 +142,7 @@ var CalendarView = Marionette.CompositeView.extend({
     notyPrompt({
       layout: 'topLeft',
       type: 'success',
-      template: 'Event title:<br><input type="text" id="promptInput" autofocus="autofocus">',
+      template: 'Event title:<br><input type="text" id="promptInput">',
       buttons: [{
         addClass: 'btn btn-success',
         text: 'Yes',

@@ -30,6 +30,7 @@ var LoginView = Validate.extend({
   },
 
   loginSubmit: function() {
+    console.log('Submitting form');
     var username = this.ui.username.val().trim();
     var password = this.ui.password.val().trim();
 

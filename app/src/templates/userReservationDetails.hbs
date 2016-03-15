@@ -1,4 +1,4 @@
-<div id="detailsWrapper">
+<form name="userReservationDetailsForm" onsubmit="return false;" id="detailsWrapper">
   <h2 id="newTitle" contentEditable="true">{{title}}</h2>
 
   <div class="contentWrapper"><label>Reservation ID: </label><div class="reservationContent">{{id}}</div></div>
@@ -9,7 +9,7 @@
 
   <div class="contentWrapper"><label>End: </label><div id="userDetailsEnd" class="reservationContent">{{end}}</div></div>
 
-  <button id="updateTitle" class="btn btn-success btn-lg">Update title</button>
+  <button id="updateTitle" class="btn btn-success btn-lg" type="submit">Update title</button>
   <button id="deleteReservation" class="btn btn-danger btn-lg">Delete reservation</button>
   <button id="cancelReservation" class="btn btn-lg">Cancel</button>
-</div>
+</form>

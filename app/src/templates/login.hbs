@@ -1,7 +1,7 @@
 <div>
   <div id="loginWrapper">
     <h2 class="loginTitle">Login</h2>
-    <div>
+    <form name="loginForm" onsubmit="return false;">
       <div class="inputWrapper input-group">
         <label class="loginField input-group-addon">Username:</label>
         <input id="loginUsername" type="text" placeholder="Username" class="form-control" autofocus />
@@ -13,8 +13,8 @@
       </div>
 
       <br />
-      <button id="loginSubmit" class="btn btn-success btn-lg">Login</button>
-    </div>
+      <button type="submit" id="loginSubmit" class="btn btn-success btn-lg">Login</button>
+    </form>
 
     <br />
 
