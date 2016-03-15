@@ -22,6 +22,10 @@ var rprView = Validation.extend({
     'click @ui.btnCancel': 'cancel'
   },
 
+  onShow: function() {
+    this.ui.username.focus();
+  },
+
   resetPasswordRequest: function() {
     var self = this;
 

@@ -265,31 +265,51 @@ function logout(req, res) {
   }).code(200);
 }
 
-function routes(server, method, path, handler) {
-  return server.route({
-    method: method,
-    path: path,
-    config: {
-      handler: handler,
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': { redirectTo: false }
-      }
+var objects = [{
+  method: 'POST',
+  path: '/login',
+  config: {
+    handler: login,
+    auth: {
+      mode: 'try',
+      strategy: 'session'
+    },
+    plugins: {
+      'hapi-auth-cookie': { redirectTo: false }
     }
-  });
-}
+  }
+}, {
+  method: 'POST',
+  path: '/register',
+  config: {
+    handler: register,
+    auth: {
+      mode: 'try',
+      strategy: 'session'
+    },
+    plugins: {
+      'hapi-auth-cookie': { redirectTo: false }
+    }
+  }
+}, {
+  method: 'GET',
+  path: '/confirm/{confirmId}',
+  config: {
+    handler: confirmRegistration,
+    auth: {
+      mode: 'try',
+      strategy: 'session'
+    },
+    plugins: {
+      'hapi-auth-cookie': { redirectTo: false }
+    }
+  }
+}, {
+  method: 'GET',
+  path: '/logout',
+  handler: logout
+}];
 
 module.exports = function(server) {
-  routes(server, 'POST', '/login', login);
-  routes(server, 'POST', '/register', register);
-  routes(server, 'GET', '/confirm/{confirmId}', confirmRegistration);
-
-  server.route({
-    method: 'GET',
-    path: '/logout',
-    handler: logout
-  });
+  server.route(objects);
 };

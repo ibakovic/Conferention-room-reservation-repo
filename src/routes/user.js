@@ -2,7 +2,6 @@
 
 var User = require('../models/models.js').User;
 var message = require('../../strings.json');
-var serverRouter = require('../lib/serverRoutes.js');
 var bcrypt = require('bcryptjs');
 var nodemailer = require('nodemailer');
 var randomString = require('randomstring');
@@ -67,7 +66,5 @@ var routeObjects = [{
 }];
 
 module.exports = function(server) {
-  routeObjects.forEach(function(routeObject) {
-    serverRouter(server, routeObject);
-  });
+  server.route(routeObjects);
 }

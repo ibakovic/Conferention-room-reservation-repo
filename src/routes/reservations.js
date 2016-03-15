@@ -8,7 +8,6 @@ var moment = require('moment');
 var logger = require('minilog')('reservations.js');
 var success;
 var message = require('../../strings.json');
-var serverRouter = require('../lib/serverRoutes.js');
 
 function overlapCheck(id, reservations, roomId, start, end) {
   var success = true;
@@ -463,7 +462,5 @@ var objects = [{
 }];
 
 module.exports = function(server) {
-  objects.forEach(function(object) {
-    serverRouter(server, object);
-  });
+  server.route(objects);
 };

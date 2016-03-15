@@ -2,7 +2,6 @@
 
 var request = {};
 var Room = require('../models/models.js').Room;
-var serverRoute = require('../lib/serverRoutes.js');
 var message = require('../../strings.json');
 
 /**
@@ -81,7 +80,5 @@ var objects = [{
 }];
 
 module.exports = function roomsRouter(server) {
-  objects.forEach(function(object) {
-    serverRoute(server, object);
-  });
+  server.route(objects);
 };

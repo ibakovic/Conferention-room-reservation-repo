@@ -192,34 +192,34 @@ function resetPasswordEmail(req, res) {
   });
 }
 
-module.exports = function(server) {
-  server.route({
-    method: 'PUT',
-    path: '/user/{resetPasswordId}/{md5}',
-    config: {
-      handler: updatePassword,
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': { redirectTo: false }
-      }
+var objects = [{
+  method: 'PUT',
+  path: '/user/{resetPasswordId}/{md5}',
+  config: {
+    handler: updatePassword,
+    auth: {
+      mode: 'try',
+      strategy: 'session'
+    },
+    plugins: {
+      'hapi-auth-cookie': { redirectTo: false }
     }
-  });
+  }
+}, {
+  method: 'POST',
+  path: '/resetMail',
+  config: {
+    handler: resetPasswordEmail,
+    auth: {
+      mode: 'try',
+      strategy: 'session'
+    },
+    plugins: {
+      'hapi-auth-cookie': { redirectTo: false }
+    }
+  }
+}];
 
-  server.route({
-    method: 'POST',
-    path: '/resetMail',
-    config: {
-      handler: resetPasswordEmail,
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': { redirectTo: false }
-      }
-    }
-  });
+module.exports = function(server) {
+  server.route(objects);
 }

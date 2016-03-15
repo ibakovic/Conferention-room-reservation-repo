@@ -35,6 +35,10 @@ var ResetPasswordView = Validation.extend({
     var now = moment().utc().valueOf();
   },
 
+  onShow: function() {
+    this.ui.newPassword.focus();
+  },
+
   resetPassword: function() {
     if(!this.validate(this.ui)) {
       return;

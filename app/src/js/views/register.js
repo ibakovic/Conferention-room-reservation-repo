@@ -27,6 +27,10 @@ var RegisterView = Validate.extend({
     'click @ui.btnCancel': 'registerCancel'
   },
 
+  onShow: function() {
+    this.ui.firstName.focus();
+  },
+
   registerSubmit: function() {
     var self = this;
 
