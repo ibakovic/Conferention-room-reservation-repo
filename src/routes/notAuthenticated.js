@@ -9,6 +9,7 @@ var nodemailer = require('nodemailer');
 var format = require('string-template');
 var logger = require('minilog')('notAuthenticated.js');
 var uuid = 1;
+var mailHtml = require('../lib/mailHtml.js');
 
 /**
  * Hashes second password and then compares with the hash in database
@@ -164,7 +165,7 @@ function register(req, res) {
           from: 'noreply@extensionengine.com',
           to: req.payload.email,
           subject: message.EmailSubject,
-          text: message.EmailText + url
+          html: mailHtml(message.EmailSubject, message.EmailText, url)
         };
 
         transporter.sendMail(mailOptions, function(err, info) {

@@ -21,7 +21,6 @@
     "fullcalendar": "^2.6.0",
     "hapi": "^12.1.0",
     "hapi-auth-cookie": "^6.0.0",
-    "hapi-auth-jwt": "^4.0.0",
     "inert": "^3.2.0",
     "is-email": "^0.1.1",
     "jquery": "^2.2.0",
@@ -37,8 +36,7 @@
     "popsicle": "^3.0.3",
     "q": "^1.4.1",
     "randomstring": "^1.1.4",
-    "string-template": "^1.0.0",
-    "vision": "^4.0.1"
+    "string-template": "^1.0.0"
   },
   "devDependencies": {
     "browserify": "^13.0.0",
@@ -51,7 +49,6 @@
     "install": "^0.4.1",
     "jshint": "^2.9.1",
     "node-sass": "^3.4.2",
-    "node-sass-css-importer": "0.0.3",
     "npm": "^3.5.3"
   }
 }

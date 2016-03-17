@@ -14,19 +14,22 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   id: 0,
 
+  oldTitle: '',
+
   ui: {
     newTitle: '#newTitle',
     detailsStart: '#userDetailsStart',
     detailsEnd: '#userDetailsEnd',
-    updateTitle: '#updateTitle',
-    deleteReservation: '#deleteReservation',
-    cancelReservation: '#cancelReservation'
+    duration: '#userDetailsDuration',
+    btnUpdateTitle: '#updateTitle',
+    btnDeleteReservation: '#deleteReservation',
+    btnCancelReservation: '#cancelReservation'
   },
 
   events: {
-    'click @ui.updateTitle': 'updateTitle',
-    'click @ui.deleteReservation': 'deleteReservation',
-    'click @ui.cancelReservation': 'cancelReservation'
+    'click @ui.btnUpdateTitle': 'updateTitle',
+    'click @ui.btnDeleteReservation': 'deleteReservation',
+    'click @ui.btnCancelReservation': 'cancelReservation'
   },
 
   updateTitleSuccess: function(model, response) {
@@ -64,11 +67,17 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   onShow: function() {
-    var newStart = moment(this.model.get('start')).format('DD.MM.YYYY HH:mm');
-    var newEnd = moment(this.model.get('end')).format('DD.MM.YYYY HH:mm');
+    var newStart = moment(this.model.get('start')).utc().format('DD.MM.YYYY HH:mm');
+    var newEnd = moment(this.model.get('end')).utc().format('DD.MM.YYYY HH:mm');
 
+    var duration = moment(this.model.get('end')).diff(this.model.get('start'));
+    duration = moment(duration).utc().format('H [h] mm [min]');
+
+    this.ui.duration.text(duration);
     this.ui.detailsStart.text(newStart);
     this.ui.detailsEnd.text(newEnd);
+
+    this.oldTitle = this.model.get('title');
   },
 
   updateTitle: function() {
@@ -79,6 +88,11 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
     if(!title) {
       notification('Title missing!', 'error', 2500);
+      return;
+    }
+
+    if(title === this.oldTitle) {
+      notification('Title not updated!', 'information', 2500);
       return;
     }
 

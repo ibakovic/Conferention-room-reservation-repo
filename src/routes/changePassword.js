@@ -9,6 +9,7 @@ var format = require('string-template');
 var moment = require('moment');
 var md5 = require('md5');
 var logger = require('minilog')('changePassword.js');
+var mailHtml = require('../lib/mailHtml.js');
 
 /**
  * @typedef ApiResponse
@@ -145,7 +146,7 @@ function resetPasswordEmail(req, res) {
       from: 'noreply@extensionengine.com',
       to: user.get('email'),
       subject: message.EmailSubjectResetPassword,
-      text: message.EmailTextResetPassword + url
+      html: mailHtml(message.EmailSubjectResetPassword, message.EmailTextResetPassword, url)
     };
 
     transporter.sendMail(mailOptions, function userDeletedEmail(err, info) {

@@ -16,6 +16,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   ui: {
     detailsStart: '#eventDetailStart',
     detailsEnd: '#eventDetailEnd',
+    duration: '#reservationDuration',
     btnReturnToCalendar: '#returnToCalendar'
   },
 
@@ -24,9 +25,13 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   },
 
   onShow: function() {
-    var newStart = moment(this.model.get('start')).format('DD.MM.YYYY HH:mm');
-    var newEnd = moment(this.model.get('end')).format('DD.MM.YYYY HH:mm');
+    var newStart = moment(this.model.get('start')).utc().format('DD.MM.YYYY HH:mm');
+    var newEnd = moment(this.model.get('end')).utc().format('DD.MM.YYYY HH:mm');
 
+    var duration = moment(this.model.get('end')).diff(this.model.get('start'));
+    duration = moment(duration).utc().format('H [h] mm [min]');
+
+    this.ui.duration.text(duration);
     this.ui.detailsStart.text(newStart);
     this.ui.detailsEnd.text(newEnd);
   },
