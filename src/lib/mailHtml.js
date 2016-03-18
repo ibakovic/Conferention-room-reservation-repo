@@ -1,15 +1,20 @@
 'use strict';
 
 var handlebars = require('handlebars');
-var mailTemplate = require('../mail templates/mailTemplate.js');
+var path = require('path');
+var fs = require('fs');
+var logger = require('minilog')('mailHtml.js');
+
+var templatePath = path.join(__dirname, '../mail templates/mailTemplate.handlebars');
 
 module.exports = function(mailTitle, mailText, mailLink) {
-  var template = handlebars.compile(mailTemplate);
+  var template = fs.readFileSync(templatePath, 'utf8');
+  var htmlTemplate = handlebars.compile(template);
   var templateData = {
     "mailTitle": mailTitle,
     "mailText": mailText,
     "mailLink": mailLink
   };
 
-  return template(templateData);
+  return htmlTemplate(templateData);
 };

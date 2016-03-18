@@ -14,8 +14,6 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   id: 0,
 
-  oldTitle: '',
-
   ui: {
     newTitle: '#newTitle',
     detailsStart: '#userDetailsStart',
@@ -27,9 +25,19 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   events: {
+    'DOMSubtreeModified @ui.newTitle': 'titleChanged',
     'click @ui.btnUpdateTitle': 'updateTitle',
     'click @ui.btnDeleteReservation': 'deleteReservation',
     'click @ui.btnCancelReservation': 'cancelReservation'
+  },
+
+  titleChanged: function() {
+    if(this.model.get('title') === this.ui.newTitle.html()) {
+      this.ui.btnUpdateTitle.css('display', 'none');
+      return;
+    }
+
+    this.ui.btnUpdateTitle.css('display', 'inline');
   },
 
   updateTitleSuccess: function(model, response) {
@@ -76,8 +84,6 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     this.ui.duration.text(duration);
     this.ui.detailsStart.text(newStart);
     this.ui.detailsEnd.text(newEnd);
-
-    this.oldTitle = this.model.get('title');
   },
 
   updateTitle: function() {
@@ -91,7 +97,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       return;
     }
 
-    if(title === this.oldTitle) {
+    if(title === this.model.get('title')) {
       notification('Title not updated!', 'information', 2500);
       return;
     }

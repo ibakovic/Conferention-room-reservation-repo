@@ -275,30 +275,6 @@ var CalendarView = Marionette.CompositeView.extend({
     });
 
     this.calendarPromise.resolve(self.ui.$calendar);
-  },
-
-  userDetails: function() {
-    var userDetailsLink = format('userDetails', {
-      roomId: this.roomId,
-      start: this.start,
-      view: this.calendarView
-    });
-
-    Backbone.history.navigate(userDetailsLink, {trigger: true});
-  },
-
-  logout: function() {
-    popsicle.request({
-      method: 'GET',
-      url: 'logout'
-    })
-    .then(function loggedOut(res) {
-      noty('Good bye!', 'success', 2500);
-      Backbone.history.navigate('', {trigger: true});
-    })
-    .catch(function loggoutErr(err) {
-      noty(err.body.msg, 'error', 2500);
-    });
   }
 });
 

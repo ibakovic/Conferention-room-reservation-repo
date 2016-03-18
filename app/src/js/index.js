@@ -12,6 +12,8 @@ var q = require('q');
 var defer = q.defer();
 var isLoggedIn = require('./lib/isLoggedIn.js');
 
+require('bootstrap-sass');
+
 var now = moment().utc().valueOf();
 var firstCollection;
 var secondCollection;
@@ -61,6 +63,7 @@ var routerController = Marionette.Object.extend({
     if(models.rooms.length !== 0) {
       resApp.roomRegion.show(new views.RoomsView({
         collection: models.rooms,
+        roomId: parseInt(roomId, 10),
         start: start,
         eventView: eventView
       }));
@@ -70,6 +73,7 @@ var routerController = Marionette.Object.extend({
         success: function roomsFetchSuccess(roomsCollection, response) {
           resApp.roomRegion.show(new views.RoomsView({
             collection: roomsCollection,
+            roomId: parseInt(roomId, 10),
             start: start,
             eventView: eventView
           }));

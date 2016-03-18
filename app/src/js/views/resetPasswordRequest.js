@@ -41,6 +41,10 @@ var rprView = Validation.extend({
       }
     })
     .then(function resetPasswordRequestSuccess(response) {
+      if(!response.body.success) {
+        noty(response.body.msg, 'error', 3000);
+        return;
+      }
       noty(response.body.msg, 'success', 4000);
       Backbone.history.navigate('', {trigger: true});
     })
