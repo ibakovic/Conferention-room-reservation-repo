@@ -16,7 +16,7 @@
   "EmailSubjectResetPassword": "Conference room booking reset password",
   "EmailText": "Click on this link to verify your registration: ",
   "EmailTextUserDeleted": "Dear user,\n\nYour registration confirmation was not recieved and because of that your account was deleted.",
-  "EmailTextResetPassword": "Hello, \n\nif you wish to change your password, click on this link whitch will expire in 30 minutes: ",
+  "EmailTextResetPassword": "Hello, \n\nif you wish to change your password, click on this link which will expire in 30 minutes: ",
   "EmailTextResetPasswordFail": "Hello,\n\n you failed to reset your password in the given time.",
 
   "UsernameExists": "This username already exists!",

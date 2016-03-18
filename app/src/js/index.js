@@ -2,6 +2,7 @@
 
 var $ = require('jquery');
 window.jQuery = window.$ = require('jquery');
+require('bootstrap-sass');
 var localstorage = window.localStorage;
 var moment = require('moment');
 var _ = require('lodash');
@@ -11,8 +12,6 @@ var noty = require('./lib/alert.js');
 var q = require('q');
 var defer = q.defer();
 var isLoggedIn = require('./lib/isLoggedIn.js');
-
-require('bootstrap-sass');
 
 var now = moment().utc().valueOf();
 var firstCollection;
