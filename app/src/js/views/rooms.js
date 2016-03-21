@@ -86,6 +86,10 @@ var RoomsView = Marionette.CompositeView.extend({
     this.calendarView = options.eventView;
   },
 
+  onShow: function() {
+    this.ui.btnUserDetails.text(window.localStorage.getItem('username'));
+  },
+
   userDetails: function() {
     var userDetailsLink = format('userDetails', {
       roomId: this.roomId,

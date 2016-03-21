@@ -56,6 +56,7 @@ var LoginView = Validate.extend({
       }
 
       window.localStorage.setItem('userId', res.body.userId);
+      window.localStorage.setItem('username', res.body.username);
       window.localStorage.setItem('fetchCollection', 1);
 
       noty(res.body.msg, 'success', 2500);

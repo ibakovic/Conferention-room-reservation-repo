@@ -2,7 +2,9 @@
 
 var $ = require('jquery');
 window.jQuery = window.$ = require('jquery');
+
 require('bootstrap-sass');
+
 var localstorage = window.localStorage;
 var moment = require('moment');
 var _ = require('lodash');

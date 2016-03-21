@@ -1,15 +1,25 @@
 <div id="detailsWrapper">
-  <h2>{{title}}</h2>
+  <h2 id="reservationDetailsTitle">{{title}}</h2>
 
-  <div class="contentWrapper"><label>Reservation ID: </label><div class="reservationContent">{{id}}</div></div>
+  <div class="contentWrapper">
+    <label class="reservationDetailsLabel">Reservation ID: </label><span class="reservationContent">{{id}}</span>
+  </div>
 
-  <div class="contentWrapper"><label>Room ID: </label><div class="reservationContent">{{roomId}}</div></div>
+  <div class="contentWrapper">
+    <label class="reservationDetailsLabel">Room ID: </label><span class="reservationContent">{{roomId}}</span>
+  </div>
 
-  <div class="contentWrapper"><label>Start: </label><div id="eventDetailStart" class="reservationContent">{{start}}</div></div>
+  <div class="contentWrapper">
+    <label class="reservationDetailsLabel">Start: </label><span id="eventDetailStart" class="reservationContent">{{start}}</span>
+  </div>
 
-  <div class="contentWrapper"><label>End: </label><div id="eventDetailEnd" class="reservationContent">{{end}}</div></div>
+  <div class="contentWrapper">
+    <label class="reservationDetailsLabel">End: </label><span id="eventDetailEnd" class="reservationContent">{{end}}</span>
+  </div>
 
-  <div class="contentWrapper"><label>Duration: </label><div id="reservationDuration" class="reservationContent"></div></div>
+  <div class="contentWrapper">
+    <label class="reservationDetailsLabel">Duration: </label><span id="reservationDuration" class="reservationContent"></span>
+  </div>
 
   <button id="returnToCalendar" class="btn btn-lg">Return to calendar</button>
 </div>
