@@ -2,6 +2,7 @@
 
 var $ = require('jquery');
 var _ = require('lodash');
+var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var noty = require('noty');
@@ -13,6 +14,8 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   template: reservationDetailsTemplate,
 
   id: 0,
+
+  roomId: 0,
 
   ui: {
     newTitle: '#newTitle',
@@ -40,10 +43,20 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
     this.ui.btnUpdateTitle.css('display', 'inline');
   },
 
+  returnToCalendar: function() {
+    var link = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.roomId,
+      start: window.localStorage.getItem('start'),
+      calendarView: window.localStorage.getItem('calendarView')
+    });
+
+    Backbone.history.navigate(link, {trigger: true});
+  },
+
   updateTitleSuccess: function(model, response) {
     notification(response.msg, 'success', 2500);
 
-    window.history.back();
+    this.returnToCalendar();
   },
 
   error: function(model, response) {
@@ -53,7 +66,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   deleteReservationSuccess: function(model, response) {
     notification(response.msg, 'error', 2500);
-    window.history.back();
+    this.returnToCalendar();
   },
 
   deleteReservationYes: function($noty) {
@@ -67,11 +80,11 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 */
     window.localStorage.setItem('deleteModel', 'true');
     $noty.close();
-    window.history.back();
+    this.returnToCalendar();
   },
 
   initialize: function(options) {
-    this.calendarView = options.calendarView;
+    this.roomId = options.roomId;
   },
 
   onShow: function() {
@@ -89,7 +102,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   updateTitle: function() {
     var roomId = this.model.get('roomId');
     var path = 'reservations/' + this.model.get('id');
-    var title = this.ui.newTitle.html();
+    var title = this.ui.newTitle[0].outerText;
     var self = this;
 
     if(!title) {
@@ -138,7 +151,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   cancelReservation: function() {
-    window.history.back();
+    this.returnToCalendar();
   }
 });
 

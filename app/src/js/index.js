@@ -19,6 +19,32 @@ var now = moment().utc().valueOf();
 var firstCollection;
 var secondCollection;
 
+function showNavbar(roomId) {
+  if(models.rooms.length !== 0) {
+    resApp.roomRegion.show(new views.RoomsView({
+      collection: models.rooms,
+      roomId: parseInt(roomId, 10),
+      start: window.localStorage.getItem('start'),
+      eventView: window.localStorage.getItem('calendarView')
+    }));
+  }
+  else {
+    models.rooms.fetch({
+      success: function roomsFetchSuccess(roomsCollection, response) {
+        resApp.roomRegion.show(new views.RoomsView({
+          collection: roomsCollection,
+          roomId: parseInt(roomId, 10),
+          start: window.localStorage.getItem('start'),
+          eventView: window.localStorage.getItem('calendarView')
+        }));
+      },
+      error: function roomsFetchError(error) {
+        console.log(error);
+      }
+    });
+  }
+}
+
 if (window.__agent) {
   window.__agent.start(Backbone, Marionette);
 }
@@ -210,14 +236,15 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.empty();
+    showNavbar(roomId);
 
     var reservation = new models.SingleReservation({id: parseInt(id, 10)});
 
     reservation.fetch({
       success: function reservationFetchSuccess(model, response) {
         resApp.mainRegion.show(new views.UserReservationView({
-          model: model
+          model: model,
+          roomId: parseInt(roomId, 10)
         }));
 
         defer = q.defer();
@@ -235,14 +262,15 @@ var routerController = Marionette.Object.extend({
       return;
     }
 
-    resApp.roomRegion.empty();
+    showNavbar(roomId);
 
     var reservation = new models.SingleReservation({id: parseInt(id, 10)});
 
     reservation.fetch({
       success: function(model, response) {
         resApp.mainRegion.show(new views.ReservationView({
-          model: model
+          model: model,
+          roomId: parseInt(roomId, 10)
         }));
       }
     });
@@ -255,18 +283,19 @@ var routerController = Marionette.Object.extend({
     resApp.mainRegion.show(views.confirmRegistration, {preventDestroy: true});
   },
 
-  userDetails: function () {
+  userDetails: function (roomId) {
     if(!isLoggedIn()) {
       Backbone.history.navigate('', {trigger: true});
       return;
     }
 
-    resApp.roomRegion.empty();
+    showNavbar(roomId);
 
     models.user.fetch({
       success: function userFetchSuccess(user, response) {
         resApp.mainRegion.show(new views.UserDetailsView({
-          model: user
+          model: user,
+          roomId: parseInt(roomId, 10)
         }));
       },
       error: function userFetchError(model, response) {
@@ -303,7 +332,7 @@ var Router = Marionette.AppRouter.extend({
     'userReservationDetails/:roomId/:id': 'userReservationDetails',
     'reservationDetails/:roomId/:id': 'reservationDetails',
     'confirm/:id': 'confirmRegistration',
-    'userDetails': 'userDetails',
+    'userDetails/:roomId': 'userDetails',
     'resetPassword/:urlId/:md5': 'resetPassword',
     'resetPasswordRequest': 'resetPasswordRequest'
   }

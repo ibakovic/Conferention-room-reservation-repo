@@ -6,7 +6,8 @@ var options = {
     force: true,
     debug: true,
     outputStyle: 'nested',
-    sourceComments: true
+    sourceComments: true,
+    precision: 10
 };
 
 module.exports = function(server) {

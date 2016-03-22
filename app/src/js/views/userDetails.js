@@ -4,12 +4,15 @@ var popsicle = require('popsicle');
 var $ = require('jquery');
 var noty = require('../lib/alert.js');
 var format = require('string-template');
+var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var userDetaisTemplate = require('../../templates/userDetails.hbs');
 
 var UserDetailsView = Marionette.ItemView.extend({
   template: userDetaisTemplate,
+
+  roomId: 0,
 
   ui: {
     resetPassword: '#resetPasswordButton',
@@ -24,6 +27,20 @@ var UserDetailsView = Marionette.ItemView.extend({
 
   modelEvents: {
     'change': 'modelChanged'
+  },
+
+  returnToCalendar: function() {
+    var link = format('calendar/{roomId}/{start}/{calendarView}', {
+      roomId: this.roomId,
+      start: window.localStorage.getItem('start'),
+      calendarView: window.localStorage.getItem('calendarView')
+    });
+
+    Backbone.history.navigate(link, {trigger: true});
+  },
+
+  initialize: function(options) {
+    this.roomId = options.roomId;
   },
 
   modelChanged: function() {
@@ -54,7 +71,7 @@ var UserDetailsView = Marionette.ItemView.extend({
   },
 
   backToCalendar: function() {
-    window.history.back();
+    this.returnToCalendar();
   }
 });
 

@@ -91,10 +91,8 @@ var RoomsView = Marionette.CompositeView.extend({
   },
 
   userDetails: function() {
-    var userDetailsLink = format('userDetails', {
-      roomId: this.roomId,
-      start: this.start,
-      view: this.calendarView
+    var userDetailsLink = format('userDetails/{roomId}', {
+      roomId: this.roomId
     });
 
     Backbone.history.navigate(userDetailsLink, {trigger: true});
