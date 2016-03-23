@@ -11,8 +11,6 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var noty = require('./lib/alert.js');
-var q = require('q');
-var defer = q.defer();
 var isLoggedIn = require('./lib/isLoggedIn.js');
 
 var now = moment().utc().valueOf();
@@ -121,37 +119,6 @@ var routerController = Marionette.Object.extend({
       if(secondCollection.models[0].get('roomId') === intRoomId)
         collection = secondCollection;
 
-      defer.promise
-      .then(function(model) {
-        if(!model) {
-          return;
-        }
-
-        var reservation = collection.findWhere({id: model.get('id')});
-
-        if(window.localStorage.getItem('deleteModel') === 'true') {
-          reservation.destroy({
-            success: function deleteItemSuccess(model, response) {
-              window.localStorage.setItem('deleteModel', 'false');
-            }
-          });
-        }
-        else
-          reservation.set(model.attributes);
-
-        resApp.mainRegion.show(new views.CalendarView({
-          collection: collection,
-          roomId: roomId,
-          start: start,
-          calendarView: eventView
-        }));
-
-        return;
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-
       resApp.mainRegion.show(new views.CalendarView({
         collection: collection,
         roomId: roomId,
@@ -174,28 +141,6 @@ var routerController = Marionette.Object.extend({
 
     firstCollection.fetch({
       success: function(collection1, response) {
-        defer.promise
-        .then(function fetchDeferSuccess(model) {
-          var reservation = collection1.findWhere({id: model.get('id')});
-
-          if(window.localStorage.getItem('deleteModel') === 'true') {
-            reservation.destroy({
-              success: function deleteItemSuccess(model, response) {
-                window.localStorage.setItem('deleteModel', 'false');
-                resApp.mainRegion.show(new views.CalendarView({
-                  collection: collection1,
-                  roomId: roomId,
-                  start: start,
-                  calendarView: eventView
-                }));
-              }
-            });
-          }
-        })
-        .catch(function fetchDeferError(error) {
-          console.log(error);
-        });
-
         resApp.mainRegion.show(new views.CalendarView({
           collection: collection1,
           roomId: roomId,
@@ -238,22 +183,39 @@ var routerController = Marionette.Object.extend({
 
     showNavbar(roomId);
 
-    var reservation = new models.SingleReservation({id: parseInt(id, 10)});
+    var collection;
 
-    reservation.fetch({
-      success: function reservationFetchSuccess(model, response) {
-        resApp.mainRegion.show(new views.UserReservationView({
-          model: model,
-          roomId: parseInt(roomId, 10)
-        }));
+    if(firstCollection && firstCollection.models[0].get('roomId') === parseInt(roomId, 10))
+      collection = firstCollection;
 
-        defer = q.defer();
-        defer.resolve(model);
-      },
-      error: function(error) {
-        console.log(error);
-      }
-    });
+    if(secondCollection && secondCollection.models[0].get('roomId') === parseInt(roomId, 10))
+      collection = secondCollection;
+
+    var reservation;
+
+    if(!collection || collection.length === 0) {
+      reservation = new models.SingleReservation({id: parseInt(id, 10)});
+
+      reservation.fetch({
+        success: function(model, response) {
+          resApp.mainRegion.show(new views.UserReservationView({
+            model: model,
+            roomId: parseInt(roomId, 10)
+          }));
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+      return;
+    }
+
+    reservation = collection.findWhere({id: parseInt(id, 10)});
+
+    resApp.mainRegion.show(new views.UserReservationView({
+      model: reservation,
+      roomId: parseInt(roomId, 10)
+    }));
   },
 
   reservationDetails: function(roomId, id) {

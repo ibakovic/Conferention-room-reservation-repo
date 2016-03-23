@@ -39,6 +39,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       this.ui.btnUpdateTitle.css('display', 'none');
       return;
     }
+    //jquery toggle
 
     this.ui.btnUpdateTitle.css('display', 'inline');
   },
@@ -71,16 +72,18 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
 
   deleteReservationYes: function($noty) {
     var self = this;
-/*
+
     this.model.destroy({
       wait: true,
-      success: self.deleteReservationSuccess.bind(self),
+      success: function(model, response) {
+        notification(response.msg, 'error', 2500);
+        $noty.close();
+        self.returnToCalendar();
+      },
       error: self.error.bind(self)
     });
-*/
-    window.localStorage.setItem('deleteModel', 'true');
-    $noty.close();
-    this.returnToCalendar();
+
+    //window.localStorage.setItem('deleteModel', 'true');
   },
 
   initialize: function(options) {

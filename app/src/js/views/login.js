@@ -10,7 +10,6 @@ var loginTemplate = require('../../templates/login.hbs');
 var noty = require('../lib/alert.js');
 var moment = require('moment');
 var format = require('string-template');
-var q = require('q');
 
 var LoginView = Validate.extend({
   template: loginTemplate,

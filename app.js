@@ -3,6 +3,7 @@
 var server = require('./src/lib/initializeServer.js');
 require('minilog').enable();
 var logger = require('minilog')('app.js');
+var path = require('path');
 
 //Listen for expirations
 require('./src/lib/checkExpirations.js');
@@ -30,6 +31,25 @@ server.register(require('inert'), function(err) {
   if (err) {
     throw err;
   }
+
+  server.route({
+    method: 'GET',
+    path: '/fonts/{parameter*}',
+    config: {
+      handler: {
+        directory: {
+          path: path.join(__dirname, './node_modules/bootstrap-sass/assets/fonts/bootstrap/')
+        }
+      },
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': { redirectTo: false }
+      }
+    }
+  });
 
   server.route({
     method: 'GET',

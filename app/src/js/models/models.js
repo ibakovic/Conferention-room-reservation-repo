@@ -2,7 +2,6 @@
 
 var Backbone = require('backbone');
 var _ = require('lodash');
-var defer = require('../promises/roomReservation.js');
 
 var User = Backbone.Model.extend({
   url: '/user',
