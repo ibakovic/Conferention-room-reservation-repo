@@ -194,8 +194,10 @@ var CalendarView = Marionette.CompositeView.extend({
     this.roomId = parseInt(options.roomId, 10);
     this.start = parseInt(options.start, 10);
     this.calendarView = options.calendarView;
+
     window.localStorage.setItem('calendarView', options.calendarView);
     window.localStorage.setItem('start', options.start);
+
     this.userIdLocalStorage = parseInt(window.localStorage.getItem('userId'), 10);
 
     this.calendarPromise = q.defer();

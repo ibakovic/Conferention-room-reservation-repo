@@ -28,20 +28,20 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   },
 
   events: {
-    'DOMSubtreeModified @ui.newTitle': 'titleChanged',
+    'keyup @ui.newTitle': 'titleChanged',
     'click @ui.btnUpdateTitle': 'updateTitle',
     'click @ui.btnDeleteReservation': 'deleteReservation',
     'click @ui.btnCancelReservation': 'cancelReservation'
   },
 
   titleChanged: function() {
-    if(this.model.get('title') === this.ui.newTitle.html()) {
-      this.ui.btnUpdateTitle.css('display', 'none');
+    if(this.model.get('title') === this.ui.newTitle.text()) {
+      this.ui.btnUpdateTitle.hide();
       return;
     }
     //jquery toggle
 
-    this.ui.btnUpdateTitle.css('display', 'inline');
+    this.ui.btnUpdateTitle.show();
   },
 
   returnToCalendar: function() {

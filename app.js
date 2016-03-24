@@ -34,11 +34,12 @@ server.register(require('inert'), function(err) {
 
   server.route({
     method: 'GET',
-    path: '/fonts/{parameter*}',
+    path: '/bootstrap/{parameter*}',
     config: {
       handler: {
         directory: {
-          path: path.join(__dirname, './node_modules/bootstrap-sass/assets/fonts/bootstrap/')
+          path: path.join(__dirname, './node_modules/bootstrap-sass/assets/fonts/bootstrap'),
+          listing: true
         }
       },
       auth: {
