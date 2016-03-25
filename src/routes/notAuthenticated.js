@@ -78,6 +78,11 @@ function login(req, res) {
       resData.success = true;
       resData.userId = user.get('id');
       resData.username = user.get('username');
+      resData.isAdmin = false;
+
+      if(user.get('username') === 'admin') {
+        resData.isAdmin = true;
+      }
 
       res(resData).code(200);
     });

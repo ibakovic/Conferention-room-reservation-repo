@@ -307,6 +307,10 @@ function deleteReservation(req, res) {
     userId: parseInt(req.auth.credentials, 10)
   };
 
+  if(parseInt(req.auth.credentials, 10) === 60) {
+    getReservation = {id: parseInt(req.params.id, 10)};
+  }
+
   Reservation.where(getReservation).fetch()
   .then(function(response) {
     if(!response) {
@@ -354,6 +358,10 @@ function updateTitle(req, response) {
     id: req.params.id,
     userId: req.auth.credentials
   };
+
+  if(parseInt(req.auth.credentials, 10) === 60) {
+    getReservation = {id: parseInt(req.params.id, 10)};
+  }
 
   var setReservation = {
     title: req.payload.newTitle

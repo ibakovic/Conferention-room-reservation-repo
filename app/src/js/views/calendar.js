@@ -35,6 +35,10 @@ var EventView = Marionette.ItemView.extend({
       renderEventOptions.editable = true;
     }
 
+    if (window.localStorage.getItem('isAdmin') === 'true') {
+      renderEventOptions.editable = true;
+    }
+
     $calendar.fullCalendar('renderEvent', this.model.attributes, true);
 
     this.$el.remove();
@@ -164,15 +168,21 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   renderEvent: function(event, element) {
-    if(event.userId !== this.userIdLocalStorage) {
+    var self = this;
+
+    if(event.userId !== this.userIdLocalStorage && (window.localStorage.getItem('isAdmin') !== 'true')) {
       element.css('opacity', '0.55');
       element.css('border-style', 'none');
+    }
+
+    if(event.id === parseInt(window.localStorage.getItem('reservationId'), 10)) {
+      element.fadeIn('slow');
     }
   },
 
   clickEvent: function(clickEvent) {
     var userResDetLink = '';
-    if(clickEvent.userId === this.userIdLocalStorage) {
+    if(clickEvent.userId === this.userIdLocalStorage || (window.localStorage.getItem('isAdmin') === 'true')) {
       userResDetLink = format('userReservationDetails/{roomId}/{id}', {
         roomId: this.roomId,
         id: clickEvent.id

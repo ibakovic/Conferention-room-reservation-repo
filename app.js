@@ -32,6 +32,7 @@ server.register(require('inert'), function(err) {
     throw err;
   }
 
+//treba ic u app/dist/assets
   server.route({
     method: 'GET',
     path: '/bootstrap/{parameter*}',

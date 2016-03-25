@@ -39,12 +39,14 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       this.ui.btnUpdateTitle.hide();
       return;
     }
-    //jquery toggle
 
     this.ui.btnUpdateTitle.show();
   },
 
   returnToCalendar: function() {
+    Backbone.Events.trigger('hilightReservation', this.model.get('id'));
+    window.localStorage.setItem('reservationId', this.model.get('id'));
+
     var link = format('calendar/{roomId}/{start}/{calendarView}', {
       roomId: this.roomId,
       start: window.localStorage.getItem('start'),
@@ -82,8 +84,6 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
       },
       error: self.error.bind(self)
     });
-
-    //window.localStorage.setItem('deleteModel', 'true');
   },
 
   initialize: function(options) {

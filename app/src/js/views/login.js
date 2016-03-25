@@ -56,7 +56,7 @@ var LoginView = Validate.extend({
 
       window.localStorage.setItem('userId', res.body.userId);
       window.localStorage.setItem('username', res.body.username);
-      window.localStorage.setItem('fetchCollection', 1);
+      window.localStorage.setItem('isAdmin', res.body.isAdmin);
 
       noty(res.body.msg, 'success', 2500);
 
