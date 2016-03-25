@@ -63,15 +63,17 @@ var CalendarView = Marionette.CompositeView.extend({
 
   userIdLocalStorage: 0,
 
+  maxDuration: parseInt(window.localStorage.getItem('maxDuration'), 10),
+
   ui: {
     $calendar: '#calendar',
-    btnUserDetails: '#userDetailsRedirect',
-    btnLogout: '#logout'
+    maxDurationBox: '#maxDurationWrapper',
+    maxDurationInput: '#maxDuration',
+    btnConfirmDuration: '#maxDurationConfirm',
   },
 
   events: {
-    'click @ui.btnUserDetails': 'userDetails',
-    'click @ui.btnLogout': 'logout'
+    'click @ui.btnConfirmDuration': 'updateDuration'
   },
 
   addEventSuccess: function(model, response) {
@@ -111,8 +113,9 @@ var CalendarView = Marionette.CompositeView.extend({
     }
 
     var self = this;
-    if(moment(end._d).diff(start._d, 'minutes') > 180) {
-      noty('Time limit on a single reservation is 3h!', 'error', 2500);
+
+    if(moment(end._d).diff(start._d, 'minutes') > self.maxDuration) {
+      noty('Time limit on a single reservation is ' + self.maxDuration + ' minutes', 'error', 2500);
       this.ui.$calendar.fullCalendar('unselect');
       return;
     }
@@ -222,6 +225,10 @@ var CalendarView = Marionette.CompositeView.extend({
   },
 
   onDomRefresh: function() {
+    if(window.localStorage.getItem('isAdmin') === 'true') {
+      this.ui.maxDurationBox.show();
+    }
+
     this.createCalendar();
   },
 
@@ -289,6 +296,33 @@ var CalendarView = Marionette.CompositeView.extend({
     });
 
     this.calendarPromise.resolve(self.ui.$calendar);
+  },
+
+  updateDuration: function() {
+    if(!this.ui.maxDurationInput.val()) {
+      noty('Max duration field empty!!', 'error', 2500);
+      return;
+    }
+
+    this.maxDuration = parseInt(this.ui.maxDurationInput.val(), 10);
+    var self = this;
+
+
+    popsicle.request({
+      method: 'POST',
+      url: 'rooms/' + self.roomId,
+      body: {
+        maxDuration: self.maxDuration
+      }
+    })
+    .then(function durationSend(response) {
+      window.localStorage.setItem('maxDuration', self.maxDuration);
+
+      noty('Max duration set to ' + self.maxDuration, 'success', 2500);
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
   }
 });
 

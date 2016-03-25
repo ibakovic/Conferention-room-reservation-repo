@@ -69,6 +69,33 @@ function getRoom(req, res) {
   });
 }
 
+function setDuration(req, res) {
+  var resData = {};
+  resData.success = false;
+
+  var roomQuery = {roomId: req.params.id};
+  var setRoom = {maxDuration: parseInt(req.payload.maxDuration, 10)};
+
+  Room.where(roomQuery).save(setRoom, {method: 'update'})
+  .then(function updatingRoom(room) {
+    if(!room) {
+      resData.msg = message.RoomNotFound;
+      res(resData).code(400);
+      return;
+    }
+
+    resData.msg = 'Maximum duration updated!';
+    resData.success = true;
+    resData.data = room;
+
+    res(resData).code(200);
+  })
+  .catch(function(err) {
+    resData.msg = err.message;
+    res(resData).code(400);
+  });
+}
+
 var objects = [{
   method: 'GET',
   path: '/rooms',
@@ -77,6 +104,10 @@ var objects = [{
   method: 'GET',
   path: '/rooms/{id}',
   handler: getRoom
+}, {
+  method: 'POST',
+  path: '/rooms/{id}',
+  handler: setDuration
 }];
 
 module.exports = function roomsRouter(server) {

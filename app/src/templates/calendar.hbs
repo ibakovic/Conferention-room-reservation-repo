@@ -1,6 +1,15 @@
 <div id="calendarWrapper">
   <div class="container-fluid">
     <div class="row">
+    <br />
+      <div id="maxDurationWrapper">
+        <div class="input-group">
+          <label class="maxDurationField input-group-addon">Maximum duration in minutes:</label>
+          <input id="maxDuration" type="number" placeholder="180 default" class="form-control" />
+        </div>
+
+        <button id="maxDurationConfirm" class="btn btn-success">Set max duration</button>
+      </div>
       <div class="col-xs-12">
         <div id="calendar"></div>
       </div>

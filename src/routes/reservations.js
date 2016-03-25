@@ -143,53 +143,60 @@ function createReservation(req, res) {
     return;
   }
 
-  var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
-  if(duration > 180) {
-    resData.msg = message.MaxDurationExceeded;
-    res(resData).code(400);
-    return;
-  }
+  var findRoom = {roomId: parseInt(req.payload.roomId, 10)};
 
-  if(duration <= 0) {
-    resData.msg = message.EndBeforeStart;
-    res(resData).code(400);
-    return;
-  }
+  Room.where(findRoom).fetch()
+  .then(function roomFound(room){
+    var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 
-  Reservation.fetchAll()
-  .then(function overlapValidationAdd(reservations) {
-    var success = overlapCheck(0, reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
-
-    if(!success) {
-      resData.msg = message.Overlap;
+    if(duration > room.get('maxDuration')) {
+      resData.msg = message.MaxDurationExceeded;
       res(resData).code(400);
       return;
     }
 
-    var reservation = new Reservation(makeReservation);
+    if(duration <= 0) {
+      resData.msg = message.EndBeforeStart;
+      res(resData).code(400);
+      return;
+    }
 
-    reservation.save()
-    .then(function reservationCreated(reservation) {
-      if(!reservation) {
-        resData.msg = message.ReservationNotSaved;
+    Reservation.fetchAll()
+    .then(function overlapValidationAdd(reservations) {
+      var success = overlapCheck(0, reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
+
+      if(!success) {
+        resData.msg = message.Overlap;
         res(resData).code(400);
         return;
       }
 
-      resData.msg = message.ReservationSaved;
-      resData.success = true;
-      resData.data = reservation;
+      var reservation = new Reservation(makeReservation);
 
-      res(resData).code(200);
-    })
-    .catch(function setError(err) {
-      resData = {};
-      resData.success = false;
-      resData.msg = err;
+      reservation.save()
+      .then(function reservationCreated(reservation) {
+        if(!reservation) {
+          resData.msg = message.ReservationNotSaved;
+          res(resData).code(400);
+          return;
+        }
 
-      res(resData).code(400);
+        resData.msg = message.ReservationSaved;
+        resData.success = true;
+        resData.data = reservation;
+
+        res(resData).code(200);
+      })
+      .catch(function setError(err) {
+        resData = {};
+        resData.success = false;
+        resData.msg = err;
+
+        res(resData).code(400);
+      });
     });
-  });
+  })
+
 }
 
 /**
@@ -214,80 +221,92 @@ function updateStartAndEnd(req, response) {
     return;
   }
 
-  var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
-  if(duration > 181) {
-    resData.msg = message.MaxDurationExceeded;
+  if(!req.payload.roomId) {
+    resData.msg = message.RoomIdNotFound;
     response(resData).code(400);
     return;
   }
 
-  if(duration <= 0) {
-    resData.msg = message.EndBeforeStart;
-    response(resData).code(400);
-    return;
-  }
+  var findRoom = {roomId: parseInt(req.payload.roomId, 10)};
 
-  Reservation.fetchAll()
-  .then(function overlapValidateChange(reservations) {
-    var success = overlapCheck(parseInt(req.params.id, 10), reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
+  Room.where(findRoom).fetch()
+  .then(function roomFound(room){
+    var duration = moment(req.payload.end).diff(req.payload.start, 'minutes');
 
-    if(!success) {
-      resData.msg = message.Overlap;
+    if(duration > room.get('maxDuration')) {
+      resData.msg = message.MaxDurationExceeded;
       response(resData).code(400);
       return;
     }
 
-    User.where({id: req.auth.credentials}).fetch()
-    .then(function userChecked(user) {
-      if(!user) {
-        resData.msg = message.UserNotFound;
+    if(duration <= 0) {
+      resData.msg = message.EndBeforeStart;
+      response(resData).code(400);
+      return;
+    }
+
+    Reservation.fetchAll()
+    .then(function overlapValidateChange(reservations) {
+      var success = overlapCheck(parseInt(req.params.id, 10), reservations, parseInt(req.payload.roomId, 10), req.payload.start, req.payload.end);
+
+      if(!success) {
+        resData.msg = message.Overlap;
         response(resData).code(400);
         return;
       }
 
-      var getReservation = {
-        id: parseInt(req.params.id, 10),
-        userId: parseInt(req.auth.credentials, 10)
-      };
-
-      if(user.attributes.username === 'admin') {
-        getReservation = {id: parseInt(req.params.id, 10)};
-      }
-
-      var setReservation = {
-        start: req.payload.start,
-        end: req.payload.end
-      };
-
-      Reservation.where(getReservation).save(setReservation, {method: 'update'})
-      .then(function reservationSet(res) {
-        if(!res) {
-          resData.msg = message.ReservationNotFound;
+      User.where({id: req.auth.credentials}).fetch()
+      .then(function userChecked(user) {
+        if(!user) {
+          resData.msg = message.UserNotFound;
           response(resData).code(400);
           return;
         }
 
-        resData.msg = message.ReservationUpdated;
-        resData.success = true;
-        resData.data = res;
+        var getReservation = {
+          id: parseInt(req.params.id, 10),
+          userId: parseInt(req.auth.credentials, 10)
+        };
 
-        response(resData).code(200);
-        return;
+        if(user.attributes.username === 'admin') {
+          getReservation = {id: parseInt(req.params.id, 10)};
+        }
+
+        var setReservation = {
+          start: req.payload.start,
+          end: req.payload.end
+        };
+
+        Reservation.where(getReservation).save(setReservation, {method: 'update'})
+        .then(function reservationSet(res) {
+          if(!res) {
+            resData.msg = message.ReservationNotFound;
+            response(resData).code(400);
+            return;
+          }
+
+          resData.msg = message.ReservationUpdated;
+          resData.success = true;
+          resData.data = res;
+
+          response(resData).code(200);
+          return;
+        })
+        .catch(function setError(err) {
+          resData = {};
+          resData.success = false;
+          resData.msg = err.message;
+
+          response(resData).code(400);
+        });
       })
-      .catch(function setError(err) {
+      .catch(function(err) {
         resData = {};
         resData.success = false;
         resData.msg = err.message;
 
         response(resData).code(400);
       });
-    })
-    .catch(function(err) {
-      resData = {};
-      resData.success = false;
-      resData.msg = err.message;
-
-      response(resData).code(400);
     });
   });
 }

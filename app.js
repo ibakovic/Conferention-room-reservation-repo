@@ -39,7 +39,7 @@ server.register(require('inert'), function(err) {
     config: {
       handler: {
         directory: {
-          path: path.join(__dirname, './node_modules/bootstrap-sass/assets/fonts/bootstrap'),
+          path: path.join(__dirname, './app/dist/assets/bootstrap'),
           listing: true
         }
       },

@@ -2,6 +2,7 @@
 
 var bcrypt = require('bcryptjs');
 var User = require('../models/models.js').User;
+var Rooms = require('../models/models.js').Room;
 var message = require('../../strings.json');
 var moment = require('moment');
 var isEmail = require('is-email');
@@ -74,17 +75,21 @@ function login(req, res) {
 
       req.cookieAuth.set({ sid: sid });
 
-      resData.msg = message.LoginSuccess;
-      resData.success = true;
-      resData.userId = user.get('id');
-      resData.username = user.get('username');
-      resData.isAdmin = false;
+      Rooms.where({roomId: 1}).fetch()
+      .then(function(room) {
+        resData.msg = message.LoginSuccess;
+        resData.success = true;
+        resData.userId = user.get('id');
+        resData.username = user.get('username');
+        resData.isAdmin = false;
+        resData.maxDuration = room.get('maxDuration');
 
-      if(user.get('username') === 'admin') {
-        resData.isAdmin = true;
-      }
+        if(user.get('username') === 'admin') {
+          resData.isAdmin = true;
+        }
 
-      res(resData).code(200);
+        res(resData).code(200);
+      })
     });
   })
   .catch(function userNotFound(err) {
