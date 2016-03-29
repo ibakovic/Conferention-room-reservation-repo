@@ -22,7 +22,7 @@ var ReservationDetailsView = Marionette.ItemView.extend({
   },
 
   events: {
-    'click @ui.btnReturnToCalendar': 'returnToCalendar'
+    'click @ui.btnReturnToCalendar': 'backToCalendar'
   },
 
   returnToCalendar: function() {
@@ -31,6 +31,8 @@ var ReservationDetailsView = Marionette.ItemView.extend({
       start: window.localStorage.getItem('start'),
       calendarView: window.localStorage.getItem('calendarView')
     });
+
+    window.localStorage.setItem('reservationId', this.model.get('id'));
 
     Backbone.history.navigate(link, {trigger: true});
   },
@@ -51,8 +53,8 @@ var ReservationDetailsView = Marionette.ItemView.extend({
     this.ui.detailsEnd.text(newEnd);
   },
 
-  returnToCalendar: function() {
-    window.history.back();
+  backToCalendar: function() {
+    this.returnToCalendar();
   }
 });
 

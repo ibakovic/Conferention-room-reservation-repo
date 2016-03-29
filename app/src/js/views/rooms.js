@@ -34,19 +34,13 @@ var RoomView = Marionette.ItemView.extend({
   getCalendar: function() {
     var roomId = this.model.get('roomId');
 
-    if(roomId === 1) {
-      window.localStorage.setItem('fetchCollection', 1);
-    }
-
-    else {
-      window.localStorage.setItem('fetchCollection', 2);
-    }
-
     var calendarLink = format('calendar/{roomId}/{start}/{calendarView}', {
       roomId: roomId,
       start: this.parent.start,
       calendarView: this.parent.calendarView
     });
+
+    window.localStorage.setItem('maxDuration', this.model.get('maxDuration'));
 
     Backbone.history.navigate(calendarLink, {trigger: true});
   }

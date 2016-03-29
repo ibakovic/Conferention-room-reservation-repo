@@ -63,13 +63,14 @@ var CalendarView = Marionette.CompositeView.extend({
 
   userIdLocalStorage: 0,
 
-  maxDuration: parseInt(window.localStorage.getItem('maxDuration'), 10),
+  maxDuration: 0,
 
   ui: {
     $calendar: '#calendar',
     maxDurationBox: '#maxDurationWrapper',
     maxDurationInput: '#maxDuration',
     btnConfirmDuration: '#maxDurationConfirm',
+    maxDurationLabel: '#maxDurationLabel'
   },
 
   events: {
@@ -85,6 +86,14 @@ var CalendarView = Marionette.CompositeView.extend({
 
   changeReservationStartAndEnd: function(changeEvent, revertFunc) {
     var self =this;
+
+    var duration = moment(changeEvent._end._d).diff(changeEvent._start._d, 'minutes');
+
+    if(duration > this.maxDuration) {
+      noty('Error! Time limit on a single reservation is ' + self.maxDuration + ' minutes', 'error', 2500);
+      revertFunc();
+      return;
+    }
 
     var changes = {
       roomId: self.roomId,
@@ -115,7 +124,7 @@ var CalendarView = Marionette.CompositeView.extend({
     var self = this;
 
     if(moment(end._d).diff(start._d, 'minutes') > self.maxDuration) {
-      noty('Time limit on a single reservation is ' + self.maxDuration + ' minutes', 'error', 2500);
+      noty('Error! Time limit on a single reservation is ' + self.maxDuration + ' minutes', 'error', 2500);
       this.ui.$calendar.fullCalendar('unselect');
       return;
     }
@@ -179,7 +188,9 @@ var CalendarView = Marionette.CompositeView.extend({
     }
 
     if(event.id === parseInt(window.localStorage.getItem('reservationId'), 10)) {
-      element.fadeIn('slow');
+      element.fadeIn('slow', function() {
+        window.localStorage.setItem('reservationId', 0);
+      });
     }
   },
 
@@ -207,6 +218,7 @@ var CalendarView = Marionette.CompositeView.extend({
     this.roomId = parseInt(options.roomId, 10);
     this.start = parseInt(options.start, 10);
     this.calendarView = options.calendarView;
+    this.maxDuration = parseInt(window.localStorage.getItem('maxDuration'), 10);
 
     window.localStorage.setItem('calendarView', options.calendarView);
     window.localStorage.setItem('start', options.start);
@@ -228,6 +240,8 @@ var CalendarView = Marionette.CompositeView.extend({
     if(window.localStorage.getItem('isAdmin') === 'true') {
       this.ui.maxDurationBox.show();
     }
+
+    this.ui.maxDurationLabel.text(this.maxDuration);
 
     this.createCalendar();
   },
