@@ -81,7 +81,14 @@ var RoomsView = Marionette.CompositeView.extend({
   },
 
   onShow: function() {
-    this.ui.btnUserDetails.text(window.localStorage.getItem('username'));
+    var username = window.localStorage.getItem('username');
+    var rights = ' (Regular user)';
+
+    if(window.localStorage.getItem('isAdmin') === 'true') {
+      rights = ' (Admin)';
+    }
+
+    this.ui.btnUserDetails.text(username + rights);
   },
 
   userDetails: function() {

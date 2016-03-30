@@ -321,37 +321,53 @@ function deleteReservation(req, res) {
   var resData = {};
   resData.success = false;
 
-  var getReservation = {
-    id: parseInt(req.params.id, 10),
-    userId: parseInt(req.auth.credentials, 10)
-  };
+  var id = parseInt(req.params.id, 10);
+  var userId = parseInt(req.auth.credentials, 10);
 
-  if(parseInt(req.auth.credentials, 10) === 60) {
-    getReservation = {id: parseInt(req.params.id, 10)};
-  }
-
-  Reservation.where(getReservation).fetch()
-  .then(function(response) {
-    if(!response) {
-      resData.msg = message.ReservationNotFound;
-      res(resData).code(400);
+  User.where({id: req.auth.credentials}).fetch()
+  .then(function deleteReservationUser(user) {
+    if(!user) {
+      resData.msg = message.UserNotFound;
+      response(resData).code(400);
       return;
     }
 
-    response.destroy()
-    .then(function reservationDestroyed() {
-      resData.msg = message.ReservationDeleted;
-      resData.success = true;
+    var getReservation = {
+      id: id,
+      userId: userId
+    };
 
-      res(resData).code(200);
+    if(user.get('username') === 'admin') {
+      getReservation = {id: id};
+    }
+
+    Reservation.where(getReservation).fetch()
+    .then(function(response) {
+      if(!response) {
+        resData.msg = message.ReservationNotFound;
+        res(resData).code(400);
+        return;
+      }
+
+      response.destroy()
+      .then(function reservationDestroyed() {
+        resData.msg = message.ReservationDeleted;
+        resData.success = true;
+
+        res(resData).code(200);
+      })
+      .error(function(err) {
+        resData.msg = err.message;
+        res(resData).code(400);
+      });
     })
-    .error(function(err) {
+    .catch(function(err){
       resData.msg = err.message;
       res(resData).code(400);
     });
   })
-  .catch(function(err){
-    resData.msg = err.message;
+  .catch(function userError(error) {
+    resData.msg = error.message;
     res(resData).code(400);
   });
 }
@@ -373,40 +389,57 @@ function updateTitle(req, response) {
     return;
   }
 
-  var getReservation = {
-    id: req.params.id,
-    userId: req.auth.credentials
-  };
 
-  if(parseInt(req.auth.credentials, 10) === 60) {
-    getReservation = {id: parseInt(req.params.id, 10)};
-  }
+  var id = parseInt(req.params.id, 10);
+  var userId = parseInt(req.auth.credentials, 10);
 
-  var setReservation = {
-    title: req.payload.newTitle
-  };
-
-  Reservation.where(getReservation).save(setReservation, {method: 'update'})
-  .then(function reservationSet(res) {
-    if(!res) {
-      resData.msg = message.ReservationNotFound;
+  User.where({id: req.auth.credentials}).fetch()
+  .then(function deleteReservationUser(user) {
+    if(!user) {
+      resData.msg = message.UserNotFound;
       response(resData).code(400);
       return;
     }
 
-    resData.msg = message.ReservationUpdated;
-    resData.success = true;
-    resData.data = res;
+    var getReservation = {
+      id: id,
+      userId: userId
+    };
 
-    response(resData).code(200);
-    return;
+    if(user.get('username') === 'admin') {
+      getReservation = {id: id};
+    }
+
+    var setReservation = {
+      title: req.payload.newTitle
+    };
+
+    Reservation.where(getReservation).save(setReservation, {method: 'update'})
+    .then(function reservationSet(res) {
+      if(!res) {
+        resData.msg = message.ReservationNotFound;
+        response(resData).code(400);
+        return;
+      }
+
+      resData.msg = message.ReservationUpdated;
+      resData.success = true;
+      resData.data = res;
+
+      response(resData).code(200);
+      return;
+    })
+    .catch(function setError(err) {
+      resData = {};
+      resData.success = false;
+      resData.msg = err.message;
+
+      response(resData).code(400);
+    });
   })
-  .catch(function setError(err) {
-    resData = {};
-    resData.success = false;
-    resData.msg = err.message;
-
-    response(resData).code(400);
+  .catch(function userError(error) {
+    resData.msg = error.message;
+    res(resData).code(400);
   });
 }
 
@@ -440,7 +473,7 @@ function getSingleReservation(req, res) {
   resData.success = false;
 
   Reservation.where({id: req.params.id}).fetch()
-  .then(function gotAllReservations(reservations) {
+  .then(function gotAReservation(reservations) {
     if(!reservations) {
       resData.msg = message.ReservationNotFound;
       res(resData).code(400);
