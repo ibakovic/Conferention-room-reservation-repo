@@ -151,7 +151,7 @@ function resetPasswordEmail(req, res) {
 
     transporter.sendMail(mailOptions, function userDeletedEmail(err, info) {
       if (err) {
-        resData.msg = err;
+        resData.msg = message.EmailNotSent;
         res(resData).code(400);
         return;
       }

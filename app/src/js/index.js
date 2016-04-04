@@ -185,10 +185,10 @@ var routerController = Marionette.Object.extend({
 
     var collection;
 
-    if(firstCollection && firstCollection.models[0].get('roomId') === parseInt(roomId, 10))
+    if(firstCollection && (firstCollection.length !== 0) && firstCollection.models[0].get('roomId') === parseInt(roomId, 10))
       collection = firstCollection;
 
-    if(secondCollection && secondCollection.models[0].get('roomId') === parseInt(roomId, 10))
+    if(secondCollection && (secondCollection.length !== 0) && secondCollection.models[0].get('roomId') === parseInt(roomId, 10))
       collection = secondCollection;
 
     var reservation;
