@@ -332,7 +332,7 @@ var CalendarView = Marionette.CompositeView.extend({
       window.localStorage.setItem('maxDuration', self.maxDuration);
       self.ui.maxDurationLabel.text(self.maxDuration);
 
-      noty('Max duration set to ' + self.maxDuration, 'success', 2500);
+      noty('Max duration set to ' + self.maxDuration + ' minutes!', 'success', 2500);
     })
     .catch(function(error) {
       console.log(error);

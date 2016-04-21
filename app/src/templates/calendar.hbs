@@ -2,14 +2,14 @@
   <div class="container-fluid">
     <div class="row">
     <br />
-      <div id="maxDurationWrapper">
-        <div class="input-group">
+      <form id="maxDurationWrapper">
+        <div class="input-group" onsubmit="return false;">
           <label class="maxDurationField input-group-addon">Maximum duration in minutes:</label>
           <input id="maxDuration" type="number" placeholder="180 default" class="form-control" />
         </div>
 
         <button id="maxDurationConfirm" class="btn btn-success">Set max duration</button>
-      </div>
+      </form>
 
       <label>Maximum duration for this room: </label>
       <span id="maxDurationLabel" class="maxDurationText"></span> <span class="maxDurationText"> minutes</span>
