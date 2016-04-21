@@ -321,7 +321,6 @@ var CalendarView = Marionette.CompositeView.extend({
     this.maxDuration = parseInt(this.ui.maxDurationInput.val(), 10);
     var self = this;
 
-
     popsicle.request({
       method: 'POST',
       url: 'rooms/' + self.roomId,
@@ -331,6 +330,7 @@ var CalendarView = Marionette.CompositeView.extend({
     })
     .then(function durationSend(response) {
       window.localStorage.setItem('maxDuration', self.maxDuration);
+      self.ui.maxDurationLabel.text(self.maxDuration);
 
       noty('Max duration set to ' + self.maxDuration, 'success', 2500);
     })

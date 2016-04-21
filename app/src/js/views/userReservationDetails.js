@@ -105,7 +105,7 @@ var UserReservationDetailsView = Marionette.ItemView.extend({
   updateTitle: function() {
     var roomId = this.model.get('roomId');
     var path = 'reservations/' + this.model.get('id');
-    var title = this.ui.newTitle[0].outerText;
+    var title = this.ui.newTitle.text();
     var self = this;
 
     if(!title) {
