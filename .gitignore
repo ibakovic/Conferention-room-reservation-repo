@@ -10,3 +10,5 @@ todo.txt
 app/dist/index.js
 app/dist/style.css
 
+#Ignore log file
+npm-debug.log
